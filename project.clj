@@ -16,6 +16,7 @@
                  [metosin/muuntaja "0.6.4"]
                  [metosin/reitit "0.3.9"]
                  [metosin/ring-http-response "0.9.1"]
+                 [metosin/muuntaja "0.6.4"]
                  [mount "0.1.16"]
                  [nrepl "0.6.0"]
                  [org.clojure/clojure "1.10.1"]
@@ -29,6 +30,8 @@
                  [ring/ring-defaults "0.3.2"]
                  [com.novemberain/monger "3.1.0"]
                  [prismatic/schema "1.1.12"]
+                 [digest "1.4.9"]
+                 [metosin/reitit-swagger "0.3.9"]
                  [selmer "1.12.14"]]
 
   :min-lein-version "2.0.0"

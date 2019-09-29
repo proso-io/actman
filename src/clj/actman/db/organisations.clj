@@ -4,7 +4,6 @@
     [schema.core :as sc]))
 
 (defCollection Organisations [
-  [:oid sc/Str "Unique id"]
   [:name sc/Str "Name of the organisation"]
-  [:location sc/Str "Location of the organisation" :opt]
+  [:loc sc/Str "Location of the organisation" :opt]
   ])
