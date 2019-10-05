@@ -1,5 +1,6 @@
 (ns actman.bi.logger
-  (:require [clojure.tools.logging :as log]))
+  (:require
+    [clojure.tools.logging :as log]))
 
 (defn log [& args]
   (log/info args))
