@@ -5,7 +5,7 @@
     [schema.core :as sc]))
 
 (defCollection Teams [
-  [:oid sc/Str "Organisation id for the team"]
+  [:oid sc/Str "Organisation id for the team" :req-ro]
   [:name sc/Str "Name of team"]
   [:desc sc/Str "Description of team"]
   ])

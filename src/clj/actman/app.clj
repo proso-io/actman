@@ -8,12 +8,14 @@
     [actman.db.programs :as programs]
     [schema.core :as sc]))
 
-(sc/defschema Team teams/validation-schema)
-  ;(dissoc teams/validation-schema :oid))
+(sc/defschema Team teams/document-schema)
+  ;(dissoc teams/document-schema :oid))
 
 (defn add-team
   [team]
   (teams/insert-doc team))
+
+(defn crash [] (+ 2 ""))
 
 (defn api-routes []
   [
@@ -42,7 +44,13 @@
         ["/:id"
           {
             :get {
-              :parameters {:path {:id (:_id Team)}}
+              :coercion reitit.coercion.schema/coercion
+              :parameters {:path {:id sc/Str}}
+              :handler (fn [{{{:keys [id]} :path} :parameters}] (ok (teams/get-doc id)))
+            }
+            :put {
+              :coercion reitit.coercion.schema/coercion
+              :parameters {:body teams/updation-schema :path {:id sc/Str}}
               :handler (fn [{{{:keys [id]} :path} :parameters}] (ok (teams/get-doc id)))
             }
             }]
@@ -53,12 +61,12 @@
           {
             :get {
               :coercion reitit.coercion.schema/coercion
-              :parameters {:query {:oid (:oid form-schemas/validation-schema)}}
+              :parameters {:query {:oid (:oid form-schemas/document-schema)}}
               :handler (fn [{{{:keys [oid]} :query} :parameters}] (ok (form-schemas/get-docs {:oid oid})))
             }
-            :post {
+            :put {
               :coercion reitit.coercion.schema/coercion
-              :parameters {:body form-schemas/validation-schema}
+              :parameters {:body form-schemas/document-schema}
               :handler (fn [{{:keys [body]} :parameters}] (ok (form-schemas/insert-doc body)))
             }
             }]
@@ -69,12 +77,12 @@
           {
             :get {
               :coercion reitit.coercion.schema/coercion
-              :parameters {:query {:oid (:oid programs/validation-schema)}}
+              :parameters {:query {:oid (:oid programs/document-schema)}}
               :handler (fn [{{{:keys [oid]} :query} :parameters}] (ok (programs/get-docs {:oid oid})))
             }
             :post {
               :coercion reitit.coercion.schema/coercion
-              :parameters {:body programs/validation-schema}
+              :parameters {:body programs/document-schema}
               :handler (fn [{{:keys [body]} :parameters}] (ok (programs/insert-doc body)))
             }
             }]

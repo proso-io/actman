@@ -15,16 +15,16 @@
 (defstate db
   :start (:db db*))
 
-(declare generate-validation-schema)
+(declare generate-document-schema)
 
 (defn resolve-nested-schema
   [schema-map]
   (cond
-    (:map schema-map) (generate-validation-schema (:map schema-map))
+    (:map schema-map) (generate-document-schema (:map schema-map))
     (:array schema-map) [(resolve-nested-schema (:array schema-map))]
     :else schema-map))
 
-(defn generate-validation-schema
+(defn generate-document-schema
   [schema]
   (reduce
     #(assoc %1
@@ -35,6 +35,18 @@
     {} schema)
   )
 
+(defn generate-updation-schema
+  [schema]
+  (reduce
+    #(if (and (> (count %2) 3) (= (nth %2 3) :req-ro))
+      %1
+      (assoc %1
+        (sc/optional-key (first %2))
+        (resolve-nested-schema (second %2)))
+    )
+    {} schema)
+  )
+
 (defn gen-uid
   []
   (str (ObjectId.)))
@@ -42,20 +54,29 @@
 (defmacro defCollection
   "Generate relevant handlers for a collection given the collection name and schema.
   Schema is array of fields where each field is array of key-keyword,
-  prismatic/schema compatible schema, description string, :req/:opt"
+  prismatic/schema compatible schema, description string, :req/:opt/:req-ro
+  "
   [coll-name schema]
   `(do
     (intern *ns* '~'COLL '~coll-name)
     (let [
-      validation-schema# (generate-validation-schema ~schema)
+      document-schema# (generate-document-schema ~schema)
+      updation-schema# (generate-updation-schema ~schema)
       ]
-      (intern *ns* '~'validation-schema validation-schema#)
+      (intern *ns* '~'document-schema document-schema#)
+      (intern *ns* '~'updation-schema updation-schema#)
       (intern *ns* '~'validate-document
-        (fn [document#] (when (sc/validate validation-schema# document#) document#)))
+        (fn [document#] (when (sc/validate document-schema# document#) document#)))
+      (intern *ns* '~'validate-updation-document
+        (fn [document#] (when (sc/validate updation-schema# document#) document#)))
       (intern *ns* '~'insert-doc
         (fn [document#]
-          (when (sc/validate validation-schema# document#)
+          (when (sc/validate document-schema# document#)
             (mc/insert-and-return db '~coll-name (merge {:_id (gen-uid)} document#)))))
+      (intern *ns* '~'update-doc
+        (fn [id# document#]
+          (when (sc/validate updation-schema# document#)
+            (mc/update-by-id db '~coll-name id# document#))))
       (intern *ns* '~'get-doc
         (fn [id#]
           (mc/find-map-by-id db '~coll-name id#)))
