@@ -14,4 +14,4 @@
 
 (defn create-user
   [{:keys [pswd] :as details}]
-  (insert-row (assoc details :pswd (sutils/gen-hash pswd))))
+  (insert-doc (assoc details :pswd (sutils/gen-hash pswd))))
