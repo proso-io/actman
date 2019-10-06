@@ -65,7 +65,7 @@
     get-doc - Gets a document with given id.
     get-docs - Gets documents with given query.
   Schema is array of fields where each field is array of key-keyword,
-  prismatic/schema compatible schema, description string, :req/:opt/:req-ro.
+  prismatic/schema compatible schema, description string, :req/:opt/:req-ro (defaults to :req).
   "
   [coll-name schema]
   `(do

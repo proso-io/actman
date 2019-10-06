@@ -2,6 +2,7 @@
   (:require
     [actman.db.core :as db-core :refer [defCollection]]
     [schema.core :as sc]
+    [actman.utils.security :as sutils]
     [actman.db.utils :as db-utils]))
 
 (defCollection Users [

@@ -32,6 +32,8 @@
                  [prismatic/schema "1.1.12"]
                  [digest "1.4.9"]
                  [metosin/reitit-swagger "0.3.9"]
+                 [midje "1.9.9"]
+                 [com.cemerick/friend "0.2.3"]
                  [selmer "1.12.14"]]
 
   :min-lein-version "2.0.0"
