@@ -10,7 +10,8 @@
     {:error (getstr :ORG_NAME_USED)}
     (let [
         org (orgs/insert-doc org-info)
+        admin-team (teams/create-admin-team (:_id org))
+        org (orgs/update-doc (:_id org) {:admintid (:_id admin-team)})
       ]
-      (teams/create-admin-team (:_id org))
       (select-keys org [:_id])
       )))
