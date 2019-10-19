@@ -20,7 +20,8 @@
       (provided
         (orgs/get-organisation-for-name ..name..) => nil
         (orgs/insert-doc {:name ..name..}) => {:name ..name.. :_id ..oid..} :times 1
-        (teams/create-admin-team ..oid..) => anything :times 1)
+        (teams/create-admin-team ..oid..) => {:_id ..admintid..} :times 1
+        (orgs/update-doc ..oid.. {:admintid ..admintid..}) => {:name ..name.. :admintid ..admintid.. :_id ..oid..} :times 1)
     )
   )
 )

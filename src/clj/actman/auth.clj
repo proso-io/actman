@@ -24,7 +24,7 @@
   (gutil/is-object-equal-for-keys? team1 team2 (db-utils/get-team-role-keys)))
 
 (defn team-role-exists?
-  "Checks if `teams` contains a role `team`"
+  "Checks if `teams` contains `team`"
   [teams team]
   (some #(is-team-role-equal team %) teams))
 
