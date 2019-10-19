@@ -40,30 +40,20 @@
 (defn authorize-operation
   "Checks if user can perform an operation on entity.
   `entity` is assumed as a vector if `multi` is true else it is assumed to be a single entity element"
-  [{:keys [oid username teams] :as current-user} entity-type operation is-addon-operation? entity & [multi]]
+  [{:keys [oid username teams] :as current-user} entity-type operation is-addon-operation? entity]
   (let [
     global-access
       (->
         {:oid oid :opn operation :addon is-addon-operation? :ent entity-type}
         (accres/get-docs)
         (first))
-    entity-access
-      (if multi
-        (reduce
-          #(assoc %1
-            :roles (into (:roles %1) (-> %2 operation :accessroles))
-            :users (into (:users %1) (-> %2 operation :accessusers)))
-          {:roles [] :users []}
-          entity)
-        (-> entity operation
-          (select-keys [:accessroles :accessusers])
-          (clojure.set/rename-keys {:accessroles :roles :accessusers :users}))
-        )
+    entity-roles-access  (-> entity :accessroles operation)
+    entity-users-access  (-> entity :accessusers operation)
     ]
     (or
-      (some #(= username %) (:users entity-access))
+      (some #(= username %) entity-users-access)
       (some #(= username %) (:users global-access))
-      (contains-valid-team-role? (:roles entity-access) teams)
+      (contains-valid-team-role? entity-roles-access teams)
       (contains-valid-team-role? (:roles global-access) teams)
       )
     ))

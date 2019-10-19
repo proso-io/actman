@@ -91,23 +91,43 @@
     )
   )
 
-  ; (facts "Testing authorize-operation"
-  ;   (fact "Test for username access on entity with single entity"
-  ;     (authorize-operation {:username ..user.. :oid ..oid..} ..type..
-  ;       ..operation.. ..addon-op..
-  ;       {:accessroles {} :accessusers {..operation.. [..user..]}}) => true
-  ;     (provided
-  ;       (accres/get-docs anything) => [])
-  ;   )
-  ;
-  ;   (fact "Test for user role access on entity with single entity"
-  ;     (authorize-operation {:username ..user.. :oid ..oid..} ..type..
-  ;       ..operation.. ..addon-op..
-  ;       {:accessroles {} :accessusers {..operation.. [..user..]}}) => true
-  ;     (provided
-  ;       (accres/get-docs anything) => [])
-  ;   )
-  ; )
+  (facts "Testing authorize-operation"
+    (fact "Test for username access on entity"
+      (authorize-operation {:username ..user.. :oid ..oid..} ..type..
+        :opn ..addon-op..
+        {:accessroles {} :accessusers {:opn [..user..]}}) => true
+      (provided
+        (accres/get-docs anything) => [])
+    )
+
+    (fact "Test for user role access on entity"
+      (authorize-operation {:username ..user.. :oid ..oid..
+          :teams [{:t ..team1.. :tu ..tu.. :rl ..rl..} {:t ..team2.. :tu ..tu.. :rl ..rl..}]}
+        ..type.. :opn ..addon-op..
+        {:accessroles {:opn [{:t ..team1.. :tu ..tu.. :rl ..rl..} {:t ..team3.. :tu ..tu.. :rl ..rl..}]}
+          :accessusers {}}) => true
+      (provided
+        (accres/get-docs anything) => [])
+    )
+
+    (fact "Test for user access on entity model"
+      (authorize-operation {:username ..user.. :oid ..oid..}
+        ..type.. ..operation.. ..addon-op..
+        anything) => true
+      (provided
+        (accres/get-docs anything) => [{:users [..user.. ..user2..]}])
+    )
+
+    (fact "Test for user role access on entity model"
+      (authorize-operation {:username ..user.. :oid ..oid..
+          :teams [{:t ..team1.. :tu ..tu.. :rl ..rl..} {:t ..team2.. :tu ..tu.. :rl ..rl..}]}
+        ..type.. ..operation.. ..addon-op..
+        anything) => true
+      (provided
+        (accres/get-docs anything)
+          => [{:roles [{:t ..team1.. :tu ..tu.. :rl ..rl..} {:t ..team3.. :tu ..tu.. :rl ..rl..}]}])
+    )
+  )
 )
 
 ;{:oid ..oid.. :opn ..operation.. :addon ..addon-op.. :ent ..type..}
