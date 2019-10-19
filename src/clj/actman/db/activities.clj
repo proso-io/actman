@@ -8,6 +8,5 @@
   [:name sc/Str "Name of Activity"]
   [:mdata sc/Str "Metadata of activity"]
   [:pid sc/Str "Program under which activity is created"]
-  [:access (db-utils/get-access-schema [:view :edit])
-    "Access rights restricted to" :opt]
-  ])
+  ]
+  [:create :view :edit])

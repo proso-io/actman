@@ -19,7 +19,6 @@
 (defn create-admin-team
   "Create default admin team for organisation id"
   [oid]
-  (println "creating admin team for " oid)
   (->
     DEFAULT_ADMIN_TEAM_DETAILS
     (assoc :oid oid)

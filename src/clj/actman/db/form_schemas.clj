@@ -10,6 +10,7 @@
   [:title sc/Str "Title of form"]
   [:desc sc/Str "Description of form"]
   [:schema sc/Any "Schema of the form"]
-  [:access (db-utils/get-access-schema [:edit])
-    "Access rights restricted to" :opt]
-  ])
+  ; [:access (db-utils/get-access-schema [:edit])
+  ;   "Access rights restricted to" :opt]
+  ]
+  [:create :view :edit])

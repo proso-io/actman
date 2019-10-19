@@ -6,8 +6,9 @@
 
 (defCollection AccessRestrictions [
   [:oid sc/Str "Id of Organisation" :req-ro]
-  [:entity sc/Str "Entity to enforce restriction on" :req-ro]
-  [:operation sc/Str "Operation on the entity" :req-ro]
-  [:addon sc/Str "If operation belongs to addon" :opt]
-  [:accessto db-utils/USER_TEAM_ROLE_SCHEMA "Array of access objects" :req]
+  [:ent sc/Str "Entity to enforce restriction on" :req-ro]
+  [:opn sc/Str "Operation on the entity" :req-ro]
+  [:addon sc/Bool "If operation belongs to addon" :req-ro]
+  [:roles db-utils/USER_TEAM_ROLE_SCHEMA "Array of user roles" :req]
+  [:users [sc/Str] "Array of user ids" :opt]
   ])

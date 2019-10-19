@@ -5,6 +5,7 @@
       [monger.operators :refer :all]
       [mount.core :refer [defstate]]
       [schema.core :as sc]
+      [actman.db.utils :as db-utils]
       [actman.config :refer [env]])
     (:import org.bson.types.ObjectId))
 
@@ -67,17 +68,25 @@
   Schema is array of fields where each field is array of key-keyword,
   prismatic/schema compatible schema, description string, :req/:opt/:req-ro (defaults to :req).
   "
-  [coll-name schema]
+  [coll-name schema & [operations]]
   `(do
     (intern *ns* '~'COLL '~coll-name)
     (let [
-      insertion-schema# (generate-document-schema ~schema)
+      schema#
+        (if ~operations
+          (conj ~schema
+            [:accessroles (db-utils/get-access-roles-schema ~operations)
+              "Access rights restricted to roles" :opt]
+            [:accessusers [sc/Str] "Access rights restricted to users" :opt])
+          ~schema)
+      insertion-schema# (generate-document-schema schema#)
       document-schema# (assoc insertion-schema# :_id sc/Str)
-      updation-schema# (generate-updation-schema ~schema)
+      updation-schema# (generate-updation-schema schema#)
       ]
       (intern *ns* '~'document-schema document-schema#)
       (intern *ns* '~'insertion-schema insertion-schema#)
       (intern *ns* '~'updation-schema updation-schema#)
+      (intern *ns* '~'operations ~operations)
       (intern *ns* '~'validate-document
         (fn [document#] (when (sc/validate document-schema# document#) document#)))
       (intern *ns* '~'validate-insertion-document
@@ -97,6 +106,40 @@
           (mc/find-map-by-id db '~coll-name id#)))
       (intern *ns* '~'get-docs
         (fn [query-obj#]
-          (mc/find-maps db '~coll-name query-obj#))))
+          (mc/find-maps db '~coll-name query-obj#)))
+      (intern *ns* '~'get-opn-auth-docs
+        (fn [team-roles# userid# query-obj# operation#]
+          (let [
+            accroles# (str operation# ".accessroles")
+            accusers# (str operation# ".accessusers")
+            access-query#
+              {
+                "or" [
+                  {"$and" [{accroles# {"$exists" false}} {accroles# {"$size" 0}} {accusers# {"$exists" false}} {accusers# {"$size" 0}}]}
+                  {accroles# {"$in" team-roles#}}
+                  {accusers# userid#}
+                ]
+              }
+            ]
+            (mc/find-maps db '~coll-name (merge query-obj# access-query#) {:return-new true})
+            )))
+      ; (intern *ns* '~'operate
+      ;   (fn [team-roles# userid# query-obj# update-obj# operation#]
+      ;     (let [
+      ;       accroles# (str operation# ".accessroles")
+      ;       accusers# (str operation# ".accessusers")
+      ;       access-query#
+      ;         {
+      ;           "or" [
+      ;             {"$and" [{accroles# {"$exists" false}} {accroles# {"$size" 0}} {accusers# {"$exists" false}} {accusers# {"$size" 0}}]}
+      ;             {accroles# {"$in" team-roles#}}
+      ;             {accusers# userid#}
+      ;           ]
+      ;         }
+      ;       ]
+      ;       (println "in operate " (merge query-obj# access-query#))
+      ;       (mc/find-and-modify db '~coll-name (merge query-obj# access-query#) {"$set" update-obj#} {:return-new true})
+      ;       )))
+      )
     )
   )

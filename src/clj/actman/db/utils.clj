@@ -16,9 +16,12 @@
   [operation]
   [operation USER_TEAM_ROLE_SCHEMA])
 
-(defn get-access-schema
+(defn get-access-roles-schema
   "Get access schema which can be passed to defCollection for given array of operations"
   [ops]
   {
     :map (mapv get-access-schema-vector ops)
   })
+
+(defn get-team-role-keys []
+  (mapv first (-> USER_TEAM_ROLE_SCHEMA :array :map)))
