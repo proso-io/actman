@@ -4,7 +4,7 @@
     [schema.core :as sc]))
 
 (defCollection Programs [
-  [:oid sc/Str "Organisation id for the program"]
+  [:oid sc/Str "Organisation id for the program" :req-ro]
   [:name sc/Str "Name of Program"]
   [:desc sc/Str "Description of Program"]
   [:sid sc/Str "Schema of form for activities under the program" :opt]

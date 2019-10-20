@@ -7,14 +7,14 @@
 (defn view-schema-action
   "Action function for get-schema operation.
   Returns received schema wrapped with a response"
-  [valid-schema id args schema-for-id]
+  [valid-schema id args]
   (if valid-schema (ok valid-schema) (not-found))
   )
 
 (defn update-schema-action
   "Action function for edit-schema operation.
   Updates a schema object for given id"
-  [valid-schema id update-obj schema-for-id]
+  [valid-schema id update-obj]
   (if valid-schema
     (ok (schemas/update-doc id update-obj))
     (not-found)))
@@ -28,33 +28,31 @@
 (defn get-schemas-action
   "Action function for get-schemas operation.
   Returns received schemas list wrapped in response"
-  [valid-schemas query args all-schemas]
+  [valid-schemas query args]
   (ok valid-schemas))
 
 (defn perform-operation
   "This method is assigned to operations defined by defOperation"
   [entity-db-ns operation-key action-fn find-by-query? current-user entity-query & [action-args]]
   (let [
+    model-key @(ns-resolve entity-db-ns 'COLL)
+    model-authorized? (auth/authorize-operation current-user model-key operation-key false nil)
     entities
       (when entity-query
         (if find-by-query?
-          ((ns-resolve entity-db-ns 'get-docs) entity-query)
-          [((ns-resolve entity-db-ns 'get-doc) entity-query)]
-          ))
-    model-key @(ns-resolve entity-db-ns 'COLL)
-    authorized-entities
-        (remove nil?
-          (mapv
-            #(when
-              (auth/authorize-operation current-user model-key operation-key false %)
-              %)
-            entities))
+          (if model-authorized?
+            ((ns-resolve entity-db-ns 'get-docs) entity-query)
+            ((ns-resolve entity-db-ns 'get-only-opn-auth-docs) entity-query)
+            )
+          (->>
+            ((ns-resolve entity-db-ns 'get-doc) entity-query)
+            (auth/authorize-operation current-user model-key operation-key false)
+            )))
     ]
     (action-fn
-      (if find-by-query? authorized-entities (first authorized-entities))
+      entities
       entity-query
-      action-args
-      (if find-by-query? entities (first entities)))
+      action-args)
   ))
 
 (defmacro defOperation
@@ -63,7 +61,7 @@
     entity-db-ns: db model namespace of operated entity.
     entity-operation-key: specific operation key defined in db model definitions.
     action-fn: function which accepts 4 arguments - authorized entity object, query,
-      action object and all entity object for query.
+      and action object.
     Entity object can be single element or array of entities depending on operation;
     action-object will be passed as it is from operation arguments
 

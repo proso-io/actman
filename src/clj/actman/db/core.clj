@@ -107,7 +107,7 @@
       (intern *ns* '~'get-docs
         (fn [query-obj#]
           (mc/find-maps db '~coll-name query-obj#)))
-      (intern *ns* '~'get-opn-auth-docs
+      (intern *ns* '~'get-only-opn-auth-docs
         (fn [team-roles# userid# query-obj# operation#]
           (let [
             accroles# (str operation# ".accessroles")
@@ -115,7 +115,7 @@
             access-query#
               {
                 "or" [
-                  {"$and" [{accroles# {"$exists" false}} {accroles# {"$size" 0}} {accusers# {"$exists" false}} {accusers# {"$size" 0}}]}
+                  ;{"$and" [{accroles# {"$exists" false}} {accroles# {"$size" 0}} {accusers# {"$exists" false}} {accusers# {"$size" 0}}]}
                   {accroles# {"$in" team-roles#}}
                   {accusers# userid#}
                 ]
