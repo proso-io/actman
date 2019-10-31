@@ -9,6 +9,6 @@
     [:oid sc/Str "Organisation id for the media" :req-ro]
     [:name sc/Str "Name of media"]
     [:turl sc/Str "Thumbnail URL of media"]
-    [:url sc/Str "URL of media file storage location" :req-ro]
+    [:tags [sc/Str] "Tags for media" :opt]
   ]
   [:create :view-thumbnail :edit :download])

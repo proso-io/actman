@@ -3,17 +3,20 @@
     [ring.util.http-response :refer [ok]]
     [reitit.swagger :as swagger]
     [reitit.coercion.schema]
+    [reitit.ring.middleware.multipart :as multipart]
     [actman.db.teams :as teams]
     [actman.db.team-units :as team-units]
     [actman.db.form-schemas :as form-schemas]
     [actman.db.programs :as programs]
     [actman.db.organisations :as orgs]
     [actman.db.users :as users]
+    [actman.db.media-meta-data :as mmd]
     [actman.api :as api]
     [clojure.pprint :refer [pprint]]
     [cemerick.friend :as friend]
     [actman.auth :as auth]
     [actman.operations-api :as opns]
+    [actman.filestorage.core :as files]
     [schema.core :as sc]))
 
 (sc/defschema Team teams/insertion-schema)
@@ -30,6 +33,11 @@
     ]
     (operation-fn user query operation-args))
   )
+
+(def media-insert-schema {
+  :oid string?
+  :tags [string?]
+  })
 
 (defn api-routes []
   [
@@ -198,6 +206,16 @@
               :coercion reitit.coercion.schema/coercion
               :parameters {:body programs/insertion-schema :header {:authorization sc/Str}}
               :handler (fn [{{:keys [body]} :parameters}] (ok (programs/insert-doc body)))
+            }
+            }]
+      ]
+      ["/media"
+        {:swagger {:tags ["Media"]}}
+        [""
+          {
+            :post {
+              :parameters {:multipart {:file multipart/temp-file-part :metadata media-insert-schema}  :header {:authorization string?}}
+              :handler (fn [[parameters]] (ok "ok"))
             }
             }]
       ]

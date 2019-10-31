@@ -34,6 +34,7 @@
                  [metosin/reitit-swagger "0.3.9"]
                  [midje "1.9.9"]
                  [com.cemerick/friend "0.2.3"]
+                 [com.microsoft.azure/azure-storage "8.4.0"]
                  [selmer "1.12.14"]]
 
   :min-lein-version "2.0.0"
