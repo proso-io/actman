@@ -4,65 +4,92 @@
     [actman.auth :as auth]
     [actman.db.teams :as teams]
     [actman.db.team-units :as team-units]
+    [actman.db.media-meta-data :as mmd]
+    [actman.filestorage.core :as filestorage]
     [actman.db.form-schemas :as schemas]))
 
 (defn view-schema-action
   "Action function for get-schema operation.
   Returns received schema wrapped with a response"
   [valid-schema id args]
-  (if valid-schema (ok valid-schema) (not-found))
-  )
+  valid-schema)
 
 (defn update-schema-action
   "Action function for edit-schema operation.
   Updates a schema object for given id"
   [valid-schema id update-obj]
-  (if valid-schema
-    (ok (schemas/update-doc id update-obj))
-    (not-found)))
+  (when valid-schema
+    (schemas/update-doc id update-obj)))
 
 (defn insert-schema-action
   "Action function for add-schema operation.
   Creates a new form schema with given schema object"
-  [schema & args]
-  (created (schemas/insert-doc schema)))
+  [_1 _2 schema]
+  (schemas/insert-doc schema))
 
 (defn get-schemas-action
   "Action function for get-schemas operation.
   Returns received schemas list wrapped in response"
   [valid-schemas query args]
-  (ok valid-schemas))
+  valid-schemas)
+
+(defn upload-media-action
+  "Action function for upload-media operation.
+  Returns uploaded url"
+  [_1 _2 {:keys [file metadata current-user] :as data}]
+  (let [
+    {:keys [oid username]} current-user
+    filename (str oid "-" username "-" (System/currentTimeMillis))
+    {:keys [success message url] :as resp}
+      (filestorage/upload-file
+        filename
+        (:tempfile file))
+    ]
+    (when success
+      (mmd/insert-doc {
+        :oid oid
+        :name filename
+        :turl ""
+        }))
+    resp))
 
 (defn perform-operation
   "This method is assigned to operations defined by defOperation"
-  [entity-db-ns operation-key action-fn find-by-query? current-user entity-query & [action-args]]
+  [entity-db-ns operation-key action-fn find-by-query? {:keys [oid username teams] :as current-user} entity-query & [action-args]]
   (let [
     model-key @(ns-resolve entity-db-ns 'COLL)
     model-authorized? (auth/authorize-operation current-user model-key operation-key false nil)
+    get-all-docs? (and entity-query find-by-query? model-authorized?)
+    get-auth-docs? (and entity-query find-by-query? (not model-authorized?))
+    get-single-doc? (and entity-query (not find-by-query?))
     entities
-      (when entity-query
-        (if find-by-query?
-          (if model-authorized?
-            ((ns-resolve entity-db-ns 'get-docs) entity-query)
-            ((ns-resolve entity-db-ns 'get-only-opn-auth-docs) entity-query)
-            )
-          (->>
-            ((ns-resolve entity-db-ns 'get-doc) entity-query)
-            (auth/authorize-operation current-user model-key operation-key false)
-            )))
+      (cond
+        get-all-docs? ((ns-resolve entity-db-ns 'get-docs) entity-query)
+        get-auth-docs? ((ns-resolve entity-db-ns 'get-only-opn-auth-docs) teams username entity-query operation-key)
+        get-single-doc?
+          (let [entity ((ns-resolve entity-db-ns 'get-doc) entity-query)]
+            (when
+              (auth/authorize-operation current-user model-key operation-key false entity)
+              entity)))
+    perform? (boolean (or model-authorized? (not-empty entities)))
     ]
-    (action-fn
-      entities
-      entity-query
-      action-args)
-  ))
+    {
+      :performed perform?
+      :accessed-existing-entities (mapv :_id (if get-single-doc? [entities] entities))
+      :data
+        (when perform?
+          (action-fn
+            entities
+            entity-query
+            action-args))
+    }))
 
 (defmacro defOperation
   "Define an operation function in this namespace.
     operation-name: name of operation.
     entity-db-ns: db model namespace of operated entity.
     entity-operation-key: specific operation key defined in db model definitions.
-    action-fn: function which accepts 4 arguments - authorized entity object, query,
+    action-fn: function which accepts 3 arguments - authorized entity object, query,
       and action object.
     Entity object can be single element or array of entities depending on operation;
     action-object will be passed as it is from operation arguments
@@ -93,3 +120,7 @@
 (defOperation get-schemas
   "Get all schemas for given search query"
   'actman.db.form-schemas :view get-schemas-action true)
+
+(defOperation upload-media
+  "Upload new media file"
+  'actman.db.media-meta-data :create upload-media-action)

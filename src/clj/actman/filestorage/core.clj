@@ -29,11 +29,15 @@
   "uploads a file in azure blob storage"
   [filename file]
   (try
-    (.uploadFromFile (.getBlockBlobReference @media-container filename) (.getAbsolutePath file))
-    (log/info "File uploaded " filename)
+    (let [
+      ref (.getBlockBlobReference @media-container filename)
+      ]
+      (.uploadFromFile ref (.getAbsolutePath file))
+      (log/info "File uploaded " filename)
+      {:success true :url (.getUri ref)})
     (catch Exception e
-      (log/error "File uploading failed" e)
-      (str "File uploading failed\n" e)
+      (log/error "File uploading failed" filename file e)
+      {:success false :message (str "File uploading failed\n" e)}
     ))
     )
 
@@ -41,9 +45,7 @@
   "Downloads a media file form azure blob storage"
   [filename]
   (let [
-    sourceFile (io/file filename)
     blob (.getBlockBlobReference @media-container filename)
     ]
-    (println blob )
     (.getUri blob)
     ))
