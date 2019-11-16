@@ -1,6 +1,6 @@
 (ns actman.app
   (:require
-    [ring.util.http-response :refer [ok]]
+    [ring.util.http-response :refer [ok unauthorized]]
     [reitit.swagger :as swagger]
     [reitit.coercion.schema]
     [reitit.ring.middleware.multipart :as multipart]
@@ -38,6 +38,15 @@
   :oid string?
   :tags [string?]
   })
+
+(defn superadmin-auth-middleware
+  "Authenticate whether requestee is superadmin"
+  [handler]
+  (fn [request]
+    (if (auth/is-superadmin? (friend/current-authentication request))
+      (handler request)
+      (unauthorized "")
+    )))
 
 (defn api-routes []
   [

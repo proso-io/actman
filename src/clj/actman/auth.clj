@@ -2,6 +2,7 @@
   "Contains various authentication and authorization methods"
   (:require
     [actman.db.teams :as teams]
+    [actman.db.organisations :as orgs]
     [actman.utils.general :as gutil]
     [actman.db.utils :as db-utils]
     [actman.db.access-restrictions :as accres]))
@@ -55,5 +56,17 @@
       (some #(= username %) (:users global-access))
       (contains-valid-team-role? entity-roles-access teams)
       (contains-valid-team-role? (:roles global-access) teams)
+      )
+    ))
+
+(defn is-superadmin?
+  "Check whether requestee is a superadmin for organisation"
+  [{:keys [oid username teams] :as current-user}]
+  (let [
+    {:keys [admintid] :as org} (orgs/get-doc oid)
+    ]
+    (some
+      #(gutil/is-object-equal-for-keys? {:t admintid} % (db-utils/get-team-role-keys))
+      teams
       )
     ))
