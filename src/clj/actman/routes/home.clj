@@ -13,8 +13,8 @@
 
 (defn home-routes []
   [""
-   {:middleware [middleware/wrap-csrf
+    {:no-doc true}
+    {:middleware [middleware/wrap-csrf
                  middleware/wrap-formats]}
-   ["/" {:get home-page}]
-   ["/about" {:get about-page}]])
-
+    ["/" {:get home-page}]
+    ["/about" {:get about-page}]])

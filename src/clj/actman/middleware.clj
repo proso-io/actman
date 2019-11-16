@@ -10,8 +10,14 @@
     [muuntaja.middleware :refer [wrap-format wrap-params]]
     [actman.config :refer [env]]
     [ring-ttl-session.core :refer [ttl-memory-store]]
+    [cemerick.friend :as friend]
+    (cemerick.friend
+      [workflows :as workflows]
+      [credentials :as creds]
+      [util :as util])
+    [actman.db.users :as users]
     [ring.middleware.defaults :refer [site-defaults wrap-defaults]])
-  (:import 
+  (:import
            ))
 
 (defn wrap-internal-error [handler]
@@ -40,8 +46,23 @@
       ;; since they're not compatible with this middleware
       ((if (:websocket? request) handler wrapped) request))))
 
+(defn get-user-creds
+  "Return user object for friend credential-fn."
+  [id]
+  (let [
+    creds (users/get-doc id)
+    ]
+    (when (:pswd creds)
+      (clojure.set/rename-keys creds {:_id :username :pswd :password}))))
+
 (defn wrap-base [handler]
   (-> ((:middleware defaults) handler)
+    (friend/authenticate
+      {:credential-fn (partial creds/bcrypt-credential-fn get-user-creds)
+        :workflows [(workflows/http-basic :realm "/")
+                    (workflows/interactive-form)]
+        :login-uri "/login"
+        :default-landing-uri "/dashboard"})
       (wrap-defaults
         (-> site-defaults
             (assoc-in [:security :anti-forgery] false)

@@ -6,6 +6,7 @@
     [actman.config :refer [env]]
     [clojure.tools.cli :refer [parse-opts]]
     [clojure.tools.logging :as log]
+    [actman.filestorage.core :as files]
     [mount.core :as mount])
   (:gen-class))
 
@@ -43,7 +44,8 @@
 
 (defn stop-app []
   (doseq [component (:stopped (mount/stop))]
-    (log/info component "stopped"))
+    (log/info component "stopped")
+    (println component "stopped"))
   (shutdown-agents))
 
 (defn start-app [args]
@@ -51,7 +53,9 @@
                         (parse-opts cli-options)
                         mount/start-with-args
                         :started)]
-    (log/info component "started"))
+    (files/init-container)
+    (log/info component "started")
+    (println component "started"))
   (.addShutdownHook (Runtime/getRuntime) (Thread. stop-app)))
 
 (defn -main [& args]

@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration scan="true" scanPeriod="10 seconds">
+    <statusListener class="ch.qos.logback.core.status.NopStatusListener" />
+    <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+        <!-- filtering logs for stdout to allow WARN and below -->
+        <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+          <level>WARN</level>
+        </filter>
+        <!-- encoders are assigned the type
+             ch.qos.logback.classic.encoder.PatternLayoutEncoder by default -->
+        <encoder>
+            <charset>UTF-8</charset>
+            <pattern>%date{ISO8601} [%thread] %-5level %logger{36} - %msg %n</pattern>
+        </encoder>
+    </appender>
+    <appender name="FILE-INFO" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>/opt/actman/log/actman.log</file>
+        <!-- filtering logs for info logs to allow INFO and below -->
+        <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+          <level>INFO</level>
+        </filter>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>/opt/actman/log/actman.%d{yyyy-MM-dd}.%i.log</fileNamePattern>
+            <timeBasedFileNamingAndTriggeringPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
+                <maxFileSize>100MB</maxFileSize>
+            </timeBasedFileNamingAndTriggeringPolicy>
+            <!-- keep 30 days of history -->
+            <maxHistory>30</maxHistory>
+        </rollingPolicy>
+        <encoder>
+            <charset>UTF-8</charset>
+            <pattern>%date{ISO8601} [%thread] %-5level %logger{36} - %msg %n</pattern>
+        </encoder>
+    </appender>
+    <appender name="FILE-ERROR" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>/opt/actman/log/actman-errors.log</file>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>/opt/actman/log/actman-errors.%d{yyyy-MM-dd}.%i.log</fileNamePattern>
+            <timeBasedFileNamingAndTriggeringPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
+                <maxFileSize>100MB</maxFileSize>
+            </timeBasedFileNamingAndTriggeringPolicy>
+            <!-- keep 30 days of history -->
+            <maxHistory>30</maxHistory>
+        </rollingPolicy>
+        <!-- filtering logs for error logs to allow ERROR and below -->
+        <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+          <level>WARN</level>
+        </filter>
+        <encoder>
+            <charset>UTF-8</charset>
+            <pattern>%date{ISO8601} [%thread] %-5level %logger{36} - %msg %n</pattern>
+        </encoder>
+    </appender>
+    <appender name="FILE-ALL" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>/opt/actman/log/actman-all.log</file>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>/opt/actman/log/actman-all.%d{yyyy-MM-dd}.%i.log</fileNamePattern>
+            <timeBasedFileNamingAndTriggeringPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
+                <maxFileSize>100MB</maxFileSize>
+            </timeBasedFileNamingAndTriggeringPolicy>
+            <!-- keep 2 day of history -->
+            <maxHistory>2</maxHistory>
+        </rollingPolicy>
+        <encoder>
+            <charset>UTF-8</charset>
+            <pattern>%date{ISO8601} [%thread] %-5level %logger{36} - %msg %n</pattern>
+        </encoder>
+    </appender>
+    <logger name="org.apache.http" level="warn" />
+    <logger name="org.xnio.nio" level="warn" />
+    <logger name="org.eclipse.jetty" level="warn" />
+    <logger name="org.mongodb.driver" level="warn" />
+    <root level="DEBUG">
+        <appender-ref ref="FILE-INFO" />
+        <appender-ref ref="FILE-ERROR" />
+        <appender-ref ref="FILE-ALL" />
+        <appender-ref ref="STDOUT" />
+    </root>
+</configuration>
