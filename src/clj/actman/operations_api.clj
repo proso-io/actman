@@ -5,6 +5,7 @@
     [actman.db.teams :as teams]
     [actman.db.team-units :as team-units]
     [actman.db.media-meta-data :as mmd]
+    [actman.db.activities :as activities]
     [actman.filestorage.core :as filestorage]
     [actman.db.form-schemas :as schemas]))
 
@@ -52,6 +53,22 @@
         :turl ""
         }))
     resp))
+
+
+(defn create-activity-action
+  "Action function for create-activity operation"
+  [_1 _2 activity]
+  (activities/insert-doc activity))
+
+(defn edit-activity-action
+  "Action function for edit-activity operation"
+  [valid-activity _2 activity]
+  (when valid-activity (activities/update-doc activity)))
+
+(defn get-activities-action
+  "Action function for get-activities operation"
+  [activities _1 _2]
+  activities)
 
 (defn perform-operation
   "This method is assigned to operations defined by defOperation"
@@ -124,3 +141,19 @@
 (defOperation upload-media
   "Upload new media file"
   'actman.db.media-meta-data :create upload-media-action)
+
+(defOperation create-activity
+  "Create a new activity"
+  'actman.db.activities :create create-activity-action)
+
+(defOperation edit-activity
+  "Edit an exisiting activity"
+  'actman.db.activities :edit edit-activity-action)
+
+(defOperation get-activity
+  "Get activity detalis for an activity id"
+  'actman.db.activities :view get-activities-action)
+
+(defOperation get-activities
+  "Get activity detalis for given search query"
+  'actman.db.activities :view get-activities-action true)

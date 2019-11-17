@@ -11,6 +11,7 @@
     [actman.db.organisations :as orgs]
     [actman.db.users :as users]
     [actman.db.media-meta-data :as mmd]
+    [actman.db.activities :as activities]
     [actman.api :as api]
     [clojure.pprint :refer [pprint]]
     [cemerick.friend :as friend]
@@ -95,7 +96,16 @@
               :responses {200 {:body orgs/document-schema}}
               :handler (fn [{{:keys [path body]} :parameters}] (ok (orgs/update-doc (:id path) body)))
             }
-            }]
+          }
+          ["/activities-search-keys"
+            {
+              :get {
+                :parameters {:path {:id sc/Str} :header {:authorization sc/Str}}
+                :handler (fn [{{{:keys [id]} :path} :parameters}] (ok (api/get-activity-search-keys id)))
+              }
+            }
+          ]
+        ]
       ]
       ["/teams"
         {:swagger {:tags ["Teams"]}}
@@ -184,6 +194,36 @@
               :parameters {:body form-schemas/updation-schema :path {:id sc/Str} :header {:authorization sc/Str}}
               :responses {200 {:body form-schemas/document-schema}}
               :handler (fn [{{:keys [path body]} :parameters :as request}] (perform-operation request opns/edit-schema (:id path) body))
+            }
+            }]
+      ]
+      ["/activities"
+        {:swagger {:tags ["Activities"]}}
+        [""
+          {
+            :get {
+              :coercion reitit.coercion.schema/coercion
+              :parameters {:query {:query sc/Any} :header {:authorization sc/Str}}
+              :handler (fn [{{{:keys [oid]} :query} :parameters :as request}] (perform-operation request opns/get-activities {query))
+            }
+            :post {
+              :coercion reitit.coercion.schema/coercion
+              :parameters {:body activities/insertion-schema :header {:authorization sc/Str}}
+              :handler (fn [{{:keys [body]} :parameters :as request}] (perform-operation request opns/create-activity nil body))
+            }
+            }]
+        ["/:id"
+          {
+            :get {
+              :coercion reitit.coercion.schema/coercion
+              :parameters {:path {:id sc/Str} :header {:authorization sc/Str}}
+              :handler (fn [{{{:keys [id]} :path} :parameters :as request}] (perform-operation request opns/get-activity id))
+            }
+            :put {
+              :coercion reitit.coercion.schema/coercion
+              :parameters {:body activities/updation-schema :path {:id sc/Str} :header {:authorization sc/Str}}
+              :responses {200 {:body activities/document-schema}}
+              :handler (fn [{{:keys [path body]} :parameters :as request}] (perform-operation request opns/edit-activity (:id path) body))
             }
             }]
       ]
