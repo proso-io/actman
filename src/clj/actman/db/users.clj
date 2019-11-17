@@ -16,3 +16,5 @@
 (defn create-user
   [{:keys [pswd] :as details}]
   (insert-doc (assoc details :pswd (sutils/gen-hash pswd))))
+
+(ns-unmap *ns* 'insert-doc)

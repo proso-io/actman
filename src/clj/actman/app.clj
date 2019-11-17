@@ -27,26 +27,11 @@
 
 (defn perform-operation
   [request operation-fn query & [operation-args]]
-  (println query)
   (let [
     user (friend/current-authentication request)
     ]
-    (operation-fn user query operation-args))
+    (ok (operation-fn user query operation-args)))
   )
-
-(def media-insert-schema {
-  :oid string?
-  :tags [string?]
-  })
-
-(defn superadmin-auth-middleware
-  "Authenticate whether requestee is superadmin"
-  [handler]
-  (fn [request]
-    (if (auth/is-superadmin? (friend/current-authentication request))
-      (handler request)
-      (unauthorized "")
-    )))
 
 (defn api-routes []
   [
@@ -223,8 +208,10 @@
         [""
           {
             :post {
-              :parameters {:multipart {:file multipart/temp-file-part :metadata media-insert-schema}  :header {:authorization string?}}
-              :handler (fn [[parameters]] (ok "ok"))
+              :parameters {:multipart {:file multipart/temp-file-part :metadata string?}  :header {:authorization string?}}
+              :handler (fn [{{:keys [multipart]} :parameters :as request}]
+                  (perform-operation request opns/upload-media nil
+                    (assoc multipart :current-user (friend/current-authentication request))))
             }
             }]
       ]

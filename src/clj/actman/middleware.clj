@@ -46,7 +46,7 @@
       ;; since they're not compatible with this middleware
       ((if (:websocket? request) handler wrapped) request))))
 
-(defn get-user-creds
+(defn get-user-creds-internal
   "Return user object for friend credential-fn."
   [id]
   (let [
@@ -54,6 +54,8 @@
     ]
     (when (:pswd creds)
       (clojure.set/rename-keys creds {:_id :username :pswd :password}))))
+
+(def get-user-creds (memoize get-user-creds-internal))
 
 (defn wrap-base [handler]
   (-> ((:middleware defaults) handler)

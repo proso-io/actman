@@ -39,8 +39,7 @@
     ))
 
 (defn authorize-operation
-  "Checks if user can perform an operation on entity.
-  `entity` is assumed as a vector if `multi` is true else it is assumed to be a single entity element"
+  "Checks if user can perform an operation on entity."
   [{:keys [oid username teams] :as current-user} entity-type operation is-addon-operation? entity]
   (let [
     global-access
@@ -70,3 +69,56 @@
       teams
       )
     ))
+
+(defn is-valid-user?
+  "Checks whether current user has given user id"
+  [{:keys [oid username teams] :as current-user} id]
+  (= username id))
+
+(defn is-team-member?
+  "Checks whether current user belongs to provided team id"
+  [{:keys [oid username teams] :as current-user} team-id]
+  (some
+    #(gutil/is-object-equal-for-keys? {:t team-id} % (db-utils/get-team-role-keys))
+    teams))
+
+(defn is-org-member?
+  "Checks whether current user belongs to provided organisation id"
+  [{:keys [oid username teams] :as current-user} org-id]
+  (= oid org-id))
+
+; (defmacro auth-middleware
+;   [handler auth-fn check-id?]
+;   `(fn [request#]
+;     (let [
+;       current-user# {:name "shivam"}; (friend/current-authentication request)
+;       args#
+;         (if ~check-id?
+;           [current-user#]
+;           [current-user# (-> request# :parameters :path :id)])
+;       ]
+;       (if (apply ~auth-fn args#)
+;         (~handler request#)
+;         (unauthorized "")
+;       ))
+;     ))
+;
+; (defn superadmin-auth-middleware
+; "Authenticate whether requestee is superadmin"
+; [handler]
+; (auth-middleware handler auth/is-superadmin? false))
+;
+; (defn valid-user-auth-middleware
+;   "Authenticate whether requestee is superadmin"
+;   [handler]
+;   (auth-middleware handler auth/is-valid-user? true))
+;
+; (defn valid-team-user-auth-middleware
+;   "Authenticate whether requestee is superadmin"
+;   [handler]
+;   (auth-middleware handler auth/is-team-member? true))
+;
+; (defn valid-org-user-auth-middleware
+;   "Authenticate whether requestee is superadmin"
+;   [handler]
+;   (auth-middleware handler auth/is-org-member? true))
