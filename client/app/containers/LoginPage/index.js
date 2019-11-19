@@ -4,7 +4,7 @@
  *
  */
 
-import React from "react";
+import React, { useState } from "react";
 import PropTypes from "prop-types";
 import { connect } from "react-redux";
 import { Helmet } from "react-helmet";
@@ -19,11 +19,18 @@ import reducer from "./reducer";
 import saga from "./saga";
 import messages from "./messages";
 
+import { loginRequestAction } from './actions';
+
 import Button from "../../components/Button";
 
-export function LoginPage() {
+import { Input, FormBuilder } from '@proso-io/fobu';
+
+export function LoginPage(props) {
   useInjectReducer({ key: "loginPage", reducer });
   useInjectSaga({ key: "loginPage", saga });
+
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
 
   return (
     <div>
@@ -31,16 +38,29 @@ export function LoginPage() {
         <title>Login Page</title>
         <meta name="description" content="Description of LoginPage" />
       </Helmet>
+      <Input
+        id="username"
+        label={<FormattedMessage {...messages.username} />}
+        value={username}
+        onValueChange={(id, val) => setUsername(val)}
+        />
+      <Input
+        id="password"
+        type="password"
+        label={<FormattedMessage {...messages.password} />}
+        value={password}
+        onValueChange={(id, val) => setPassword(val)}
+        />
       <Button
         text={<FormattedMessage {...messages.submit} />}
-        onClick={()=>{console.log("Button CLicked");}}
+        onClick={()=>{props.onSubmit(username, password)}}
         />
     </div>
   );
 }
 
 LoginPage.propTypes = {
-  dispatch: PropTypes.func.isRequired
+  onSubmit: PropTypes.func.isRequired
 };
 
 const mapStateToProps = createStructuredSelector({
@@ -49,7 +69,7 @@ const mapStateToProps = createStructuredSelector({
 
 function mapDispatchToProps(dispatch) {
   return {
-    dispatch
+    onSubmit: (username, password) => dispatch(loginRequestAction(username, password))
   };
 }
 
