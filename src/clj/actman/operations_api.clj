@@ -72,21 +72,24 @@
 
 (defn perform-operation
   "This method is assigned to operations defined by defOperation"
-  [entity-db-ns operation-key action-fn find-by-query? {:keys [oid username teams] :as current-user} entity-query & [action-args]]
+  [entity-db-ns operation-key action-fn find-by-query? addon-id {:keys [oid username teams] :as current-user} entity-query & [action-args]]
   (let [
     model-key @(ns-resolve entity-db-ns 'COLL)
-    model-authorized? (auth/authorize-operation current-user model-key operation-key false nil)
+    model-authorized? (auth/authorize-operation current-user model-key operation-key nil addon-id)
     get-all-docs? (and entity-query find-by-query? model-authorized?)
     get-auth-docs? (and entity-query find-by-query? (not model-authorized?))
     get-single-doc? (and entity-query (not find-by-query?))
     entities
       (cond
-        get-all-docs? ((ns-resolve entity-db-ns 'get-docs) entity-query)
-        get-auth-docs? ((ns-resolve entity-db-ns 'get-only-opn-auth-docs) teams username entity-query operation-key)
+        get-all-docs?
+          (if addon-id
+            ((ns-resolve entity-db-ns 'get-docs-for-addons-data) addon-id entity-query)
+            ((ns-resolve entity-db-ns 'get-docs) entity-query))
+        get-auth-docs? ((ns-resolve entity-db-ns 'get-only-opn-auth-docs) teams username entity-query operation-key addon-id)
         get-single-doc?
           (let [entity ((ns-resolve entity-db-ns 'get-doc) entity-query)]
             (when
-              (auth/authorize-operation current-user model-key operation-key false entity)
+              (auth/authorize-operation current-user model-key operation-key entity addon-id)
               entity)))
     perform? (boolean (or model-authorized? (not-empty entities)))
     ]
@@ -117,9 +120,9 @@
     entity-query: id of resource or a query map for resources on which operation
       is to be performed
     action-args: additional argument to be used by passed action-function."
-  [operation-name doc-string entity-db-ns entity-operation-key action-fn & [find-by-query?]]
+  [operation-name doc-string entity-db-ns entity-operation-key action-fn & [find-by-query? addon-id]]
   `(intern *ns* '~operation-name
-    (partial perform-operation ~entity-db-ns ~entity-operation-key ~action-fn ~find-by-query?)
+    (partial perform-operation ~entity-db-ns ~entity-operation-key ~action-fn ~find-by-query? ~addon-id)
       ))
 
 (defOperation get-schema

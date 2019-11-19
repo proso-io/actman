@@ -37,3 +37,8 @@
     (schemas/get-docs {:oid oid})
     :name
     []))
+
+(defn get-access-operations
+  "Get list of all operations for which user has access rights"
+  [{:keys [oid username teams] :as current-user}]
+  (accres/get-user-access-operations username teams))
