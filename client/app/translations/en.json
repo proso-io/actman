@@ -1,3 +1,5 @@
 {
-  "app.containers.LandingPage.header": "Actman landing"
+  "app.containers.LandingPage.header": "Actman landing",
+  "app.containers.LoginPage.login": "Login",
+  "app.containers.LoginPage.submit": "Submit"
 }

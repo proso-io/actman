@@ -16,7 +16,7 @@ const GlobalStyle = createGlobalStyle`
   }
 
   #app {
-    background-color: #fafafa;
+    background-color: ${({ theme }) => theme.body};
     min-height: 100%;
     min-width: 100%;
   }
