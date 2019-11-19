@@ -18,7 +18,7 @@ import history from "utils/history";
 import "sanitize.css/sanitize.css";
 
 // Import root app
-import LandingPage from "containers/LandingPage";
+import App from 'containers/App';
 
 // Import Language Provider
 import LanguageProvider from "containers/LanguageProvider";
@@ -44,12 +44,7 @@ const render = messages => {
     <Provider store={store}>
       <LanguageProvider messages={messages}>
         <ConnectedRouter history={history}>
-          <>
-            <Switch>
-              <Route exact path="/" render={() => <LandingPage />} />
-              <Route render={() => <div>Miss</div>} />
-            </Switch>
-          </>
+          <App />
         </ConnectedRouter>
       </LanguageProvider>
     </Provider>,
