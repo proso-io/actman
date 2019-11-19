@@ -14,7 +14,7 @@ import messages from "./messages";
 const ButtonWrapper = styled.button`
   background: ${props => props.theme[props.type]};
   color: ${props => props.type === 'primary' ? props.theme.secondary : props.theme.primary};
-  padding: 10px 20px;
+  padding: 10px 25px;
 `;
 
 function Button(props) {

@@ -32,7 +32,7 @@ export function LoginPage() {
         <meta name="description" content="Description of LoginPage" />
       </Helmet>
       <Button
-        text={<FormattedMessage {...messages.login} />}
+        text={<FormattedMessage {...messages.submit} />}
         onClick={()=>{console.log("Button CLicked");}}
         />
     </div>
