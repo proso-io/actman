@@ -52,6 +52,16 @@
   []
   (str (ObjectId.)))
 
+(defn get-addon-update-obj
+  [addon-id diff-addon-meta]
+  (reduce
+    (fn [update-meta update-key]
+      (assoc-in update-meta
+        (str "addonsmetadata." addon-id "." (name update-key))
+        (update-key diff-addon-meta)))
+    {}
+    (keys diff-addon-meta)))
+
 (defmacro defCollection
   "Generate following handlers and vars for a collection given the collection name and schema.
     document-schema - schema of the document. Includes all fields of model.
@@ -77,7 +87,9 @@
           (conj ~schema
             [:accessroles (db-utils/get-access-roles-schema ~operations)
               "Access rights restricted to roles" :opt]
-            [:accessusers [sc/Str] "Access rights restricted to users" :opt])
+            [:accessusers [sc/Str] "Access rights restricted to users" :opt]
+            [:addonsmetadata sc/Any "Metadata fields to be used by addons" :opt]
+            [:addonsaccess sc/Any "Access rights for addons" :opt])
           ~schema)
       insertion-schema# (generate-document-schema schema#)
       document-schema# (assoc insertion-schema# :_id sc/Str)
@@ -107,15 +119,21 @@
       (intern *ns* '~'get-docs
         (fn [query-obj#]
           (mc/find-maps db '~coll-name query-obj#)))
+      (intern *ns* '~'update-addon-data
+        (fn [id# addon-id# update-obj#]
+            (mc/find-and-modify db '~coll-name {:_id id#} {"$set" (get-addon-update-obj addon-id# update-obj#)} {:return-new true})))
+      (intern *ns* '~'get-docs-for-addon-data
+        (fn [addon-id# query-obj#]
+          (mc/find-maps db '~coll-name {(str "addonsmetadata." addon-id#) query-obj#})))
       (intern *ns* '~'get-only-opn-auth-docs
-        (fn [team-roles# userid# query-obj# operation#]
+        (fn [team-roles# userid# query-obj# operation# & [addon-id#]]
           (let [
-            accroles# (str operation# ".accessroles")
-            accusers# (str operation# ".accessusers")
+            prepath# (if addon-id# (str "addonsaccess." addon-id# ".") "")
+            accroles#  (str prepath# operation# ".accessroles")
+            accusers# (str prepath# operation# ".accessusers")
             access-query#
               {
                 "or" [
-                  ;{"$and" [{accroles# {"$exists" false}} {accroles# {"$size" 0}} {accusers# {"$exists" false}} {accusers# {"$size" 0}}]}
                   {accroles# {"$in" team-roles#}}
                   {accusers# userid#}
                 ]

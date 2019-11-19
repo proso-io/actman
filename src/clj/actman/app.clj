@@ -18,6 +18,7 @@
     [actman.auth :as auth]
     [actman.operations-api :as opns]
     [actman.filestorage.core :as files]
+    [actman.addons.watcher :as watcher]
     [schema.core :as sc]))
 
 (sc/defschema Team teams/insertion-schema)
@@ -66,7 +67,17 @@
               :parameters {:body users/updation-schema :path {:id sc/Str} :header {:authorization sc/Str}}
               :handler (fn [{{:keys [path body]} :parameters}] (ok (users/update-doc (:id path) body)))
             }
-            }]
+          }
+          ["/operations"
+            {
+              :get {
+                :coercion reitit.coercion.schema/coercion
+                :parameters {:path {:id sc/Str} :header {:authorization sc/Str}}
+                :handler (fn [{{{:keys [id]} :path} :parameters :as request}] (ok (api/get-access-operations (friend/current-authentication request))))
+              }
+            }
+          ]
+        ]
       ]
       ["/organisations"
         {:swagger {:tags ["Organisations"]}}
@@ -204,7 +215,7 @@
             :get {
               :coercion reitit.coercion.schema/coercion
               :parameters {:query {:query sc/Any} :header {:authorization sc/Str}}
-              :handler (fn [{{{:keys [oid]} :query} :parameters :as request}] (perform-operation request opns/get-activities {query))
+              :handler (fn [{{{:keys [query]} :query} :parameters :as request}] (perform-operation request opns/get-activities query))
             }
             :post {
               :coercion reitit.coercion.schema/coercion
@@ -254,5 +265,22 @@
                     (assoc multipart :current-user (friend/current-authentication request))))
             }
             }]
+      ]
+      ["/watcher"
+        ["/is-special-activity/:activity-id"
+          {
+            :get {
+              :coercion reitit.coercion.schema/coercion
+              :parameters {:path {:id sc/Str} :header {:authorization sc/Str}}
+              :handler (fn [{{{:keys [id]} :path} :parameters :as request}] (perform-operation request watcher/is-activity-special? id))
+            }
+            :post {
+              :coercion reitit.coercion.schema/coercion
+              :parameters {:path {:id sc/Str} :body {:status sc/Bool} :header {:authorization sc/Str}}
+              :handler (fn [{{{:keys [id]} :path {:keys [status]} :body} :parameters :as request}]
+                  (perform-operation request watcher/is-activity-special? id status))
+            }
+          }
+        ]
       ]
     ]])

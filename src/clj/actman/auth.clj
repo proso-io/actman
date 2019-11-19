@@ -40,15 +40,17 @@
 
 (defn authorize-operation
   "Checks if user can perform an operation on entity."
-  [{:keys [oid username teams] :as current-user} entity-type operation is-addon-operation? entity]
+  [{:keys [oid username teams] :as current-user} entity-type operation entity & [addon-id]]
   (let [
+    rolespath (if addon-id [:addonsaccess (key addon-id) :accessroles operation] [:accessroles operation])
+    userspath (if addon-id [:addonsaccess (key addon-id) :accessusers operation] [:accessusers operation])
     global-access
       (->
-        {:oid oid :opn operation :addon is-addon-operation? :ent entity-type}
+        {:oid oid :opn operation :addon addon-id :ent entity-type}
         (accres/get-docs)
         (first))
-    entity-roles-access  (-> entity :accessroles operation)
-    entity-users-access  (-> entity :accessusers operation)
+    entity-roles-access (get-in entity rolespath)
+    entity-users-access (get-in entity userspath)
     ]
     (or
       (some #(= username %) entity-users-access)
