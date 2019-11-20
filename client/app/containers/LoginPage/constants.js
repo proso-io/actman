@@ -10,4 +10,4 @@ export const LOGIN_REQUEST_ACTION = "app/LoginPage/LOGIN_REQUEST_ACTION";
 
 export const LOGIN_RESPONSE_ACTION = "app/LoginPage/LOGIN_RESPONSE_ACTION";
 
-export const LOGIN_ENDPOINT = "/api/users";
+export const LOGIN_ENDPOINT = "/login";

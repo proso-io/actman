@@ -93,7 +93,7 @@
 ;   [handler auth-fn check-id?]
 ;   `(fn [request#]
 ;     (let [
-;       current-user# {:name "shivam"}; (friend/current-authentication request)
+;       current-user# (friend/current-authentication request)
 ;       args#
 ;         (if ~check-id?
 ;           [current-user#]

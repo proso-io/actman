@@ -52,7 +52,7 @@
             :post {
               :coercion reitit.coercion.schema/coercion
               :parameters {:body users/insertion-schema}
-              :handler (fn [{{:keys [body]} :parameters}] (ok (dissoc (users/create-user body) :pswd)))
+              :handler (fn [{{:keys [body]} :parameters :as request}] (ok (api/register-user body request)))
             }
           }]
         ["/:id"
