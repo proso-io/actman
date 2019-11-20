@@ -19,6 +19,8 @@ import reducer from "./reducer";
 import saga from "./saga";
 import messages from "./messages";
 
+import { FormBuilder, FormDataUploader, Input } from "@proso-io/fobu";
+
 export function LandingPage() {
   useInjectReducer({ key: "landingPage", reducer });
   useInjectSaga({ key: "landingPage", saga });
@@ -29,6 +31,16 @@ export function LandingPage() {
         <title>LandingPage</title>
         <meta name="description" content="Description of LandingPage" />
       </Helmet>
+      <Input id="sdv" />
+      <FormBuilder
+        onDataSubmit={formData => {
+          FormDataUploader(
+            "https://www.mocky.io/v2/5c0452da3300005100d01d1f",
+            formData,
+            {}
+          );
+        }}
+      />
       <FormattedMessage {...messages.header} />
     </div>
   );
