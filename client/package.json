@@ -22,7 +22,7 @@
     "prebuild": "npm run build:clean",
     "build": "cross-env NODE_ENV=production webpack --config internals/webpack/webpack.prod.babel.js --color -p --progress --hide-modules --display-optimization-bailout",
     "build:clean": "rimraf ./build",
-    "postbuild": "rm -rf ../resources/public/build && mv build ../resources/public/",
+    "postbuild": "rm -rf ../resources/public/build && mv build ../resources/public/ && mv ../resources/public/build/form-sw.js ../resources/public/form-sw.js",
     "start": "cross-env NODE_ENV=development node server",
     "start:tunnel": "cross-env NODE_ENV=development ENABLE_TUNNEL=true node server",
     "start:production": "npm run test && npm run build && npm run start:prod",

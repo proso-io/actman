@@ -1,4 +1,4 @@
-import { manageDataSendToServer } from "@proso-io/fobu";
+import { manageDataSendToServer } from "@proso-io/fobu/dist/fobu.uploadUtils";
 
 self.oninstall = function(event) {
   console.log(event);
@@ -6,17 +6,28 @@ self.oninstall = function(event) {
 
 self.onfetch = function(event) {};
 
-self.onsync = function(event) {
-  if (event.tag == "sync") {
+self.addEventListener("sync", function(event) {
+  if (event.tag === "formDataSync") {
     event.waitUntil(syncIt());
   }
-};
+});
 
 // down here are the other functions to go get the indexeddb data and also post to our server
 
 function syncIt() {
   return getIndexedDB()
-    .then(manageDataSendToServer)
+    .then(results => {
+      console.log(results);
+      if (results.length > 0) {
+        const result = results[0];
+        return manageDataSendToServer(
+          result.requestParams.submitUrl,
+          result.data,
+          result.requestParams.formSchema
+        );
+      }
+    })
+    .then(clearData)
     .catch(function(err) {
       return err;
     });
@@ -33,6 +44,26 @@ function getIndexedDB() {
         resolve(event.target.result);
       };
     };
+    db.onerror = function(err) {
+      reject(err);
+    };
+  });
+}
+
+function clearData() {
+  console.log("Data uploaded. Clearing database now.");
+  return new Promise(function(resolve, reject) {
+    var db = indexedDB.open("formData");
+    db.onsuccess = function(event) {
+      let db = event.target.result;
+      db
+        .transaction(["formDataObjStore"], "readwrite")
+        .objectStore("formDataObjStore")
+        .clear().onsuccess = function(event) {
+        console.log("Database cleared.");
+      };
+    };
+
     db.onerror = function(err) {
       reject(err);
     };
