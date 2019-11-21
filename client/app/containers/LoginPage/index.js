@@ -11,6 +11,7 @@ import { Helmet } from "react-helmet";
 import { FormattedMessage } from "react-intl";
 import { createStructuredSelector } from "reselect";
 import { compose } from "redux";
+import styled from "styled-components";
 
 import { useInjectSaga } from "utils/injectSaga";
 import { useInjectReducer } from "utils/injectReducer";
@@ -19,11 +20,25 @@ import reducer from "./reducer";
 import saga from "./saga";
 import messages from "./messages";
 
-import { loginRequestAction } from './actions';
+import { loginRequestAction } from "./actions";
 
 import Button from "../../components/Button";
+import FlexContainer from "../../components/FlexContainer";
+import LoginFormCard from "./LoginFormCard";
+import StaticNav from "./StaticNav";
+import BackgroundContainer from "./BackgroundContainer";
 
-import { Input, FormBuilder } from '@proso-io/fobu';
+import { Input, FormBuilder } from "@proso-io/fobu/dist/fobu.components";
+
+const StyledInput = styled(Input)`
+  > label.input__label {
+    color: ${props => props.theme.white};
+  }
+
+  > input {
+    width: 100%;
+  }
+`;
 
 export function LoginPage(props) {
   useInjectReducer({ key: "loginPage", reducer });
@@ -38,23 +53,36 @@ export function LoginPage(props) {
         <title>Login Page</title>
         <meta name="description" content="Description of LoginPage" />
       </Helmet>
-      <Input
-        id="username"
-        label={<FormattedMessage {...messages.username} />}
-        value={username}
-        onValueChange={(id, val) => setUsername(val)}
-        />
-      <Input
-        id="password"
-        type="password"
-        label={<FormattedMessage {...messages.password} />}
-        value={password}
-        onValueChange={(id, val) => setPassword(val)}
-        />
-      <Button
-        text={<FormattedMessage {...messages.submit} />}
-        onClick={()=>{props.onSubmit(username, password)}}
-        />
+      <BackgroundContainer>
+        <StaticNav>
+          <h2>ActMan</h2>
+        </StaticNav>
+        <FlexContainer height="100%">
+          <LoginFormCard {...props}>
+            <div className="fobuComponents">
+              <StyledInput
+                id="username"
+                label={<FormattedMessage {...messages.username} />}
+                value={username}
+                onValueChange={(id, val) => setUsername(val)}
+              />
+              <StyledInput
+                id="password"
+                type="password"
+                label={<FormattedMessage {...messages.password} />}
+                value={password}
+                onValueChange={(id, val) => setPassword(val)}
+              />
+            </div>
+            <Button
+              text={<FormattedMessage {...messages.submit} />}
+              onClick={() => {
+                props.onSubmit(username, password);
+              }}
+            />
+          </LoginFormCard>
+        </FlexContainer>
+      </BackgroundContainer>
     </div>
   );
 }
@@ -69,7 +97,8 @@ const mapStateToProps = createStructuredSelector({
 
 function mapDispatchToProps(dispatch) {
   return {
-    onSubmit: (username, password) => dispatch(loginRequestAction(username, password))
+    onSubmit: (username, password) =>
+      dispatch(loginRequestAction(username, password))
   };
 }
 
