@@ -1,6 +1,7 @@
 (ns actman.api
   (:require
     [actman.db.organisations :as orgs]
+    [actman.db.users :as users]
     [actman.db.media-meta-data :as mmd]
     [actman.db.access-restrictions :as accres]
     [actman.utils.strings :refer [getstr]]
@@ -18,6 +19,16 @@
       ]
       (select-keys org [:_id])
       )))
+
+(defn register-user
+  [{:keys [email] :as user-info} req]
+  ;(println req)
+  ;(println user-info (users/get-user-for-email email))
+  (if (users/get-user-for-email email)
+    {:error (getstr :USER_EMAIL_USED)}
+    (->
+      (users/create-user user-info)
+      (dissoc :pswd))))
 
 (defn get-schema-keys-list
   "Get recursively list of key value for all elements in the schema"

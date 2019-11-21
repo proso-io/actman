@@ -4,6 +4,7 @@
 
 (def ^:const strings {
   :ORG_NAME_USED "Name used by other organisation"
+  :USER_EMAIL_USED "Account with email id already exists"
   :DEFAULT_ADMIN_TEAM_NAME "Admin Team"
   :DEFAULT_ADMIN_TEAM_DESCRIPTION "Admin team to manage admin activities"
   })

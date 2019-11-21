@@ -20,5 +20,13 @@ export default defineMessages({
   submit: {
     id: `${scope}.submit`,
     defaultMessage: "Submit"
+  },
+  username: {
+    id: `${scope}.username`,
+    defaultMessage: "Username"
+  },
+  password: {
+    id: `${scope}.password`,
+    defaultMessage: "Password"
   }
 });
