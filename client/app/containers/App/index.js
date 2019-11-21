@@ -10,19 +10,26 @@
 import React from 'react';
 import { Switch, Route } from 'react-router-dom';
 
+import { ThemeProvider } from 'styled-components';
+
 import HomePage from 'containers/HomePage/Loadable';
 import NotFoundPage from 'containers/NotFoundPage/Loadable';
+import LoginPage from 'containers/LoginPage';
 
 import GlobalStyle from '../../global-styles';
+import { defaultTheme } from '../../theme';
 
 export default function App() {
   return (
-    <div>
-      <Switch>
-        <Route exact path="/" component={HomePage} />
-        <Route component={NotFoundPage} />
-      </Switch>
-      <GlobalStyle />
-    </div>
+    <ThemeProvider theme={defaultTheme}>
+      <div>
+        <Switch>
+          <Route exact path="/" component={HomePage} />
+          <Route exact path="/login" component={LoginPage} />
+          <Route component={NotFoundPage} />
+        </Switch>
+        <GlobalStyle />
+      </div>
+    </ThemeProvider>
   );
 }

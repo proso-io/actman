@@ -15,5 +15,9 @@ module.exports = (app, options) => {
     addDevMiddlewares(app, webpackConfig);
   }
 
+  const proxy = require('http-proxy-middleware');
+  const apiProxy = proxy('http://localhost:8080');
+  app.use(apiProxy);
+
   return app;
 };

@@ -15,6 +15,9 @@
 (defn about-page [request]
   (layout/render request "about.html"))
 
+(defn serve-index [request]
+  (content-type (ok (-> "public/build/index.html" io/resource slurp)) "text/html; charset=utf-8"))
+
 (defn home-routes []
   [""
     {:no-doc true}

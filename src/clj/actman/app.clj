@@ -11,12 +11,14 @@
     [actman.db.organisations :as orgs]
     [actman.db.users :as users]
     [actman.db.media-meta-data :as mmd]
+    [actman.db.activities :as activities]
     [actman.api :as api]
     [clojure.pprint :refer [pprint]]
     [cemerick.friend :as friend]
     [actman.auth :as auth]
     [actman.operations-api :as opns]
     [actman.filestorage.core :as files]
+    [actman.addons.watcher :as watcher]
     [schema.core :as sc]))
 
 (sc/defschema Team teams/insertion-schema)
@@ -50,7 +52,7 @@
             :post {
               :coercion reitit.coercion.schema/coercion
               :parameters {:body users/insertion-schema}
-              :handler (fn [{{:keys [body]} :parameters}] (ok (dissoc (users/create-user body) :pswd)))
+              :handler (fn [{{:keys [body]} :parameters :as request}] (ok (api/register-user body request)))
             }
           }]
         ["/:id"
@@ -65,7 +67,17 @@
               :parameters {:body users/updation-schema :path {:id sc/Str} :header {:authorization sc/Str}}
               :handler (fn [{{:keys [path body]} :parameters}] (ok (users/update-doc (:id path) body)))
             }
-            }]
+          }
+          ["/operations"
+            {
+              :get {
+                :coercion reitit.coercion.schema/coercion
+                :parameters {:path {:id sc/Str} :header {:authorization sc/Str}}
+                :handler (fn [{{{:keys [id]} :path} :parameters :as request}] (ok (api/get-access-operations (friend/current-authentication request))))
+              }
+            }
+          ]
+        ]
       ]
       ["/organisations"
         {:swagger {:tags ["Organisations"]}}
@@ -95,7 +107,16 @@
               :responses {200 {:body orgs/document-schema}}
               :handler (fn [{{:keys [path body]} :parameters}] (ok (orgs/update-doc (:id path) body)))
             }
-            }]
+          }
+          ["/activities-search-keys"
+            {
+              :get {
+                :parameters {:path {:id sc/Str} :header {:authorization sc/Str}}
+                :handler (fn [{{{:keys [id]} :path} :parameters}] (ok (api/get-activity-search-keys id)))
+              }
+            }
+          ]
+        ]
       ]
       ["/teams"
         {:swagger {:tags ["Teams"]}}
@@ -187,6 +208,36 @@
             }
             }]
       ]
+      ["/activities"
+        {:swagger {:tags ["Activities"]}}
+        [""
+          {
+            :get {
+              :coercion reitit.coercion.schema/coercion
+              :parameters {:query {:query sc/Any} :header {:authorization sc/Str}}
+              :handler (fn [{{{:keys [query]} :query} :parameters :as request}] (perform-operation request opns/get-activities query))
+            }
+            :post {
+              :coercion reitit.coercion.schema/coercion
+              :parameters {:body activities/insertion-schema :header {:authorization sc/Str}}
+              :handler (fn [{{:keys [body]} :parameters :as request}] (perform-operation request opns/create-activity nil body))
+            }
+            }]
+        ["/:id"
+          {
+            :get {
+              :coercion reitit.coercion.schema/coercion
+              :parameters {:path {:id sc/Str} :header {:authorization sc/Str}}
+              :handler (fn [{{{:keys [id]} :path} :parameters :as request}] (perform-operation request opns/get-activity id))
+            }
+            :put {
+              :coercion reitit.coercion.schema/coercion
+              :parameters {:body activities/updation-schema :path {:id sc/Str} :header {:authorization sc/Str}}
+              :responses {200 {:body activities/document-schema}}
+              :handler (fn [{{:keys [path body]} :parameters :as request}] (perform-operation request opns/edit-activity (:id path) body))
+            }
+            }]
+      ]
       ["/programs"
         {:swagger {:tags ["Programs"]}}
         [""
@@ -214,5 +265,22 @@
                     (assoc multipart :current-user (friend/current-authentication request))))
             }
             }]
+      ]
+      ["/watcher"
+        ["/is-special-activity/:activity-id"
+          {
+            :get {
+              :coercion reitit.coercion.schema/coercion
+              :parameters {:path {:id sc/Str} :header {:authorization sc/Str}}
+              :handler (fn [{{{:keys [id]} :path} :parameters :as request}] (perform-operation request watcher/is-activity-special? id))
+            }
+            :post {
+              :coercion reitit.coercion.schema/coercion
+              :parameters {:path {:id sc/Str} :body {:status sc/Bool} :header {:authorization sc/Str}}
+              :handler (fn [{{{:keys [id]} :path {:keys [status]} :body} :parameters :as request}]
+                  (perform-operation request watcher/is-activity-special? id status))
+            }
+          }
+        ]
       ]
     ]])
