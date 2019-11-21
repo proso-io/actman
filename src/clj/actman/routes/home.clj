@@ -6,6 +6,9 @@
     [actman.middleware :as middleware]
     [ring.util.http-response :as response]))
 
+(defn serve-index [request]
+  (content-type (ok (-> "public/build/index.html" io/resource slurp)) "text/html; charset=utf-8"))
+
 (defn home-page [request]
   (layout/render request "home.html" {:docs (-> "docs/docs.md" io/resource slurp)}))
 
