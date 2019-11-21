@@ -1,16 +1,6 @@
 import { take, call, put, select, takeLatest } from 'redux-saga/effects';
 import { LOGIN_REQUEST_ACTION, LOGIN_ENDPOINT } from './constants';
-
-
-// function login = (username, password) => {
-//   let formData = new FormData();
-//   formData.append('username', username);
-//   formData.append('password', password);
-//   let loginPromise = fetch(LOGIN_ENDPOINT, {
-//     method: "POST",
-//     body: formData
-//   })
-// }
+import { loginResponseAction } from './actions'
 
 
 export function login(data){
@@ -21,6 +11,20 @@ export function login(data){
   let loginPromise = fetch(LOGIN_ENDPOINT, {
     method: "POST",
     body: formData
+  });
+  loginPromise.then(response => {
+    //console.log("res", response);//})
+    let url = response.url;
+    let querystring = url.substring(url.indexOf("?"));
+    let urlParams = new URLSearchParams(querystring);
+    //console.log("url params", urlParams);
+    if(urlParams.get("success") === "true"){
+      console.log("Login successful");
+      //yield put(loginResponseAction(true));
+    } else {
+      console.log("Login failed");
+      //yield put(loginResponseAction(false));
+    }
   })
 }
 
