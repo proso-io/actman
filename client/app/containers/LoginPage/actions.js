@@ -20,8 +20,9 @@ export function loginRequestAction(username, password) {
   }
 }
 
-export function loginResponseAction() {
+export function loginResponseAction(status) {
   return {
-    type: LOGIN_RESPONSE_ACTION
+    type: LOGIN_RESPONSE_ACTION,
+    status: status
   }
 }

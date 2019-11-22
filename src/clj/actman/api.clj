@@ -6,6 +6,7 @@
     [actman.db.access-restrictions :as accres]
     [actman.utils.strings :refer [getstr]]
     [actman.db.form-schemas :as schemas]
+    [actman.db.team-units :as team-units]
     [actman.db.teams :as teams]))
 
 (defn register-organisation
@@ -22,8 +23,6 @@
 
 (defn register-user
   [{:keys [email] :as user-info} req]
-  ;(println req)
-  ;(println user-info (users/get-user-for-email email))
   (if (users/get-user-for-email email)
     {:error (getstr :USER_EMAIL_USED)}
     (->
@@ -53,3 +52,33 @@
   "Get list of all operations for which user has access rights"
   [{:keys [oid username teams] :as current-user}]
   (accres/get-user-access-operations username teams))
+
+(defn get-team-obj
+  [teamrole]
+  (let [
+    team (teams/get-doc (:t teamrole))
+    unit (team-units/get-doc (:tu teamrole))
+    ]
+    (->
+      teamrole
+      (assoc :team (:name team))
+      (assoc :teamunit (:name unit)))))
+
+(defn get-all-teams-obj
+  [teamroles]
+  (mapv #(get-team-obj %) teamroles))
+
+(defn get-current-user
+  [{:keys [oid username teams] :as current-user}]
+  (if username
+    (let [
+      org (orgs/get-doc oid)
+      teamroles  (get-all-teams-obj teams)
+      ]
+      (->
+        current-user
+        (assoc :orgName (:name org))
+        (assoc :teams teamroles)
+        (assoc :perms (get-access-operations current-user))
+        ))
+    {}))
