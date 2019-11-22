@@ -4,8 +4,8 @@ import { loginResponseAction } from './actions'
 
 function loginRequest(data){
   let formData = new FormData();
-  formData.append('username', data.username);
-  formData.append('password', data.password);
+  formData.append("username", data.username);
+  formData.append("password", data.password);
   let loginPromise = fetch(LOGIN_ENDPOINT, {
     method: "POST",
     body: formData

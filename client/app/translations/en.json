@@ -3,5 +3,7 @@
   "app.containers.LoginPage.login": "Login",
   "app.containers.LoginPage.submit": "Submit",
   "app.containers.LoginPage.username": "Username",
-  "app.containers.LoginPage.password": "Password"
+  "app.containers.LoginPage.password": "Password",
+  "app.components.SideMenu.actionsTitle": "Your actions",
+  "app.components.SideMenu.logoutText": "Logout"
 }
