@@ -16,5 +16,9 @@ export default defineMessages({
   actionsTitle: {
     id: `${scope}.actionsTitle`,
     defaultMessage: "Your actions"
+  },
+  logoutText: {
+    id: `${scope}.logoutText`,
+    defaultMessage: "Logout"
   }
 });

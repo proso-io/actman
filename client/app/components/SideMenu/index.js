@@ -7,6 +7,8 @@
 import React, { useState } from "react";
 import PropTypes from "prop-types";
 import styled from "styled-components";
+import { push } from "connected-react-router";
+import { connect } from "react-redux";
 
 import { FormattedMessage } from "react-intl";
 import messages from "./messages";
@@ -16,7 +18,20 @@ import Text from "../Text";
 import FlexContainer from "../FlexContainer";
 import Avatar from "../Avatar";
 import Spacing from "../Spacing";
-import SideMenuHeader from "./SideMenuHeader";
+import {
+  SideMenuHeader,
+  CaretDownContainer,
+  CrossContainer,
+  UserInfoContainer,
+  UserInfoTextContainer
+} from "./SideMenuHeader";
+import {
+  SideMenuBody,
+  MenuTitleText,
+  MenuContainer,
+  MenuItemContainer
+} from "./SideMenuBody";
+import { SideMenuFooter } from "./SideMenuFooter";
 
 const SideMenuContainer = styled.div`
   position: relative;
@@ -28,26 +43,6 @@ const SideMenuContainer = styled.div`
   transition: width 2s;
   background: ${props => props.theme.secondary};
   box-shadow: 0px -6px 8px rgba(0, 0, 0, 0.16);
-`;
-
-const CaretDownContainer = styled.div`
-  color: ${props => props.theme.primary40};
-  width: 10%;
-  text-align: left;
-`;
-
-const UserInfoContainer = styled.div`
-  width: 80%;
-`;
-
-const UserInfoTextContainer = styled.div`
-  margin-left: ${props => props.theme.spacing.eight};
-`;
-
-const CrossContainer = styled.div`
-  color: ${props => props.theme.primary40};
-  width: 10%;
-  text-align: right;
 `;
 
 function getUserContextString({ orgName, teams, activeTeamIndex }) {
@@ -89,6 +84,32 @@ function SideMenu(props) {
           <CrossContainer>{open ? "x" : ""}</CrossContainer>
         </FlexContainer>
       </SideMenuHeader>
+      <SideMenuBody>
+        <MenuTitleText type="body" color="primary40" weight="semibold">
+          <FormattedMessage {...messages.actionsTitle} />
+        </MenuTitleText>
+
+        <MenuContainer>
+          {props.actions.map(action => {
+            return (
+              <MenuItemContainer
+                key={action.title}
+                onClick={() => push(action.link)}
+                isActive={action.isActive}
+              >
+                <Text type="body" color={action.isActive ? "white" : "primary"}>
+                  {action.title}
+                </Text>
+              </MenuItemContainer>
+            );
+          })}
+        </MenuContainer>
+      </SideMenuBody>
+      <SideMenuFooter onClick={props.onLogout}>
+        <Text type="body" color="primary">
+          <FormattedMessage {...messages.logoutText} />
+        </Text>
+      </SideMenuFooter>
     </SideMenuContainer>
   );
 }
@@ -107,12 +128,18 @@ SideMenu.propTypes = {
       })
     )
   }).isRequired,
-  actions: PropTypes.shape({
-    title: PropTypes.string,
-    link: PropTypes.string
-  }).isRequired,
+  actions: PropTypes.arrayOf(
+    PropTypes.shape({
+      title: PropTypes.string,
+      link: PropTypes.string,
+      isActive: PropTypes.boolean
+    })
+  ).isRequired,
   onLogout: PropTypes.func.isRequired,
   onTeamChange: PropTypes.func.isRequired
 };
 
-export default SideMenu;
+export default connect(
+  null,
+  { push }
+)(SideMenu);

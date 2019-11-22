@@ -21,6 +21,11 @@ export default function HomePage() {
           activeTeamIndex: 0,
           teams: [{ id: 0, teamName: "Regional team", unitName: "Bihar" }]
         }}
+        actions={[
+          { title: "Home", link: "/", isActive: true },
+          { title: "Record an activity", link: "/record" },
+          { title: "Quick Upload Images", link: "/quick-upload" }
+        ]}
       />
     </>
   );

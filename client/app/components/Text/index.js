@@ -35,14 +35,14 @@ Text.propTypes = {
   type: PropTypes.oneOf(["title", "subtitle", "caption", "body", "small"]),
   color: PropTypes.string,
   weight: PropTypes.string,
-  case: PropTypes.oneOf(["title", "uppercase", "lowercase"])
+  case: PropTypes.oneOf(["title", "uppercase", "lowercase", "inherit"])
 };
 
 Text.defaultProps = {
   type: "body",
   color: "primary",
   weight: "normal",
-  case: ""
+  case: "inherit"
 };
 
 export default Text;

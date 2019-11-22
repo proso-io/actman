@@ -1,6 +1,6 @@
 import styled from "styled-components";
 
-const SideMenuHeader = styled.div`
+export const SideMenuHeader = styled.div`
   width: 100%;
   height: 80px;
   padding: ${props => props.theme.spacing.sixteen}
@@ -10,4 +10,22 @@ const SideMenuHeader = styled.div`
   border-bottom: ${props => props.theme.primary80};
 `;
 
-export default SideMenuHeader;
+export const CaretDownContainer = styled.div`
+  color: ${props => props.theme.primary40};
+  width: 10%;
+  text-align: left;
+`;
+
+export const UserInfoContainer = styled.div`
+  width: 80%;
+`;
+
+export const UserInfoTextContainer = styled.div`
+  margin-left: ${props => props.theme.spacing.eight};
+`;
+
+export const CrossContainer = styled.div`
+  color: ${props => props.theme.primary40};
+  width: 10%;
+  text-align: right;
+`;
