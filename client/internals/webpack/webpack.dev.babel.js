@@ -11,25 +11,50 @@ module.exports = require("./webpack.base.babel")({
   mode: "development",
 
   // Add hot reloading in development
-  entry: {
-    app: [
-      require.resolve("react-app-polyfill/ie11"),
-      "webpack-hot-middleware/client?reload=true",
-      path.join(process.cwd(), "app/app.js")
-    ],
-    formSw: path.join(process.cwd(), "app/form-sw.js")
-  },
+  entry: [
+    require.resolve("react-app-polyfill/ie11"),
+    "react-hot-loader/patch",
+    `webpack-dev-server/client?http://localhost:3000/`,
+    "webpack/hot/only-dev-server",
+    path.join(process.cwd(), "app/app.js") // Start with js/app.js
+  ],
 
   // Don't use hashes in dev mode for better performance
   output: {
     filename: "[name].js",
-    chunkFilename: "[name].chunk.js"
+    chunkFilename: "[name].chunk.js",
+    publicPath: `http://localhost:3000/`
   },
 
   optimization: {
     splitChunks: {
       chunks: "all"
     }
+  },
+
+  devServer: {
+    port: 3000,
+    publicPath: `http://localhost:3000/`,
+    compress: true,
+    noInfo: false,
+    stats: "errors-only",
+    inline: true,
+    lazy: false,
+    hot: true,
+    open: true,
+    overlay: true,
+    headers: { "Access-Control-Allow-Origin": "*" },
+    contentBase: path.join(__dirname, "..", "..", "app", "build"),
+    watchOptions: {
+      aggregateTimeout: 300,
+      ignored: /node_modules/,
+      poll: 100
+    },
+    historyApiFallback: {
+      verbose: true,
+      disableDotRule: false
+    },
+    proxy: { "/api/**": { target: "http://localhost:8080", secure: false } }
   },
 
   // Add development plugins
