@@ -11,8 +11,11 @@ import React from "react";
 import { Switch, Route } from "react-router-dom";
 import styled from "styled-components";
 import { connect } from "react-redux";
+import { compose } from "redux";
 
 import { ThemeProvider } from "styled-components";
+
+import makeSelectLoginPage from "./selectors";
 
 import HomePage from "containers/HomePage/Loadable";
 import NotFoundPage from "containers/NotFoundPage/Loadable";
@@ -68,11 +71,9 @@ function App(props) {
   return (
     <ThemeProvider theme={defaultTheme}>
       <div>
-        {props.pathname.includes("/login") ? (
+        {props.loginPage.loginStatus !== 1 ? (
           <Switch>
-            <Route exact path="/" component={HomePage} />
             <Route exact path="/login" component={LoginPage} />
-            <Route component={NotFoundPage} />
           </Switch>
         ) : (
           <DashboardLayout {...props} />
@@ -84,8 +85,20 @@ function App(props) {
   );
 }
 
-const mapStateToProps = state => ({
+const mapStateToProps = createStructuredSelector({
+  loginPage: makeSelectLoginPage(),
   pathname: state.router.location.pathname
 });
 
-export default connect(mapStateToProps)(App);
+function mapDispatchToProps(dispatch) {
+  return {
+    onLoaded: () => dispatch(loginRequestAction())
+  };
+}
+
+const withConnect = connect(
+  mapStateToProps,
+  mapDispatchToProps
+);
+
+export default connect(withConnect)(App);
