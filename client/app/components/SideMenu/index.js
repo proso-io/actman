@@ -40,6 +40,7 @@ const SideMenuContainer = styled.div`
   margin: 0;
   left: 0;
   width: ${props => (props.open ? "300px" : "0px")};
+  min-width: ${props => (props.open ? "300px" : "0px")};
   transition: width 2s;
   background: ${props => props.theme.secondary};
   box-shadow: 0px -6px 8px rgba(0, 0, 0, 0.16);

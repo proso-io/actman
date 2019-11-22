@@ -17,7 +17,7 @@ export const defaultTheme = {
     twentyfour: "24px"
   },
   fontSizes: {
-    title: "32px",
+    title: "30px",
     subtitle: "24px",
     caption: "18px",
     body: "14px",
