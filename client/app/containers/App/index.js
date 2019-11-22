@@ -1,38 +1,41 @@
 /**
  *
- * App.js
- *
- * This component is the skeleton around the actual pages, and should only
- * contain code that should be seen on all pages. (e.g. navigation bar)
+ * App
  *
  */
 
 import React from "react";
+import PropTypes from "prop-types";
 import { Switch, Route } from "react-router-dom";
-import styled from "styled-components";
 import { connect } from "react-redux";
+import { Helmet } from "react-helmet";
+import { FormattedMessage } from "react-intl";
+import { createStructuredSelector } from "reselect";
 import { compose } from "redux";
 
 import { ThemeProvider } from "styled-components";
 
-import makeSelectLoginPage from "./selectors";
-
-import HomePage from "containers/HomePage/Loadable";
-import NotFoundPage from "containers/NotFoundPage/Loadable";
-import LoginPage from "containers/LoginPage";
-import SideMenu from "../../components/SideMenu";
+import { useInjectSaga } from "utils/injectSaga";
+import { useInjectReducer } from "utils/injectReducer";
+import makeSelectApp from "./selectors";
 
 import GlobalStyle from "../../global-styles";
 import { defaultTheme } from "../../theme";
-import PageHeader from "../../components/PageHeader";
-import FlexContainer from "../../components/FlexContainer";
+//import PageHeader from "../../components/PageHeader";
+//import FlexContainer from "../../components/FlexContainer";
 
-const PageBody = styled.div`
-  padding-left: ${props => props.theme.spacing.twentyfour};
-  width: 100%;
-`;
+import makeSelectLoginPage from "containers/LoginPage/selectors";
+
+import LoginPage from "containers/LoginPage";
+import SideMenu from "../../components/SideMenu";
 
 const DashboardLayout = function(props) {
+  console.log("DashboardLayout", props);
+
+  // useEffect(() => {
+  //   props.onLoaded();
+  // });
+
   return (
     <FlexContainer mainAxis="stretch" crossAxis="flex-start">
       <SideMenu
@@ -68,6 +71,7 @@ const DashboardLayout = function(props) {
 };
 
 function App(props) {
+  console.log("App", props);
   return (
     <ThemeProvider theme={defaultTheme}>
       <div>
@@ -85,14 +89,17 @@ function App(props) {
   );
 }
 
+App.propTypes = {
+  onLoaded: PropTypes.func.isRequired
+};
+
 const mapStateToProps = createStructuredSelector({
-  loginPage: makeSelectLoginPage(),
-  pathname: state.router.location.pathname
+  loginPage: makeSelectLoginPage()
 });
 
 function mapDispatchToProps(dispatch) {
   return {
-    onLoaded: () => dispatch(loginRequestAction())
+    onLoaded: () => dispatch(userRequestAction())
   };
 }
 
@@ -101,4 +108,4 @@ const withConnect = connect(
   mapDispatchToProps
 );
 
-export default connect(withConnect)(App);
+export default compose(withConnect)(App);
