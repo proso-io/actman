@@ -45,14 +45,21 @@
       (filestorage/upload-file
         filename
         (:tempfile file))
+    mmd
+      (when success
+        (mmd/insert-doc {
+          :oid oid
+          :name filename
+          :turl (:url url)
+          }))
     ]
-    (when success
-      (mmd/insert-doc {
-        :oid oid
-        :name filename
-        :turl ""
-        }))
-    resp))
+    (assoc resp :url (str "/api/media/" (:_id mmd) "/thumbnail"))))
+
+(defn view-media-action
+  "Action function for view-media operation.
+  Returns MediaMetaData"
+  [mmd id _]
+  mmd)
 
 
 (defn create-activity-action
@@ -76,6 +83,7 @@
   (let [
     model-key @(ns-resolve entity-db-ns 'COLL)
     model-authorized? (auth/authorize-operation current-user model-key operation-key nil addon-id)
+    p (println "\nperform operation authorized check done" model-authorized?)
     get-all-docs? (and entity-query find-by-query? model-authorized?)
     get-auth-docs? (and entity-query find-by-query? (not model-authorized?))
     get-single-doc? (and entity-query (not find-by-query?))
@@ -144,6 +152,10 @@
 (defOperation upload-media
   "Upload new media file"
   'actman.db.media-meta-data :create upload-media-action)
+
+(defOperation view-media
+  "Get media metadata"
+  'actman.db.media-meta-data :view view-media-action)
 
 (defOperation create-activity
   "Create a new activity"

@@ -46,6 +46,7 @@
 (defn contains-valid-team-role?
   "Checks if any of roles from `member-teams` exists in `allowed-teams`"
   [allowed-teams member-teams]
+  (println "checking valid team role" allowed-teams member-teams)
   (reduce
     #(or %1 (team-role-exists? allowed-teams %2))
     false
@@ -56,16 +57,22 @@
   "Checks if user can perform an operation on entity."
   [{:keys [oid username teams] :as current-user} entity-type operation entity & [addon-id]]
   (let [
+    a {:oid oid :opn (name operation) :addon addon-id :ent entity-type}
+    ;b (println "query" a)
+    docs (accres/get-docs a)
+    ;b (println "docs" (first docs))
     rolespath (if addon-id [:addonsaccess (key addon-id) :accessroles operation] [:accessroles operation])
     userspath (if addon-id [:addonsaccess (key addon-id) :accessusers operation] [:accessusers operation])
     global-access
       (->
-        {:oid oid :opn operation :addon addon-id :ent entity-type}
+        {:oid oid :opn (name operation) :addon addon-id :ent entity-type}
         (accres/get-docs)
         (first))
+    ;a (println "got global access" global-access)
     entity-roles-access (get-in entity rolespath)
     entity-users-access (get-in entity userspath)
     ]
+    (println "authorize operation" entity)
     (or
       (some #(= username %) entity-users-access)
       (some #(= username %) (:users global-access))

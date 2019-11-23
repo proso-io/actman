@@ -66,7 +66,7 @@
         :redirect-on-auth? false
         :workflows [(workflows/http-basic :realm "/")
                     (workflows/interactive-form)]
-        :login-uri "/login"
+        :login-uri "/api/login"
         :default-landing-uri "/login?success=true"})
       (wrap-defaults
         (-> site-defaults
