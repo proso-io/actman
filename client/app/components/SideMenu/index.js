@@ -34,7 +34,10 @@ import {
 import { SideMenuFooter } from "./SideMenuFooter";
 
 const SideMenuContainer = styled.div`
-  position: relative;
+  top: 0;
+  position: fixed;
+  z-index: 10;
+  bottom: 0;
   height: 100vh;
   padding: 0;
   margin: 0;

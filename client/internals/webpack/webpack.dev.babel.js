@@ -54,7 +54,10 @@ module.exports = require("./webpack.base.babel")({
       verbose: true,
       disableDotRule: false
     },
-    proxy: { "/api/**": { target: "http://localhost:8080", secure: false } }
+    proxy: {
+      "/api/**": { target: "http://localhost:8080", secure: false },
+      "/login": { target: "http://localhost:8080", secure: false }
+    }
   },
 
   // Add development plugins

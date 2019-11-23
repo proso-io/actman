@@ -12,11 +12,10 @@ import FlexContainer from "../FlexContainer";
 
 const PageHeaderContainer = styled.div`
   height: 80px;
-  position: sticky;
   width: 100%;
-  top: 0;
   padding: ${props => props.theme.spacing.twentyfour};
   box-shadow: 0px 1px 4px rgba(0, 0, 0, 0.16);
+  background: ${props => props.theme.white};
 `;
 
 function PageHeader({ title }) {
