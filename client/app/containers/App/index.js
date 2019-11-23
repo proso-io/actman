@@ -29,7 +29,7 @@ import FlexContainer from "../../components/FlexContainer";
 
 import makeSelectLoginPage from "containers/LoginPage/selectors";
 
-import { makeSelectUserData } from "./selectors";
+import { makeSelectUserData, makeSelectUserFetchingState } from "./selectors";
 
 import LoginPage from "containers/LoginPage";
 import HomePage from "containers/HomePage";
@@ -49,12 +49,6 @@ const PageRightContainer = styled.div`
 
 const DashboardLayout = function(props) {
   console.log("Dashboar layout props", props);
-  useEffect(() => {
-    console.log("in use effect", props.userData, !props.userData);
-    if (!props.userData) {
-      props.onLoaded();
-    }
-  });
 
   const userData = props.userData || { teams: [] };
 
@@ -94,18 +88,31 @@ function App(props) {
   console.log("App props", props);
   useInjectReducer({ key: "appPage", reducer });
   useInjectSaga({ key: "appPage", saga });
+  useEffect(() => {
+    console.log("in use effect", props.userData, !props.userData);
+    if (!props.userData) {
+      props.onLoaded();
+    }
+  });
   return (
     <ThemeProvider theme={defaultTheme}>
       <div>
-        {/* {props.loginPage.loginStatus !== 1 ? (
-          <Switch>
-            <Route exact path="/login" component={LoginPage} />
-            <Route component={NotFoundPage} />
-          </Switch>
+        {props.fetchingCurrentUser ? (
+          <p>Loading...</p>
         ) : (
-          <DashboardLayout {...props} />
-        )} */}
-        <DashboardLayout {...props} />
+          <div>
+            {props.userData ? (
+              <DashboardLayout {...props} />
+            ) : (
+              <Switch>
+                <Route exact path="/login" component={LoginPage} />
+                <Route component={NotFoundPage} />
+              </Switch>
+            )}
+          </div>
+        )}
+
+        {/* <DashboardLayout {...props} /> */}
 
         <GlobalStyle />
       </div>
@@ -119,7 +126,8 @@ App.propTypes = {
 
 const mapStateToProps = createStructuredSelector({
   loginPage: makeSelectLoginPage(),
-  userData: makeSelectUserData()
+  userData: makeSelectUserData(),
+  fetchingCurrentUser: makeSelectUserFetchingState()
 });
 
 function mapDispatchToProps(dispatch) {

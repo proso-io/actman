@@ -14,7 +14,7 @@
   (let [
     {:keys [username] :as auth-user} (friend/current-authentication request)
     ]
-    (println "current user")
+    (println "current user" auth-user)
     (when username
       (->
         (users/get-doc username)

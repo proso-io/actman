@@ -16,4 +16,10 @@ const makeSelectUserData = () =>
     appState => appState.userData
   );
 
-export { makeSelectLocation, makeSelectUserData };
+const makeSelectUserFetchingState = () =>
+  createSelector(
+    selectApp,
+    appState => appState.fetchingCurrentUser
+  );
+
+export { makeSelectLocation, makeSelectUserData, makeSelectUserFetchingState };

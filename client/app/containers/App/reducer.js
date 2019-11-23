@@ -18,10 +18,12 @@ const appPageReducer = (state = initialState, action) =>
     switch (action.type) {
       case USER_REQUEST_ACTION:
         draft.userData = null;
+        draft.fetchingCurrentUser = true;
         break;
       case USER_RESPONSE_ACTION:
         console.log(USER_RESPONSE_ACTION, action);
-        draft.userData = action.data;
+        draft.fetchingCurrentUser = false;
+        //draft.userData = action.data;
         if (action.data) {
           action.data.teams = action.data.teams.map(team => {
             return {
