@@ -40,7 +40,7 @@ function getDisplayName(name) {
 function Avatar({ name }) {
   return (
     <Circle>
-      <AvatarText>{getDisplayName(name)}</AvatarText>
+      <AvatarText>{getDisplayName(name || "")}</AvatarText>
     </Circle>
   );
 }

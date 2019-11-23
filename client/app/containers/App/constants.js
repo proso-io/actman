@@ -8,3 +8,9 @@
  * Follow this format:
  * export const YOUR_ACTION_CONSTANT = 'yourproject/YourContainer/YOUR_ACTION_CONSTANT';
  */
+
+export const USER_REQUEST_ACTION = "app/USER_REQUEST_ACTION";
+
+export const USER_RESPONSE_ACTION = "app/USER_RESPONSE_ACTION";
+
+export const CURRENT_USER_ENDPOINT = "/api/current-user";

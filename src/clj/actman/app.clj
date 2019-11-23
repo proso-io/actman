@@ -1,6 +1,6 @@
 (ns actman.app
   (:require
-    [ring.util.http-response :refer [ok unauthorized]]
+    [ring.util.http-response :refer [ok unauthorized found]]
     [reitit.swagger :as swagger]
     [reitit.coercion.schema]
     [reitit.ring.middleware.multipart :as multipart]
@@ -120,6 +120,7 @@
         ["/:id/activities-search-keys"
           {
             :get {
+              :coercion reitit.coercion.schema/coercion
               :parameters {:path {:id sc/Str} :header {:authorization sc/Str}}
               :handler (fn [{{{:keys [id]} :path} :parameters}] (ok (api/get-activity-search-keys id)))
             }
@@ -267,10 +268,32 @@
         [""
           {
             :post {
-              :parameters {:multipart {:file multipart/temp-file-part :metadata string?}  :header {:authorization string?}}
+              :parameters {:multipart {:file multipart/temp-file-part}  :header {:authorization string?}}
               :handler (fn [{{:keys [multipart]} :parameters :as request}]
                   (perform-operation request opns/upload-media nil
                     (assoc multipart :current-user (current-user request))))
+            }
+            }]
+        ["/:id"
+          {
+            :get {
+              :coercion reitit.coercion.schema/coercion
+              :parameters {:path {:id sc/Str} :header {:authorization sc/Str}}
+              :handler (fn [{{:keys [multipart]} :parameters :as request}]
+                  (perform-operation request opns/upload-media nil
+                    (assoc multipart :current-user (current-user request))))
+            }
+            }]
+        ["/:id/thumbnail"
+          {
+            :get {
+              :coercion reitit.coercion.schema/coercion
+              :parameters {:path {:id sc/Str} :header {:authorization sc/Str}}
+              :handler
+                (fn [{{{:keys [id]} :path} :parameters :as request}]
+                    (let [d (perform-operation request opns/view-media id)]
+                      (found
+                        (-> d :body :data :turl))))
             }
             }]
       ]
