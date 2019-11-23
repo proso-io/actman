@@ -13,7 +13,6 @@ module.exports = require("./webpack.base.babel")({
   // Add hot reloading in development
   entry: [
     require.resolve("react-app-polyfill/ie11"),
-    "react-hot-loader/patch",
     `webpack-dev-server/client?http://localhost:3000/`,
     "webpack/hot/only-dev-server",
     path.join(process.cwd(), "app/app.js") // Start with js/app.js
@@ -54,7 +53,9 @@ module.exports = require("./webpack.base.babel")({
       verbose: true,
       disableDotRule: false
     },
-    proxy: { "/api/**": { target: "http://localhost:8080", secure: false } }
+    proxy: {
+      "/api/**": { target: "http://localhost:8080", secure: false }
+    }
   },
 
   // Add development plugins

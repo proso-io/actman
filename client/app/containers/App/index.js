@@ -9,29 +9,37 @@ import PropTypes from "prop-types";
 import { Switch, Route } from "react-router-dom";
 import { connect } from "react-redux";
 import { Helmet } from "react-helmet";
+import styled from "styled-components";
 import { FormattedMessage } from "react-intl";
 import { createStructuredSelector } from "reselect";
 import { compose } from "redux";
 
 import { ThemeProvider } from "styled-components";
 
-import { useInjectSaga } from "utils/injectSaga";
-import { useInjectReducer } from "utils/injectReducer";
-import makeSelectApp from "./selectors";
-
 import GlobalStyle from "../../global-styles";
 import { defaultTheme } from "../../theme";
-//import PageHeader from "../../components/PageHeader";
-//import FlexContainer from "../../components/FlexContainer";
+import PageHeader from "../../components/PageHeader";
+import FlexContainer from "../../components/FlexContainer";
 
 import makeSelectLoginPage from "containers/LoginPage/selectors";
 
 import LoginPage from "containers/LoginPage";
+import HomePage from "containers/HomePage";
+import NotFoundPage from "containers/NotFoundPage";
 import SideMenu from "../../components/SideMenu";
 
-const DashboardLayout = function(props) {
-  console.log("DashboardLayout", props);
+const PageBody = styled.div`
+  padding-left: ${props => props.theme.spacing.twentyfour};
+  overflow: auto;
+  width: 100%;
+`;
 
+const PageRightContainer = styled.div`
+  padding-left: 300px;
+  overflow-x: hidden;
+`;
+
+const DashboardLayout = function(props) {
   // useEffect(() => {
   //   props.onLoaded();
   // });
@@ -51,37 +59,38 @@ const DashboardLayout = function(props) {
           { title: "Quick Upload Images", link: "/quick-upload" }
         ]}
       />
-      <FlexContainer
-        direction="column"
-        mainAxis="flex-start"
-        crossAxis="flex-start"
-        width="100%"
-      >
-        <PageHeader title="Home" />
-
-        <PageBody>
-          <Switch>
-            <Route exact path="/" component={HomePage} />
-            <Route component={NotFoundPage} />
-          </Switch>
-        </PageBody>
-      </FlexContainer>
+      <PageRightContainer>
+        <FlexContainer
+          direction="column"
+          mainAxis="flex-start"
+          crossAxis="flex-start"
+        >
+          <PageHeader title="Home" />
+          <PageBody>
+            <Switch>
+              <Route exact path="/" component={HomePage} />
+              <Route component={NotFoundPage} />
+            </Switch>
+          </PageBody>
+        </FlexContainer>
+      </PageRightContainer>
     </FlexContainer>
   );
 };
 
 function App(props) {
-  console.log("App", props);
   return (
     <ThemeProvider theme={defaultTheme}>
       <div>
         {props.loginPage.loginStatus !== 1 ? (
           <Switch>
             <Route exact path="/login" component={LoginPage} />
+            <Route component={NotFoundPage} />
           </Switch>
         ) : (
           <DashboardLayout {...props} />
         )}
+        {/* <DashboardLayout {...props} /> */}
 
         <GlobalStyle />
       </div>
