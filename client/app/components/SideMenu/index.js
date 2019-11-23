@@ -50,8 +50,9 @@ const SideMenuContainer = styled.div`
 `;
 
 function getUserContextString({ orgName, teams, activeTeamIndex }) {
+  teams = teams.length > 0 ? teams : [{ teamName: "", unitName: "", role: "" }];
   const { teamName, unitName } = teams.filter(
-    team => team.id === activeTeamIndex
+    (team, index) => index === activeTeamIndex
   )[0];
   let displayString = "";
   if (teamName && unitName) {

@@ -4,7 +4,7 @@
  *
  */
 
-import React from "react";
+import React, { useEffect } from "react";
 import PropTypes from "prop-types";
 import { Switch, Route } from "react-router-dom";
 import { connect } from "react-redux";
@@ -13,6 +13,12 @@ import styled from "styled-components";
 import { FormattedMessage } from "react-intl";
 import { createStructuredSelector } from "reselect";
 import { compose } from "redux";
+import { userRequestAction } from "./actions";
+
+import { useInjectSaga } from "utils/injectSaga";
+import { useInjectReducer } from "utils/injectReducer";
+import reducer from "./reducer";
+import saga from "./saga";
 
 import { ThemeProvider } from "styled-components";
 
@@ -22,6 +28,8 @@ import PageHeader from "../../components/PageHeader";
 import FlexContainer from "../../components/FlexContainer";
 
 import makeSelectLoginPage from "containers/LoginPage/selectors";
+
+import { makeSelectUserData } from "./selectors";
 
 import LoginPage from "containers/LoginPage";
 import HomePage from "containers/HomePage";
@@ -40,18 +48,22 @@ const PageRightContainer = styled.div`
 `;
 
 const DashboardLayout = function(props) {
-  // useEffect(() => {
-  //   props.onLoaded();
-  // });
+  console.log("Dashboar layout props", props);
+  useEffect(() => {
+    console.log("in use effect", props.userData, !props.userData);
+    if (!props.userData) {
+      props.onLoaded();
+    }
+  });
+
+  const userData = props.userData || { teams: [] };
 
   return (
     <FlexContainer mainAxis="stretch" crossAxis="flex-start">
       <SideMenu
         user={{
-          name: "saumitra",
-          orgName: "Goonj",
           activeTeamIndex: 0,
-          teams: [{ id: 0, teamName: "Regional team", unitName: "Bihar" }]
+          ...userData
         }}
         actions={[
           { title: "Home", link: "/", isActive: true },
@@ -79,6 +91,9 @@ const DashboardLayout = function(props) {
 };
 
 function App(props) {
+  console.log("App props", props);
+  useInjectReducer({ key: "appPage", reducer });
+  useInjectSaga({ key: "appPage", saga });
   return (
     <ThemeProvider theme={defaultTheme}>
       <div>
@@ -103,7 +118,8 @@ App.propTypes = {
 };
 
 const mapStateToProps = createStructuredSelector({
-  loginPage: makeSelectLoginPage()
+  loginPage: makeSelectLoginPage(),
+  userData: makeSelectUserData()
 });
 
 function mapDispatchToProps(dispatch) {
