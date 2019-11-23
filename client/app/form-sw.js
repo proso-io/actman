@@ -1,4 +1,4 @@
-import { manageDataSendToServer } from "@proso-io/fobu/dist/fobu.uploadUtils";
+import { manageDataSendToServer } from "@proso-io/fobu/dist/uploadUtils";
 
 self.oninstall = function(event) {
   console.log(event);
@@ -15,22 +15,30 @@ self.addEventListener("sync", function(event) {
 // down here are the other functions to go get the indexeddb data and also post to our server
 
 function syncIt() {
-  return getIndexedDB()
-    .then(results => {
-      console.log(results);
-      if (results.length > 0) {
-        const result = results[0];
-        return manageDataSendToServer(
-          result.requestParams.submitUrl,
-          result.data,
-          result.requestParams.formSchema
-        );
-      }
-    })
-    .then(clearData)
-    .catch(function(err) {
-      return err;
-    });
+  return new Promise((resolve, reject) => {
+    getIndexedDB()
+      .then(results => {
+        console.log(results);
+        if (results.length > 0) {
+          const result = results[0];
+          manageDataSendToServer(
+            result.requestParams.submitUrl,
+            result.data,
+            result.requestParams.formSchema
+          )
+            .then(clearData)
+            .then(function() {
+              resolve();
+            })
+            .catch(function() {
+              reject();
+            });
+        }
+      })
+      .catch(function(err) {
+        return err;
+      });
+  });
 }
 
 function getIndexedDB() {
