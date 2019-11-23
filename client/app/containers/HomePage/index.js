@@ -28,8 +28,8 @@ export default function HomePage() {
           formDataUploader(
             "http://eb4ad323.ngrok.io/api/media",
             formData,
-            formSchema,
-            "/form-sw.js"
+            formSchema
+            //"/form-sw.js"
           )
         }
       />

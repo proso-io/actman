@@ -14,3 +14,11 @@ export const USER_REQUEST_ACTION = "app/USER_REQUEST_ACTION";
 export const USER_RESPONSE_ACTION = "app/USER_RESPONSE_ACTION";
 
 export const CURRENT_USER_ENDPOINT = "/api/current-user";
+
+export const CURRENT_USER_REQUEST_FAILED = -1;
+
+export const CURRENT_USER_REQUEST_IN_PROGRESS = 0;
+
+export const CURRENT_USER_REQUEST_SUCCEEDED = 1;
+
+export const USER_NOT_FETCHED = 2;

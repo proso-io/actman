@@ -36,6 +36,16 @@ import HomePage from "containers/HomePage";
 import NotFoundPage from "containers/NotFoundPage";
 import SideMenu from "../../components/SideMenu";
 
+import {
+  USER_REQUEST_ACTION,
+  USER_RESPONSE_ACTION,
+  CURRENT_USER_ENDPOINT,
+  CURRENT_USER_REQUEST_FAILED,
+  CURRENT_USER_REQUEST_IN_PROGRESS,
+  CURRENT_USER_REQUEST_SUCCEEDED,
+  USER_NOT_FETCHED
+} from "./constants";
+
 const PageBody = styled.div`
   padding-left: ${props => props.theme.spacing.twentyfour};
   overflow: auto;
@@ -89,19 +99,29 @@ function App(props) {
   useInjectReducer({ key: "appPage", reducer });
   useInjectSaga({ key: "appPage", saga });
   useEffect(() => {
-    console.log("in use effect", props.userData, !props.userData);
-    if (!props.userData) {
+    console.log(
+      "in use effect",
+      props.userData,
+      !props.userData,
+      props.currentUserFetchStatus
+    );
+    if (
+      !props.userData &&
+      (!props.currentUserFetchStatus ||
+        props.currentUserFetchStatus === USER_NOT_FETCHED)
+    ) {
       props.onLoaded();
     }
   });
   return (
     <ThemeProvider theme={defaultTheme}>
       <div>
-        {props.fetchingCurrentUser ? (
+        {props.fetchingCurrentUser && false ? (
           <p>Loading...</p>
         ) : (
           <div>
-            {props.userData ? (
+            {props.userData &&
+            props.currentUserFetchStatus !== CURRENT_USER_REQUEST_FAILED ? (
               <DashboardLayout {...props} />
             ) : (
               <Switch>
@@ -127,7 +147,7 @@ App.propTypes = {
 const mapStateToProps = createStructuredSelector({
   loginPage: makeSelectLoginPage(),
   userData: makeSelectUserData(),
-  fetchingCurrentUser: makeSelectUserFetchingState()
+  currentUserFetchStatus: makeSelectUserFetchingState()
 });
 
 function mapDispatchToProps(dispatch) {
