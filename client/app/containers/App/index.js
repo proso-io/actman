@@ -82,14 +82,15 @@ function App(props) {
   return (
     <ThemeProvider theme={defaultTheme}>
       <div>
-        {/* {props.loginPage.loginStatus !== 1 ? (
+        {props.loginPage.loginStatus !== 1 ? (
           <Switch>
             <Route exact path="/login" component={LoginPage} />
+            <Route component={NotFoundPage} />
           </Switch>
         ) : (
           <DashboardLayout {...props} />
-        )} */}
-        <DashboardLayout {...props} />
+        )}
+        {/* <DashboardLayout {...props} /> */}
 
         <GlobalStyle />
       </div>

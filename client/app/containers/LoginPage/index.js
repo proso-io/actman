@@ -28,7 +28,7 @@ import LoginFormCard from "./LoginFormCard";
 import StaticNav from "./StaticNav";
 import BackgroundContainer from "./BackgroundContainer";
 
-import { Input, FormBuilder } from "@proso-io/fobu/dist/fobu.components";
+import { Input } from "@proso-io/fobu/dist/components";
 
 const StyledInput = styled(Input)`
   > label.input__label {
@@ -40,11 +40,6 @@ const StyledInput = styled(Input)`
   }
 `;
 
-function redirectToHome(){
-  //this.context.router.history.push('/home');
-  window.location.href = "/home";
-}
-
 export function LoginPage(props) {
   console.log(props, props.loginPage.loginStatus);
   useInjectReducer({ key: "loginPage", reducer });
@@ -52,11 +47,6 @@ export function LoginPage(props) {
 
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
-
-  if(props.loginPage.loginStatus === 1){
-    redirectToHome();
-    return "";
-  }
 
   return (
     <div>
@@ -104,7 +94,7 @@ LoginPage.propTypes = {
 
 LoginPage.contextTypes = {
   router: PropTypes.object
-}
+};
 
 const mapStateToProps = createStructuredSelector({
   loginPage: makeSelectLoginPage()

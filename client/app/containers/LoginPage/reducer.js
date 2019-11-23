@@ -4,7 +4,12 @@
  *
  */
 import produce from "immer";
-import { DEFAULT_ACTION, LOGIN_RESPONSE_ACTION, LOGIN_ENDPOINT, LOGIN_REQUEST_ACTION } from "./constants";
+import {
+  DEFAULT_ACTION,
+  LOGIN_RESPONSE_ACTION,
+  LOGIN_ENDPOINT,
+  LOGIN_REQUEST_ACTION
+} from "./constants";
 
 export const initialState = {};
 
@@ -15,7 +20,7 @@ const loginPageReducer = (state = initialState, action) =>
       case DEFAULT_ACTION:
         break;
       case LOGIN_REQUEST_ACTION:
-      draft.loginStatus = 0;
+        draft.loginStatus = 0;
       case LOGIN_RESPONSE_ACTION:
         console.log(LOGIN_RESPONSE_ACTION, action);
         draft.loginStatus = action.status;
