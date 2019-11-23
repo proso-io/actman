@@ -5,7 +5,21 @@
     [actman.db.organisations :as orgs]
     [actman.utils.general :as gutil]
     [actman.db.utils :as db-utils]
+    [cemerick.friend :as friend]
+    [actman.db.users :as users]
     [actman.db.access-restrictions :as accres]))
+
+(defn current-user
+  [request]
+  (let [
+    {:keys [username] :as auth-user} (friend/current-authentication request)
+    ]
+    (println "current user")
+    (when username
+      (->
+        (users/get-doc username)
+        (assoc :username username)
+        (dissoc :pswd)))))
 
 (defn authorize-team
   "checks if user belongs to a team"
@@ -93,7 +107,7 @@
 ;   [handler auth-fn check-id?]
 ;   `(fn [request#]
 ;     (let [
-;       current-user# (friend/current-authentication request)
+;       current-user# (current-user request)
 ;       args#
 ;         (if ~check-id?
 ;           [current-user#]

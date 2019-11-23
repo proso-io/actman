@@ -115,7 +115,7 @@
             (mc/find-and-modify db '~coll-name {:_id id#} {"$set" update-obj#} {:return-new true}))))
       (intern *ns* '~'get-doc
         (fn [id#]
-          (mc/find-map-by-id db '~coll-name id#)))
+          (when id# (mc/find-map-by-id db '~coll-name id#))))
       (intern *ns* '~'get-docs
         (fn [query-obj#]
           (mc/find-maps db '~coll-name query-obj#)))

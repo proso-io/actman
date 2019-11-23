@@ -40,12 +40,23 @@ const StyledInput = styled(Input)`
   }
 `;
 
+function redirectToHome(){
+  //this.context.router.history.push('/home');
+  window.location.href = "/home";
+}
+
 export function LoginPage(props) {
+  console.log(props, props.loginPage.loginStatus);
   useInjectReducer({ key: "loginPage", reducer });
   useInjectSaga({ key: "loginPage", saga });
 
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
+
+  if(props.loginPage.loginStatus === 1){
+    redirectToHome();
+    return "";
+  }
 
   return (
     <div>
@@ -90,6 +101,10 @@ export function LoginPage(props) {
 LoginPage.propTypes = {
   onSubmit: PropTypes.func.isRequired
 };
+
+LoginPage.contextTypes = {
+  router: PropTypes.object
+}
 
 const mapStateToProps = createStructuredSelector({
   loginPage: makeSelectLoginPage()

@@ -116,7 +116,7 @@
 
   The defined operation function takes following arguments
     current-user: user object for authentication returned by
-      friend/current-authentication for an http request
+      actman.auth/current-user for an http request
     entity-query: id of resource or a query map for resources on which operation
       is to be performed
     action-args: additional argument to be used by passed action-function."

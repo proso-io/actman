@@ -15,7 +15,7 @@
     [actman.api :as api]
     [clojure.pprint :refer [pprint]]
     [cemerick.friend :as friend]
-    [actman.auth :as auth]
+    [actman.auth :as auth :refer [current-user]]
     [actman.operations-api :as opns]
     [actman.filestorage.core :as files]
     [actman.addons.watcher :as watcher]
@@ -30,7 +30,7 @@
 (defn perform-operation
   [request operation-fn query & [operation-args]]
   (let [
-    user (friend/current-authentication request)
+    user (current-user request)
     ]
     (ok (operation-fn user query operation-args)))
   )
@@ -45,6 +45,13 @@
             {:info
               {:title "ActMan APIs"}}
            :handler (swagger/create-swagger-handler)}}]
+      ["/current-user"
+        {
+          :get {
+            :handler (fn [req] (ok  (api/get-current-user (current-user req))))
+            }
+        }
+      ]
       ["/users"
         {:swagger {:tags ["Users"]}}
         [""
@@ -68,15 +75,15 @@
               :handler (fn [{{:keys [path body]} :parameters}] (ok (users/update-doc (:id path) body)))
             }
           }
-          ["/operations"
-            {
-              :get {
-                :coercion reitit.coercion.schema/coercion
-                :parameters {:path {:id sc/Str} :header {:authorization sc/Str}}
-                :handler (fn [{{{:keys [id]} :path} :parameters :as request}] (ok (api/get-access-operations (friend/current-authentication request))))
-              }
+        ]
+        ["/:id/operations"
+          {
+            :get {
+              :coercion reitit.coercion.schema/coercion
+              :parameters {:path {:id sc/Str} :header {:authorization sc/Str}}
+              :handler (fn [{{{:keys [id]} :path} :parameters :as request}] (ok (api/get-access-operations (current-user request))))
             }
-          ]
+          }
         ]
       ]
       ["/organisations"
@@ -108,14 +115,15 @@
               :handler (fn [{{:keys [path body]} :parameters}] (ok (orgs/update-doc (:id path) body)))
             }
           }
-          ["/activities-search-keys"
-            {
-              :get {
-                :parameters {:path {:id sc/Str} :header {:authorization sc/Str}}
-                :handler (fn [{{{:keys [id]} :path} :parameters}] (ok (api/get-activity-search-keys id)))
-              }
+        ]
+
+        ["/:id/activities-search-keys"
+          {
+            :get {
+              :parameters {:path {:id sc/Str} :header {:authorization sc/Str}}
+              :handler (fn [{{{:keys [id]} :path} :parameters}] (ok (api/get-activity-search-keys id)))
             }
-          ]
+          }
         ]
       ]
       ["/teams"
@@ -262,7 +270,7 @@
               :parameters {:multipart {:file multipart/temp-file-part :metadata string?}  :header {:authorization string?}}
               :handler (fn [{{:keys [multipart]} :parameters :as request}]
                   (perform-operation request opns/upload-media nil
-                    (assoc multipart :current-user (friend/current-authentication request))))
+                    (assoc multipart :current-user (current-user request))))
             }
             }]
       ]

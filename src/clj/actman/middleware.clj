@@ -67,7 +67,7 @@
         :workflows [(workflows/http-basic :realm "/")
                     (workflows/interactive-form)]
         :login-uri "/login"
-        :default-landing-uri "/about"})
+        :default-landing-uri "/login?success=true"})
       (wrap-defaults
         (-> site-defaults
             (assoc-in [:security :anti-forgery] false)
