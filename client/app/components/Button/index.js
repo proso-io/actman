@@ -16,9 +16,9 @@ const ButtonWrapper = styled.button`
   color: ${props =>
     props.type === "primary" ? props.theme.secondary : props.theme.primary};
   padding: ${props => props.theme.spacing.twelve}
-    ${props => props.theme.spacing.twentyfour};
+    ${props => props.theme.spacing.sixteen};
   border: none;
-  box-shadow: 0px 3px 6px rgba(0, 0, 0, 0.16);
+  box-shadow: 0px 1px 2px rgba(0, 0, 0, 0.16);
   font-weight: 600;
   cursor: pointer;
 

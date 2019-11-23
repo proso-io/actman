@@ -18,7 +18,6 @@ import request from "utils/request";
 // }
 
 export function* getCurrentUser() {
-  console.log();
   try {
     const response = yield call(request, CURRENT_USER_ENDPOINT);
     console.log("Get current user", response);

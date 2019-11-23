@@ -20,7 +20,7 @@ export const MenuContainer = styled.ul`
 export const MenuItemContainer = styled.li`
   padding: ${props => props.theme.spacing.twelve};
   background: ${props =>
-    props.isActive ? props.theme.primary : "transparent"};
+    props.isActive ? props.theme.primary40 : "transparent"};
   width: 100%;
   cursor: pointer;
 `;
