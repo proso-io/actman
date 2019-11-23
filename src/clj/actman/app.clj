@@ -268,10 +268,11 @@
         [""
           {
             :post {
-              :parameters {:multipart {:file multipart/temp-file-part}  :header {:authorization string?}}
               :handler (fn [{{:keys [multipart]} :parameters :as request}]
                   (perform-operation request opns/upload-media nil
-                    (assoc multipart :current-user (current-user request))))
+                    (assoc
+                      {:file (get-in request [:multipart-params "file"])}
+                      :current-user (current-user request))))
             }
             }]
         ["/:id"
