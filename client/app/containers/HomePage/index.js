@@ -26,7 +26,7 @@ export default function HomePage() {
       <StyledFormBuilder
         onDataSubmit={(formData, formSchema) =>
           formDataUploader(
-            "https://www.mocky.io/v2/5c0452da3300005100d01d1f",
+            "http://eb4ad323.ngrok.io/api/media",
             formData,
             formSchema,
             "/form-sw.js"
