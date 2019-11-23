@@ -50,7 +50,7 @@
         (mmd/insert-doc {
           :oid oid
           :name filename
-          :turl (:url url)
+          :turl (str url)
           }))
     ]
     (assoc resp :url (str "/api/media/" (:_id mmd) "/thumbnail"))))
