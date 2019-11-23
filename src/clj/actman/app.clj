@@ -198,7 +198,7 @@
             }
             :post {
               :coercion reitit.coercion.schema/coercion
-              :parameters {:body form-schemas/insertion-schema :header {:authorization sc/Str}}
+              :parameters {:body form-schemas/insertion-schema}
               :handler (fn [{{:keys [body]} :parameters :as request}] (perform-operation request opns/add-schema nil body))
             }
             }]

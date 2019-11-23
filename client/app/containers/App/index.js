@@ -35,6 +35,7 @@ import LoginPage from "containers/LoginPage";
 import HomePage from "containers/HomePage";
 import NotFoundPage from "containers/NotFoundPage";
 import SideMenu from "../../components/SideMenu";
+import EditSchemaPage from "containers/EditSchemaPage";
 
 import {
   USER_REQUEST_ACTION,
@@ -85,6 +86,7 @@ const DashboardLayout = function(props) {
           <PageBody>
             <Switch>
               <Route exact path="/" component={HomePage} />
+              <Route exact path="/schemas/:schema" component={EditSchemaPage} />
               <Route component={NotFoundPage} />
             </Switch>
           </PageBody>

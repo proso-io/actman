@@ -58,9 +58,9 @@
   [{:keys [oid username teams] :as current-user} entity-type operation entity & [addon-id]]
   (let [
     a {:oid oid :opn (name operation) :addon addon-id :ent entity-type}
-    ;b (println "query" a)
+    b (println "query" a)
     docs (accres/get-docs a)
-    ;b (println "docs" (first docs))
+    b (println "docs" (first docs))
     rolespath (if addon-id [:addonsaccess (key addon-id) :accessroles operation] [:accessroles operation])
     userspath (if addon-id [:addonsaccess (key addon-id) :accessusers operation] [:accessusers operation])
     global-access
@@ -68,7 +68,7 @@
         {:oid oid :opn (name operation) :addon addon-id :ent entity-type}
         (accres/get-docs)
         (first))
-    ;a (println "got global access" global-access)
+    a (println "got global access" global-access)
     entity-roles-access (get-in entity rolespath)
     entity-users-access (get-in entity userspath)
     ]

@@ -143,7 +143,7 @@
 
 (defOperation add-schema
   "Create a new schema"
-  'actman.db.form-schemas :add insert-schema-action)
+  'actman.db.form-schemas :create insert-schema-action)
 
 (defOperation get-schemas
   "Get all schemas for given search query"
