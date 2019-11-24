@@ -14,6 +14,7 @@ import { FormattedMessage } from "react-intl";
 import { createStructuredSelector } from "reselect";
 import { compose } from "redux";
 import { userRequestAction } from "./actions";
+import { toast } from "react-toastify";
 
 import { useInjectSaga } from "utils/injectSaga";
 import { useInjectReducer } from "utils/injectReducer";
@@ -39,6 +40,8 @@ import RecordActivityPage from "containers/RecordActivityPage";
 import SideMenu from "../../components/SideMenu";
 import EditSchemaPage from "containers/EditSchemaPage";
 
+import "react-toastify/dist/ReactToastify.css";
+
 import {
   USER_REQUEST_ACTION,
   USER_RESPONSE_ACTION,
@@ -48,6 +51,8 @@ import {
   CURRENT_USER_REQUEST_SUCCEEDED,
   USER_NOT_FETCHED
 } from "./constants";
+
+toast.configure();
 
 const PageBody = styled.div`
   padding-left: ${props => props.theme.spacing.twentyfour};

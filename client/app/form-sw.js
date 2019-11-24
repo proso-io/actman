@@ -23,8 +23,11 @@ function syncIt() {
           const result = results[0];
           manageDataSendToServer(
             result.requestParams.submitUrl,
+            result.requestParams.submitMethod,
+            result.requestParams.mediaUploadUrl,
             result.data,
-            result.requestParams.formSchema
+            result.requestParams.formSchema,
+            result.requestParams.mergeObj
           )
             .then(clearData)
             .then(function() {
