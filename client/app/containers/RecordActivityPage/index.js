@@ -52,8 +52,7 @@ const ProgramsGrid = styled.div`
 const ProgramCard = styled.div`
   height: 200px;
   width: 20%;
-  box-shadow: 3px 3px 6px rgba(0, 0, 0, 0.2);
-  border: 1px solid ${props => props.theme.primary80};
+  box-shadow: 0px 3px 6px rgba(0, 0, 0, 0.2);
   margin-right: ${props => props.theme.spacing.twelve};
   cursor: pointer;
 `;

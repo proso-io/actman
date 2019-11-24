@@ -27,9 +27,9 @@ import GlobalStyle from "../../global-styles";
 import { defaultTheme } from "../../theme";
 import PageHeader from "../../components/PageHeader";
 import FlexContainer from "../../components/FlexContainer";
+import SideMenu from "../../components/SideMenu";
 
 import makeSelectLoginPage from "containers/LoginPage/selectors";
-
 import { makeSelectUserData, makeSelectUserFetchingState } from "./selectors";
 
 import LoginPage from "containers/LoginPage";
@@ -37,8 +37,8 @@ import YourFormsPage from "containers/YourFormsPage";
 import HomePage from "containers/HomePage";
 import NotFoundPage from "containers/NotFoundPage";
 import RecordActivityPage from "containers/RecordActivityPage";
-import SideMenu from "../../components/SideMenu";
 import EditSchemaPage from "containers/EditSchemaPage";
+import ActivityDetails from "containers/ActivityDetails";
 
 import "react-toastify/dist/ReactToastify.css";
 
@@ -102,6 +102,11 @@ const DashboardLayout = function(props) {
                 component={RecordActivityPage}
               />
               <Route exact path="/forms/:schema" component={EditSchemaPage} />
+              <Route
+                exact
+                path="/activities/:activityId"
+                component={ActivityDetails}
+              />
               <Route component={NotFoundPage} />
             </Switch>
           </PageBody>
