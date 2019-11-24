@@ -58,6 +58,7 @@ const PageBody = styled.div`
   padding-left: ${props => props.theme.spacing.twentyfour};
   overflow: auto;
   width: 100%;
+  min-height: 100vh;
 `;
 
 const PageRightContainer = styled.div`
