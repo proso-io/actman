@@ -5,9 +5,14 @@ import {
   CURRENT_USER_ENDPOINT,
   CURRENT_USER_REQUEST_FAILED,
   CURRENT_USER_REQUEST_IN_PROGRESS,
-  CURRENT_USER_REQUEST_SUCCEEDED
+  CURRENT_USER_REQUEST_SUCCEEDED,
+  FORMS_REQUEST_ACTION,
+  GET_FORMS_REQUEST_SUCCEEDED,
+  GET_FORMS_REQUEST_FAILED,
+  GET_FORMS_ENDPOINT
 } from "./constants";
-import { userResponseAction } from "./actions";
+import { userResponseAction, formsResponseAction } from "./actions";
+import { makeSelectOrgId } from "./selectors";
 import request from "utils/request";
 
 // function userRequest() {
@@ -18,7 +23,6 @@ import request from "utils/request";
 // }
 
 export function* getCurrentUser() {
-  console.log();
   try {
     const response = yield call(request, CURRENT_USER_ENDPOINT);
     console.log("Get current user", response);
@@ -33,8 +37,28 @@ export function* getCurrentUser() {
   }
 }
 
+function* getForms() {
+  try {
+    const orgId = yield select(makeSelectOrgId());
+    console.log(orgId);
+    const response = yield call(request, `${GET_FORMS_ENDPOINT}?oid=${orgId}`);
+    console.log("Get forms", response);
+    if (response.performed) {
+      yield put(
+        formsResponseAction(GET_FORMS_REQUEST_SUCCEEDED, response.data)
+      );
+    } else {
+      yield put(formsResponseAction(GET_FORMS_REQUEST_FAILED, null));
+    }
+  } catch (err) {
+    console.log(err);
+    yield put(formsResponseAction(GET_FORMS_REQUEST_FAILED, null));
+  }
+}
+
 // Individual exports for testing
 export default function* appSaga() {
   // See example in containers/HomePage/saga.js
   yield takeLatest(USER_REQUEST_ACTION, getCurrentUser);
+  yield takeLatest(FORMS_REQUEST_ACTION, getForms);
 }

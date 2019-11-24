@@ -16,10 +16,35 @@ const makeSelectUserData = () =>
     appState => appState.userData
   );
 
+const makeSelectOrgId = () =>
+  createSelector(
+    selectApp,
+    appState => appState.userData.oid
+  );
+
 const makeSelectUserFetchingState = () =>
   createSelector(
     selectApp,
     appState => appState.currentUserFetchStatus
   );
 
-export { makeSelectLocation, makeSelectUserData, makeSelectUserFetchingState };
+const makeSelectForms = () =>
+  createSelector(
+    selectApp,
+    substate => substate.forms
+  );
+
+const makeSelectFormsRequestState = () =>
+  createSelector(
+    selectApp,
+    substate => substate.formsFetchState
+  );
+
+export {
+  makeSelectLocation,
+  makeSelectUserData,
+  makeSelectUserFetchingState,
+  makeSelectOrgId,
+  makeSelectForms,
+  makeSelectFormsRequestState
+};

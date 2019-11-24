@@ -24,9 +24,10 @@ export default function HomePage() {
   return (
     <>
       <StyledFormBuilder
+        saveFormSchemaState="saved"
         onDataSubmit={(formData, formSchema) =>
           formDataUploader(
-            "http://eb4ad323.ngrok.io/api/media",
+            "/api/media",
             formData,
             formSchema
             //"/form-sw.js"

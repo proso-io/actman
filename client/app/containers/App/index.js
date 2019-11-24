@@ -32,8 +32,10 @@ import makeSelectLoginPage from "containers/LoginPage/selectors";
 import { makeSelectUserData, makeSelectUserFetchingState } from "./selectors";
 
 import LoginPage from "containers/LoginPage";
+import YourFormsPage from "containers/YourFormsPage";
 import HomePage from "containers/HomePage";
 import NotFoundPage from "containers/NotFoundPage";
+import RecordActivityPage from "containers/RecordActivityPage";
 import SideMenu from "../../components/SideMenu";
 import EditSchemaPage from "containers/EditSchemaPage";
 
@@ -56,6 +58,7 @@ const PageBody = styled.div`
 const PageRightContainer = styled.div`
   padding-left: 300px;
   overflow-x: hidden;
+  flex: 1;
 `;
 
 const DashboardLayout = function(props) {
@@ -86,6 +89,12 @@ const DashboardLayout = function(props) {
           <PageBody>
             <Switch>
               <Route exact path="/" component={HomePage} />
+              <Route exact path="/forms" component={YourFormsPage} />
+              <Route
+                exact
+                path="/record-activity"
+                component={RecordActivityPage}
+              />
               <Route exact path="/schemas/:schema" component={EditSchemaPage} />
               <Route component={NotFoundPage} />
             </Switch>
