@@ -10,10 +10,13 @@ import {
   CURRENT_USER_ENDPOINT,
   CURRENT_USER_REQUEST_FAILED,
   CURRENT_USER_REQUEST_IN_PROGRESS,
-  CURRENT_USER_REQUEST_SUCCEEDED
+  CURRENT_USER_REQUEST_SUCCEEDED,
+  FORMS_REQUEST_ACTION,
+  FORMS_RESPONSE_ACTION,
+  GET_FORMS_REQUEST_IN_PROGRESS
 } from "./constants";
 
-export const initialState = {};
+export const initialState = { forms: [] };
 
 /* eslint-disable default-case, no-param-reassign */
 const appPageReducer = (state = initialState, action) =>
@@ -41,6 +44,14 @@ const appPageReducer = (state = initialState, action) =>
             : [];
         }
         draft.userData = action.data;
+        break;
+      case FORMS_REQUEST_ACTION:
+        draft.formsFetchState = GET_FORMS_REQUEST_IN_PROGRESS;
+        draft.forms = [];
+        break;
+      case FORMS_RESPONSE_ACTION:
+        draft.formsFetchState = action.status;
+        draft.forms = action.data;
         break;
     }
   });

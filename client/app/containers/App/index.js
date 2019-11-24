@@ -35,6 +35,7 @@ import LoginPage from "containers/LoginPage";
 import YourFormsPage from "containers/YourFormsPage";
 import HomePage from "containers/HomePage";
 import NotFoundPage from "containers/NotFoundPage";
+import RecordActivityPage from "containers/RecordActivityPage";
 import SideMenu from "../../components/SideMenu";
 
 import {
@@ -88,6 +89,11 @@ const DashboardLayout = function(props) {
             <Switch>
               <Route exact path="/" component={HomePage} />
               <Route exact path="/forms" component={YourFormsPage} />
+              <Route
+                exact
+                path="/record-activity"
+                component={RecordActivityPage}
+              />
               <Route component={NotFoundPage} />
             </Switch>
           </PageBody>

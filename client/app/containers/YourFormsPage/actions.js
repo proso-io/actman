@@ -11,17 +11,3 @@ export function defaultAction() {
     type: DEFAULT_ACTION
   };
 }
-
-export function formsRequestAction() {
-  return {
-    type: FORMS_REQUEST_ACTION
-  };
-}
-
-export function formsResponseAction(status, data) {
-  return {
-    type: FORMS_RESPONSE_ACTION,
-    data: data,
-    status: status
-  };
-}

@@ -17,28 +17,21 @@ import { compose } from "redux";
 
 import { useInjectSaga } from "utils/injectSaga";
 import { useInjectReducer } from "utils/injectReducer";
-import { makeSelectForms, makeSelectFormsRequestState } from "./selectors";
-import { formsRequestAction } from "./actions";
-import reducer from "./reducer";
-import saga from "./saga";
+
+import {
+  makeSelectForms,
+  makeSelectFormsRequestState
+} from "containers/App/selectors";
+import { formsRequestAction } from "containers/App/actions";
+import reducer from "containers/App/reducer";
+import saga from "containers/App/saga";
 import messages from "./messages";
 import { FORMS_NOT_FETCHED } from "./constants";
 
 import Text from "components/Text";
 import Button from "components/Button";
 import FlexContainer from "components/FlexContainer";
-
-const FormSchemaContainer = styled.div`
-  border: 1px solid ${props => props.theme.primary80};
-  border-top: 0;
-  padding: ${props => props.theme.spacing.twelve};
-  background: ${props => props.theme.secondary};
-  width: 80%;
-  :nth-child(2) {
-    margin-top: ${props => props.theme.spacing.eight};
-    border-top: 1px solid ${props => props.theme.primary80};
-  }
-`;
+import ListItem from "../../components/ListItem";
 
 const SchemaListContainer = styled.div`
   margin-top: ${props => props.theme.spacing.thirtysix};
@@ -81,7 +74,7 @@ export function YourFormsPage(props) {
           <Text type="caption">Saved forms</Text>
           {props.forms.map(form => {
             return (
-              <FormSchemaContainer key={form._id}>
+              <ListItem key={form._id}>
                 <FlexContainer mainAxis="space-between">
                   <Text type="body" weight="semibold">
                     {form.title}
@@ -96,7 +89,7 @@ export function YourFormsPage(props) {
                     Edit
                   </a>
                 </FlexContainer>
-              </FormSchemaContainer>
+              </ListItem>
             );
           })}
         </SchemaListContainer>
