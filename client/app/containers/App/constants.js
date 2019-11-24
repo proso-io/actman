@@ -13,6 +13,9 @@ export const USER_REQUEST_ACTION = "app/USER_REQUEST_ACTION";
 
 export const USER_RESPONSE_ACTION = "app/USER_RESPONSE_ACTION";
 
+export const RESET_FORMS_FETCH_STATE_ACTION =
+  "app/app/RESET_FORMS_FETCH_STATE_ACTION";
+
 export const CURRENT_USER_ENDPOINT = "/api/current-user";
 
 export const CURRENT_USER_REQUEST_FAILED = -1;

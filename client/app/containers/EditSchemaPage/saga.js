@@ -16,7 +16,9 @@ import {
 } from "./constants";
 import { saveSchemaResponseAction, getSchemaResponseAction } from "./actions";
 import request from "utils/request";
-import { makeSelectUserData } from "containers/App/selectors";
+import { makeSelectUserData, makeSelectForms } from "containers/App/selectors";
+
+import { resetFormFetchStateAction } from "containers/App/actions";
 
 function* saveSchema(action) {
   let schema = action.schema;
@@ -46,6 +48,7 @@ function* saveSchema(action) {
     console.log("Save schema", response);
     if (response.performed) {
       yield put(saveSchemaResponseAction(SCHEMA_SAVE_SUCCEEDED, response.data));
+      yield put(resetFormFetchStateAction());
     } else {
       yield put(saveSchemaResponseAction(SCHEMA_SAVE_FAILED, null));
     }
@@ -57,6 +60,8 @@ function* saveSchema(action) {
 
 function* getSchema(action) {
   console.log("getSchema saga", action);
+  const schemaData = yield select(makeSelectForms());
+  console.log("schema redux data", schemaData);
   try {
     //const userData = yield select(makeSelectUserData());
     let url = SCHEMA_ENDPOINT + "/" + action.id;

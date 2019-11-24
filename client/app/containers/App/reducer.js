@@ -13,7 +13,9 @@ import {
   CURRENT_USER_REQUEST_SUCCEEDED,
   FORMS_REQUEST_ACTION,
   FORMS_RESPONSE_ACTION,
-  GET_FORMS_REQUEST_IN_PROGRESS
+  GET_FORMS_REQUEST_IN_PROGRESS,
+  RESET_FORMS_FETCH_STATE_ACTION,
+  FORMS_NOT_FETCHED
 } from "./constants";
 
 export const initialState = { forms: [] };
@@ -53,6 +55,8 @@ const appPageReducer = (state = initialState, action) =>
         draft.formsFetchState = action.status;
         draft.forms = action.data;
         break;
+      case RESET_FORMS_FETCH_STATE_ACTION:
+        draft.formsFetchState = FORMS_NOT_FETCHED;
     }
   });
 
