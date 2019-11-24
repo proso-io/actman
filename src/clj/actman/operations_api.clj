@@ -13,32 +13,32 @@
 (defn view-schema-action
   "Action function for get-schema operation.
   Returns received schema wrapped with a response"
-  [valid-schema id args]
+  [valid-schema id args _]
   valid-schema)
 
 (defn update-schema-action
   "Action function for edit-schema operation.
   Updates a schema object for given id"
-  [valid-schema id update-obj]
+  [valid-schema id update-obj _]
   (when valid-schema
     (schemas/update-doc id update-obj)))
 
 (defn insert-schema-action
   "Action function for add-schema operation.
   Creates a new form schema with given schema object"
-  [_1 _2 schema]
+  [_1 _2 schema _]
   (schemas/insert-doc schema))
 
 (defn get-schemas-action
   "Action function for get-schemas operation.
   Returns received schemas list wrapped in response"
-  [valid-schemas query args]
+  [valid-schemas query args _]
   valid-schemas)
 
 (defn upload-media-action
   "Action function for upload-media operation.
   Returns uploaded url"
-  [_1 _2 {:keys [file metadata current-user] :as data}]
+  [_1 _2 {:keys [file metadata current-user] :as data} _]
   (let [
     {:keys [oid username]} current-user
     filename (str oid "-" username "-" (System/currentTimeMillis))
@@ -59,14 +59,26 @@
 (defn view-media-action
   "Action function for view-media operation.
   Returns MediaMetaData"
-  [mmd id _]
+  [mmd id _1 _2]
   mmd)
 
 
 (defn create-activity-action
   "Action function for create-activity operation"
-  [_1 _2 activity]
-  (activities/insert-doc activity))
+  [_1 _2 activity current-user]
+  (println "creating activity" activity (:teams current-user))
+  (let [
+    team (first (:teams current-user))
+    team (assoc team :rl "Head")
+    ]
+    (println "associng team" team)
+    (->
+      activity
+      (assoc-in [:accessroles :view] [team])
+      (assoc-in [:accessroles :create] [])
+      (assoc-in [:accessroles :edit] [])
+      (assoc-in [:accessusers] [(:username current-user)])
+      (activities/insert-doc))))
 
 (defn edit-activity-action
   "Action function for edit-activity operation"
@@ -83,7 +95,7 @@
 
 (defn get-activities-action
   "Action function for get-activities operation"
-  [activities query _2]
+  [activities query _2 _]
   (println "get-activities-action" activities query)
   (if (string? query)
     (add-activity-aux-data activities)
@@ -91,21 +103,24 @@
 
 (defn perform-operation
   "This method is assigned to operations defined by defOperation"
-  [entity-db-ns operation-key action-fn find-by-query? addon-id {:keys [oid username teams] :as current-user} entity-query & [action-args]]
+  [entity-db-ns operation-key action-fn find-by-query? operation-query addon-id {:keys [oid username teams] :as current-user} entity-query & [action-args]]
   (let [
-    entity-query (assoc entity-query :oid oid)
+    entity-query (if (string? entity-query) entity-query (assoc entity-query :oid oid))
+    entity-query (if (string? entity-query) entity-query (merge entity-query operation-query))
     model-key @(ns-resolve entity-db-ns 'COLL)
     model-authorized? (auth/authorize-operation current-user model-key operation-key nil addon-id)
-    p (println "\nperform operation authorized check done" model-authorized?)
+    p (println "\nperform operation authorized check done" addon-id entity-db-ns addon-id entity-query)
     get-all-docs? (and entity-query find-by-query? model-authorized?)
     get-auth-docs? (and entity-query find-by-query? (not model-authorized?))
     get-single-doc? (and entity-query (not find-by-query?))
-    p (println "getting auth entities" get-all-docs? get-auth-docs? get-single-doc?)
+    p (println "getting auth entities" get-all-docs? addon-id get-auth-docs? get-single-doc?)
     entities
       (cond
         get-all-docs?
           (if addon-id
-            ((ns-resolve entity-db-ns 'get-docs-for-addons-data) addon-id entity-query)
+            (do
+              (println "getting addon entity" get-all-docs? addon-id entity-query)
+              ((ns-resolve entity-db-ns 'get-docs-for-addon-data) addon-id entity-query))
             ((ns-resolve entity-db-ns 'get-docs) entity-query))
         get-auth-docs? ((ns-resolve entity-db-ns 'get-only-opn-auth-docs) teams username entity-query (name operation-key) addon-id)
         get-single-doc?
@@ -124,7 +139,8 @@
           (action-fn
             entities
             entity-query
-            action-args))
+            action-args
+            current-user))
     }))
 
 (defmacro defOperation
@@ -143,9 +159,9 @@
     entity-query: id of resource or a query map for resources on which operation
       is to be performed
     action-args: additional argument to be used by passed action-function."
-  [operation-name doc-string entity-db-ns entity-operation-key action-fn & [find-by-query? addon-id]]
+  [operation-name doc-string entity-db-ns entity-operation-key action-fn & [find-by-query? operation-query addon-id]]
   `(intern *ns* '~operation-name
-    (partial perform-operation ~entity-db-ns ~entity-operation-key ~action-fn ~find-by-query? ~addon-id)
+    (partial perform-operation ~entity-db-ns ~entity-operation-key ~action-fn ~find-by-query? ~operation-query ~addon-id )
       ))
 
 (defOperation get-schema
@@ -187,7 +203,3 @@
 (defOperation get-activities
   "Get activity detalis for given search query"
   'actman.db.activities :view get-activities-action true)
-
-(defOperation get-watcher-activities
-  "Get activity details for watcher addon"
-  'actman.db.activities :view-activities get-activities-action true "watcher")

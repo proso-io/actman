@@ -72,26 +72,27 @@ export function YourFormsPage(props) {
         />
         <SchemaListContainer>
           <Text type="caption">Saved forms</Text>
-          {props.forms.map(form => {
-            return (
-              <ListItem key={form._id}>
-                <FlexContainer mainAxis="space-between">
-                  <Text type="body" weight="semibold">
-                    {form.title}
-                  </Text>
-                  <a
-                    href="#"
-                    onClick={e => {
-                      e.preventDefault();
-                      props.push(`/forms/${form._id}`);
-                    }}
-                  >
-                    Edit
-                  </a>
-                </FlexContainer>
-              </ListItem>
-            );
-          })}
+          {props.forms &&
+            props.forms.map(form => {
+              return (
+                <ListItem key={form._id}>
+                  <FlexContainer mainAxis="space-between">
+                    <Text type="body" weight="semibold">
+                      {form.title}
+                    </Text>
+                    <a
+                      href="#"
+                      onClick={e => {
+                        e.preventDefault();
+                        props.push(`/forms/${form._id}`);
+                      }}
+                    >
+                      Edit
+                    </a>
+                  </FlexContainer>
+                </ListItem>
+              );
+            })}
         </SchemaListContainer>
       </PageContainer>
     </div>

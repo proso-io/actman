@@ -4,18 +4,18 @@
     [actman.db.form-schemas :as form-schemas]
     [clojure.core.memoize :as memo]))
 
-(defn get-program-internal
+(defn get-program;-internal
   [pid]
   (programs/get-doc pid))
 
-(def get-program (memo/ttl get-program-internal))
+;(def get-program (memo/ttl get-program-internal))
 
-(defn get-form-schema-internal
+(defn get-form-schema;-internal
   [sid]
   (println "get-form-shemas-internal" sid)
   (form-schemas/get-doc sid))
 
-(def get-form-schema (memo/ttl get-form-schema-internal))
+;(def get-form-schema (memo/ttl get-form-schema-internal))
 
 (defn get-program-name
   [id]

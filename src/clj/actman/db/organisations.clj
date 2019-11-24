@@ -7,7 +7,7 @@
   [:name sc/Str "Name of the organisation"]
   [:loc sc/Str "Location of the organisation" :opt]
   [:admintid sc/Str "Id of admin team" :opt]
-  [:addons [sc/str] "Installed addon ids" :opt]
+  [:addons [sc/Str] "Installed addon ids" :opt]
   ])
 
 (defn get-organisation-for-name

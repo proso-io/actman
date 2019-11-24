@@ -6,8 +6,8 @@
   :array {
     :map [
       [:t sc/Str "Team Id"]
-      [:tu sc/Str "Team unit id"]
-      [:rl sc/Str "Role in the team"]]
+      [:rl sc/Str "Role in the team"]
+      [:tu sc/Str "Team unit id"]]
     }
   })
 

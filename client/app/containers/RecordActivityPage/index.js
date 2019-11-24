@@ -35,7 +35,7 @@ import { makeSelectFormByProgramId } from "containers/App/selectors";
 import FlexContainer from "../../components/FlexContainer";
 import Text from "../../components/Text";
 import Spacing from "../../components/Spacing";
-import { makeSelectForms } from "../App/selectors";
+import { makeSelectForms, makeSelectOrgId } from "../App/selectors";
 import ListItem from "../../components/ListItem";
 
 import { FormBuilder } from "@proso-io/fobu/dist/components";
@@ -169,7 +169,8 @@ export function RecordActivity(props) {
             onDataSubmit={(formData, formSchema) => {
               let mergeObj = {
                 name: "",
-                pid: selectedProgram._id
+                pid: selectedProgram._id,
+                oid: props.orgId
               };
               toast.success(
                 "Form upload started. You will be notified once activity is uploaded."
@@ -181,8 +182,8 @@ export function RecordActivity(props) {
                   mergeObj,
                   submitUrl: "/api/activities",
                   submitMethod: "POST",
-                  mediaUploadUrl: "/api/media",
-                  serviceWorkerUrl: "/form-sw.js"
+                  mediaUploadUrl: "/api/media"
+                  //serviceWorkerUrl: "/form-sw.js"
                 });
               });
               props.push("/");
@@ -207,7 +208,8 @@ RecordActivity.propTypes = {
 const mapStateToProps = createStructuredSelector({
   forms: makeSelectForms(),
   programs: makeSelectPrograms(),
-  programsRequestState: makeSelectProgramsRequestState()
+  programsRequestState: makeSelectProgramsRequestState(),
+  orgId: makeSelectOrgId()
 });
 
 function mapDispatchToProps(dispatch) {

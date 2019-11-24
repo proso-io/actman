@@ -124,22 +124,24 @@
             (mc/find-and-modify db '~coll-name {:_id id#} {"$set" (get-addon-update-obj addon-id# update-obj#)} {:return-new true})))
       (intern *ns* '~'get-docs-for-addon-data
         (fn [addon-id# query-obj#]
-          (mc/find-maps db '~coll-name {(str "addonsmetadata." addon-id#) query-obj#})))
+          (println "gettng docs for addo data" addon-id# query-obj#)
+          (mc/find-maps db '~coll-name query-obj#)))
       (intern *ns* '~'get-only-opn-auth-docs
         (fn [team-roles# userid# query-obj# operation# & [addon-id#]]
           (let [
             prepath# (if addon-id# (str "addonsaccess." addon-id# ".") "")
-            accroles#  (str prepath# operation# ".accessroles")
-            accusers# (str prepath# operation# ".accessusers")
+            accroles#  (str prepath# "accessroles." operation#)
+            accusers# (str prepath# "accessusers")
             access-query#
               {
-                "or" [
+                "$or" [
                   {accroles# {"$in" team-roles#}}
                   {accusers# userid#}
                 ]
               }
             ]
-            (mc/find-maps db '~coll-name (merge query-obj# access-query#) {:return-new true})
+            (println "auth query" (merge query-obj# access-query#))
+            (mc/find-maps db '~coll-name (merge query-obj# access-query#))
             )))
       ; (intern *ns* '~'operate
       ;   (fn [team-roles# userid# query-obj# update-obj# operation#]
