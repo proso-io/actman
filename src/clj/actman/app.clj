@@ -222,12 +222,12 @@
           {
             :get {
               :coercion reitit.coercion.schema/coercion
-              :parameters {:query {:query sc/Any} :header {:authorization sc/Str}}
+              :parameters {:query {:query sc/Any}}
               :handler (fn [{{{:keys [query]} :query} :parameters :as request}] (perform-operation request opns/get-activities query))
             }
             :post {
               :coercion reitit.coercion.schema/coercion
-              :parameters {:body activities/insertion-schema :header {:authorization sc/Str}}
+              :parameters {:body activities/insertion-schema}
               :handler (fn [{{:keys [body]} :parameters :as request}] (perform-operation request opns/create-activity nil body))
             }
             }]
@@ -252,7 +252,7 @@
           {
             :get {
               :coercion reitit.coercion.schema/coercion
-              :parameters {:query {:oid (:oid programs/insertion-schema)} :header {:authorization sc/Str}}
+              :parameters {:query {:oid (:oid programs/insertion-schema)}}
               :handler (fn [{{{:keys [oid]} :query} :parameters}] (ok (programs/get-docs {:oid oid})))
             }
             :post {

@@ -6,7 +6,7 @@
 
 (defCollection Activities [
   [:name sc/Str "Name of Activity"]
-  [:mdata sc/Str "Metadata of activity"]
+  [:mdata sc/Any "Metadata of activity"]
   [:pid sc/Str "Program under which activity is created"]
   ]
   [:create :view :edit])
