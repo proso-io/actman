@@ -4,28 +4,39 @@ import {
   SCHEMA_SAVED_STATE,
   SCHEMA_UNSAVED_STATE,
   SCHEMA_SAVING_STATE,
-  SCHEMA_UPLOAD_ENDPOINT,
+  SCHEMA_ENDPOINT,
   SCHEMA_SAVE_REQUEST_ACTION,
   SCHEMA_SAVE_RESPONSE_ACTION,
   SCHEMA_SAVE_SUCCEEDED,
-  SCHEMA_SAVE_FAILED
+  SCHEMA_SAVE_FAILED,
+  GET_SCHEMA_REQUEST_ACTION,
+  GET_SCHEMA_RESPONSE_ACTION,
+  GET_SCHEMA_SUCCEEDED,
+  GET_SCHEMA_FAILED
 } from "./constants";
-import { saveSchemaResponseAction } from "./actions";
+import { saveSchemaResponseAction, getSchemaResponseAction } from "./actions";
 import request from "utils/request";
 import { makeSelectUserData } from "containers/App/selectors";
 
-export function* saveSchema(action) {
+function* saveSchema(action) {
   let schema = action.schema;
-  console.log("saveSchema saga", schema);
+  console.log("saveSchema saga", action);
   try {
     const userData = yield select(makeSelectUserData());
     let params = {
-      oid: userData.oid,
       schema: schema,
       title: "Form Title"
     };
-    const response = yield call(request, SCHEMA_UPLOAD_ENDPOINT, {
-      method: "POST",
+    let url = SCHEMA_ENDPOINT;
+    let method = "POST";
+    if (action.id && action.id !== "new") {
+      url += "/" + action.id;
+      method = "PUT";
+    } else {
+      params.oid = userData.oid;
+    }
+    const response = yield call(request, url, {
+      method: method,
       body: JSON.stringify(params),
       headers: {
         Accept: "application/json",
@@ -44,8 +55,27 @@ export function* saveSchema(action) {
   }
 }
 
+function* getSchema(action) {
+  console.log("getSchema saga", action);
+  try {
+    //const userData = yield select(makeSelectUserData());
+    let url = SCHEMA_ENDPOINT + "/" + action.id;
+    const response = yield call(request, url);
+    console.log("getSchema", response);
+    if (response.performed) {
+      yield put(getSchemaResponseAction(GET_SCHEMA_SUCCEEDED, response.data));
+    } else {
+      yield put(getSchemaResponseAction(GET_SCHEMA_FAILED, null));
+    }
+  } catch (err) {
+    console.log(err);
+    yield put(getSchemaResponseAction(GET_SCHEMA_FAILED, null));
+  }
+}
+
 // Individual exports for testing
 export default function* editSchemaPageSaga() {
   // See example in containers/HomePage/saga.js
+  yield takeLatest(GET_SCHEMA_REQUEST_ACTION, getSchema);
   yield takeLatest(SCHEMA_SAVE_REQUEST_ACTION, saveSchema);
 }

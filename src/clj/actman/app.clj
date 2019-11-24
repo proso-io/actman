@@ -193,7 +193,7 @@
           {
             :get {
               :coercion reitit.coercion.schema/coercion
-              :parameters {:query {:oid (:oid form-schemas/insertion-schema)} :header {:authorization sc/Str}}
+              :parameters {:query {:oid (:oid form-schemas/insertion-schema)}}
               :handler (fn [{{{:keys [oid]} :query} :parameters :as request}] (perform-operation request opns/get-schemas {:oid oid}))
             }
             :post {
@@ -206,13 +206,12 @@
           {
             :get {
               :coercion reitit.coercion.schema/coercion
-              :parameters {:path {:id sc/Str} :header {:authorization sc/Str}}
+              :parameters {:path {:id sc/Str}}
               :handler (fn [{{{:keys [id]} :path} :parameters :as request}] (perform-operation request opns/get-schema id))
             }
             :put {
               :coercion reitit.coercion.schema/coercion
-              :parameters {:body form-schemas/updation-schema :path {:id sc/Str} :header {:authorization sc/Str}}
-              :responses {200 {:body form-schemas/document-schema}}
+              :parameters {:body form-schemas/updation-schema :path {:id sc/Str}}
               :handler (fn [{{:keys [path body]} :parameters :as request}] (perform-operation request opns/edit-schema (:id path) body))
             }
             }]

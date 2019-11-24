@@ -4,7 +4,7 @@
  *
  */
 
-import React from "react";
+import React, { useEffect } from "react";
 import PropTypes from "prop-types";
 import { connect } from "react-redux";
 import { Helmet } from "react-helmet";
@@ -22,17 +22,21 @@ import messages from "./messages";
 
 import { FormBuilder } from "@proso-io/fobu/dist/components";
 import styled from "styled-components";
-import { saveSchemaAction } from "./actions";
+import { saveSchemaAction, getSchemaAction } from "./actions";
 import {
   DEFAULT_ACTION,
   SCHEMA_SAVED_STATE,
   SCHEMA_UNSAVED_STATE,
   SCHEMA_SAVING_STATE,
-  SCHEMA_UPLOAD_ENDPOINT,
+  SCHEMA_ENDPOINT,
   SCHEMA_SAVE_REQUEST_ACTION,
   SCHEMA_SAVE_RESPONSE_ACTION,
   SCHEMA_SAVE_SUCCEEDED,
-  SCHEMA_SAVE_FAILED
+  SCHEMA_SAVE_FAILED,
+  GET_SCHEMA_REQUEST_ACTION,
+  GET_SCHEMA_RESPONSE_ACTION,
+  GET_SCHEMA_SUCCEEDED,
+  GET_SCHEMA_FAILED
 } from "./constants";
 
 const StyledFormBuilder = styled(FormBuilder)`
@@ -50,7 +54,17 @@ export function EditSchemaPage(props) {
 
   const schemaId = newSchema ? null : props.match.params.schema;
 
-  console.log("EditSchemaPage", props.editSchemaPage.schemaSaveState);
+  console.log("EditSchemaPage", props);
+
+  useEffect(() => {
+    if (schemaId) {
+      if (!props.editSchemaPage.getSchemaState) {
+        props.getSchema(schemaId);
+      }
+    }
+  });
+
+  console.log("schema id", schemaId);
 
   return (
     <div>
@@ -58,13 +72,16 @@ export function EditSchemaPage(props) {
         <title>EditSchemaPage</title>
         <meta name="description" content="Description of EditSchemaPage" />
       </Helmet>
-      <StyledFormBuilder
-        builderMode={true}
-        onSchemaSubmit={schema => props.saveSchema(schema)}
-        saveFormSchemaState={
-          props.editSchemaPage.schemaSaveState || SCHEMA_SAVED_STATE
-        }
-      />
+      {(newSchema || (schemaId && props.editSchemaPage.schemaData)) && (
+        <StyledFormBuilder
+          builderMode={true}
+          onSchemaSubmit={schema => props.saveSchema(schema, schemaId)}
+          saveFormSchemaState={
+            props.editSchemaPage.schemaSaveState || SCHEMA_SAVED_STATE
+          }
+          formSchema={props.editSchemaPage.schemaData.schema || {}}
+        />
+      )}
     </div>
   );
 }
@@ -79,7 +96,8 @@ const mapStateToProps = createStructuredSelector({
 
 function mapDispatchToProps(dispatch) {
   return {
-    saveSchema: schema => dispatch(saveSchemaAction(schema))
+    saveSchema: (schema, id) => dispatch(saveSchemaAction(schema, id)),
+    getSchema: id => dispatch(getSchemaAction(id))
   };
 }
 
