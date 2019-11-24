@@ -9,11 +9,13 @@ import {
   FORMS_REQUEST_ACTION,
   GET_FORMS_REQUEST_SUCCEEDED,
   GET_FORMS_REQUEST_FAILED,
-  GET_FORMS_ENDPOINT
+  GET_FORMS_ENDPOINT,
+  UPLOAD_FORM_DATA_REQUEST_ACTION
 } from "./constants";
 import { userResponseAction, formsResponseAction } from "./actions";
 import { makeSelectOrgId } from "./selectors";
 import request from "utils/request";
+import { formDataUploader } from "@proso-io/fobu/dist/uploadUtils";
 
 // function userRequest() {
 //   let userPromise = fetch(CURRENT_USER_ENDPOINT, {
@@ -56,9 +58,23 @@ function* getForms() {
   }
 }
 
+function* sendUploadRequest({ type, requestData }) {
+  const response = yield formDataUploader(
+    requestData.formData,
+    requestData.formSchema,
+    requestData.mergeObj,
+    requestData.submitUrl,
+    requestData.submitMethod,
+    requestData.mediaUploadUrl,
+    requestData.serviceWorkerUrl
+  );
+  console.log(response);
+}
+
 // Individual exports for testing
 export default function* appSaga() {
   // See example in containers/HomePage/saga.js
   yield takeLatest(USER_REQUEST_ACTION, getCurrentUser);
   yield takeLatest(FORMS_REQUEST_ACTION, getForms);
+  yield takeLatest(UPLOAD_FORM_DATA_REQUEST_ACTION, sendUploadRequest);
 }

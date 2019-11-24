@@ -39,3 +39,5 @@ export const GET_FORMS_REQUEST_IN_PROGRESS = 0;
 export const GET_FORMS_REQUEST_SUCCEEDED = 1;
 
 export const FORMS_NOT_FETCHED = 2;
+
+export const UPLOAD_FORM_DATA_REQUEST_ACTION = "app/app/UPLOAD_FORM_DATA";

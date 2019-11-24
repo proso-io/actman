@@ -27,7 +27,10 @@ import messages from "./messages";
 import { programsRequestAction } from "./actions";
 import { PROGRAMS_NOT_FETCHED } from "./constants";
 
-import { formsRequestAction } from "containers/App/actions";
+import {
+  formsRequestAction,
+  uploadFormDataRequestAction
+} from "containers/App/actions";
 import { makeSelectFormByProgramId } from "containers/App/selectors";
 import FlexContainer from "../../components/FlexContainer";
 import Text from "../../components/Text";
@@ -36,7 +39,6 @@ import { makeSelectForms } from "../App/selectors";
 import ListItem from "../../components/ListItem";
 
 import { FormBuilder } from "@proso-io/fobu/dist/components";
-import { formDataUploader } from "@proso-io/fobu/dist/uploadUtils";
 
 const PageContainer = styled.div`
   padding-top: ${props => props.theme.spacing.thirtysix};
@@ -169,22 +171,21 @@ export function RecordActivity(props) {
                 name: "",
                 pid: selectedProgram._id
               };
-
-              formDataUploader(
-                formData,
-                formSchema,
-                mergeObj,
-                "/api/activities",
-                "POST",
-                "/api/media",
-                "/form-sw.js"
-              );
               toast.success(
                 "Form upload started. You will be notified once activity is uploaded."
               );
               setTimeout(function() {
-                props.push("/");
+                props.uploadFormData({
+                  formData,
+                  formSchema,
+                  mergeObj,
+                  submitUrl: "/api/activities",
+                  submitMethod: "POST",
+                  mediaUploadUrl: "/api/media"
+                  //serviceWorkerUrl: "/form-sw.js"
+                });
               });
+              props.push("/");
             }}
           />
         ) : (
@@ -199,6 +200,7 @@ RecordActivity.propTypes = {
   forms: PropTypes.array,
   programs: PropTypes.array,
   programsRequestState: PropTypes.number,
+  uploadFormData: PropTypes.func.isRequired,
   onComponentLoaded: PropTypes.func.isRequired
 };
 
@@ -214,6 +216,7 @@ function mapDispatchToProps(dispatch) {
       dispatch(programsRequestAction());
       dispatch(formsRequestAction());
     },
+    uploadFormData: data => dispatch(uploadFormDataRequestAction(data)),
     push: payload => dispatch(push(payload))
   };
 }
