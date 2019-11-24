@@ -66,7 +66,7 @@
   },
   "dependencies": {
     "@babel/polyfill": "7.4.3",
-    "@proso-io/fobu": "file:../../fobu",
+    "@proso-io/fobu": "1.0.21",
     "chalk": "^2.4.2",
     "compression": "1.7.4",
     "connected-react-router": "6.4.0",
