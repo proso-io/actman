@@ -7,7 +7,6 @@
 (defCollection Addons [
   [:name sc/Str "Name of Addon"]
   [:desc sc/Str "Description"]
-  [:pid sc/Str "Program under which activity is created"]
   [:opns
     {
       :array {
