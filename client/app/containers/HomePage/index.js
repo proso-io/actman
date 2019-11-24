@@ -12,16 +12,6 @@ import styled from "styled-components";
 
 import FormDataService from "../../services/FormDataService";
 
-import { FormBuilder } from "@proso-io/fobu/dist/components";
-import { formDataUploader } from "@proso-io/fobu/dist/uploadUtils";
-
-const StyledFormBuilder = styled(FormBuilder)`
-  width: 95% !important;
-  margin: 0 !important;
-  padding: 0 !important;
-  margin-top: ${props => props.theme.spacing.twelve} !important;
-`;
-
 export default function HomePage() {
   const [hasPending, setHasPending] = useState(false);
   FormDataService.hasPendingUploads().then(pendingFormRequest => {
