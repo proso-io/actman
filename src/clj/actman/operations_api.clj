@@ -7,6 +7,7 @@
     [actman.db.media-meta-data :as mmd]
     [actman.db.activities :as activities]
     [actman.filestorage.core :as filestorage]
+    [actman.utils.model :as mutils]
     [actman.db.form-schemas :as schemas]))
 
 (defn view-schema-action
@@ -72,33 +73,47 @@
   [valid-activity _2 activity]
   (when valid-activity (activities/update-doc activity)))
 
+(defn add-activity-aux-data
+  [{:keys [pid] :as activity}]
+  (println "add-activity-aux-data" activity)
+  (->
+    activity
+    (assoc :programName (mutils/get-program-name pid))
+    (assoc :schema (mutils/get-program-schema pid))))
+
 (defn get-activities-action
   "Action function for get-activities operation"
-  [activities _1 _2]
-  activities)
+  [activities query _2]
+  (println "get-activities-action" activities query)
+  (if (string? query)
+    (add-activity-aux-data activities)
+    (mapv add-activity-aux-data activities)))
 
 (defn perform-operation
   "This method is assigned to operations defined by defOperation"
   [entity-db-ns operation-key action-fn find-by-query? addon-id {:keys [oid username teams] :as current-user} entity-query & [action-args]]
   (let [
+    entity-query (assoc entity-query :oid oid)
     model-key @(ns-resolve entity-db-ns 'COLL)
     model-authorized? (auth/authorize-operation current-user model-key operation-key nil addon-id)
     p (println "\nperform operation authorized check done" model-authorized?)
     get-all-docs? (and entity-query find-by-query? model-authorized?)
     get-auth-docs? (and entity-query find-by-query? (not model-authorized?))
     get-single-doc? (and entity-query (not find-by-query?))
+    p (println "getting auth entities" get-all-docs? get-auth-docs? get-single-doc?)
     entities
       (cond
         get-all-docs?
           (if addon-id
             ((ns-resolve entity-db-ns 'get-docs-for-addons-data) addon-id entity-query)
             ((ns-resolve entity-db-ns 'get-docs) entity-query))
-        get-auth-docs? ((ns-resolve entity-db-ns 'get-only-opn-auth-docs) teams username entity-query operation-key addon-id)
+        get-auth-docs? ((ns-resolve entity-db-ns 'get-only-opn-auth-docs) teams username entity-query (name operation-key) addon-id)
         get-single-doc?
           (let [entity ((ns-resolve entity-db-ns 'get-doc) entity-query)]
             (when
               (auth/authorize-operation current-user model-key operation-key entity addon-id)
               entity)))
+    p (println "authed entities" entities)
     perform? (boolean (or model-authorized? (not-empty entities)))
     ]
     {
@@ -172,3 +187,7 @@
 (defOperation get-activities
   "Get activity detalis for given search query"
   'actman.db.activities :view get-activities-action true)
+
+(defOperation get-watcher-activities
+  "Get activity details for watcher addon"
+  'actman.db.activities :view-activities get-activities-action true "watcher")

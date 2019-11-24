@@ -18,6 +18,7 @@
     [actman.auth :as auth :refer [current-user]]
     [actman.operations-api :as opns]
     [actman.filestorage.core :as files]
+    [cheshire.core :as json]
     [actman.addons.watcher :as watcher]
     [schema.core :as sc]))
 
@@ -31,6 +32,7 @@
   [request operation-fn query & [operation-args]]
   (let [
     user (current-user request)
+    ;operation-fn (if (= operation-fn 'opns/get-activities) 'get-watcher-activities operation-fn)
     ]
     (ok (operation-fn user query operation-args)))
   )
@@ -223,7 +225,8 @@
             :get {
               :coercion reitit.coercion.schema/coercion
               :parameters {:query {:query sc/Any} :header {:authorization sc/Str}}
-              :handler (fn [{{{:keys [query]} :query} :parameters :as request}] (perform-operation request opns/get-activities query))
+              :handler (fn [{{{:keys [query]} :query} :parameters :as request}] (perform-operation request opns/get-activities
+                (json/decode query)))
             }
             :post {
               :coercion reitit.coercion.schema/coercion
@@ -241,7 +244,6 @@
             :put {
               :coercion reitit.coercion.schema/coercion
               :parameters {:body activities/updation-schema :path {:id sc/Str} :header {:authorization sc/Str}}
-              :responses {200 {:body activities/document-schema}}
               :handler (fn [{{:keys [path body]} :parameters :as request}] (perform-operation request opns/edit-activity (:id path) body))
             }
             }]

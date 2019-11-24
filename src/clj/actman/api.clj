@@ -7,6 +7,7 @@
     [actman.utils.strings :refer [getstr]]
     [actman.db.form-schemas :as schemas]
     [actman.db.team-units :as team-units]
+    [actman.db.presets :as presets]
     [actman.db.teams :as teams]))
 
 (defn register-organisation
@@ -74,11 +75,13 @@
     (let [
       org (orgs/get-doc oid)
       teamroles  (get-all-teams-obj teams)
+      presets (presets/get-docs {:oid oid})
       ]
       (->
         current-user
         (assoc :orgName (:name org))
         (assoc :teams teamroles)
         (assoc :perms (get-access-operations current-user))
+        (assoc :orgPresets presets)
         ))
     {}))
