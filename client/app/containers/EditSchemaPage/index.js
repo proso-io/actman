@@ -23,6 +23,7 @@ import messages from "./messages";
 import { FormBuilder } from "@proso-io/fobu/dist/components";
 import styled from "styled-components";
 import { saveSchemaAction, getSchemaAction } from "./actions";
+import { push } from "connected-react-router";
 import {
   DEFAULT_ACTION,
   SCHEMA_SAVED_STATE,
@@ -64,7 +65,16 @@ export function EditSchemaPage(props) {
     }
   });
 
+  if (newSchema && props.editSchemaPage.schemaData) {
+    let id = props.editSchemaPage.schemaData._id;
+    if (id) {
+      props.push(`/forms/${id}`);
+    }
+  }
+
   console.log("schema id", schemaId);
+
+  const schema = newSchema ? null : props.editSchemaPage.schemaData.schema;
 
   return (
     <div>
@@ -72,14 +82,16 @@ export function EditSchemaPage(props) {
         <title>EditSchemaPage</title>
         <meta name="description" content="Description of EditSchemaPage" />
       </Helmet>
-      {(newSchema || (schemaId && props.editSchemaPage.schemaData)) && (
+      {(newSchema || (schemaId && schema)) && (
         <StyledFormBuilder
           builderMode={true}
           onSchemaSubmit={schema => props.saveSchema(schema, schemaId)}
           saveFormSchemaState={
-            props.editSchemaPage.schemaSaveState || SCHEMA_SAVED_STATE
+            newSchema
+              ? props.editSchemaPage.schemaSaveState || SCHEMA_SAVED_STATE
+              : SCHEMA_UNSAVED_STATE
           }
-          formSchema={props.editSchemaPage.schemaData.schema || {}}
+          formSchema={schema}
         />
       )}
     </div>
@@ -97,7 +109,8 @@ const mapStateToProps = createStructuredSelector({
 function mapDispatchToProps(dispatch) {
   return {
     saveSchema: (schema, id) => dispatch(saveSchemaAction(schema, id)),
-    getSchema: id => dispatch(getSchemaAction(id))
+    getSchema: id => dispatch(getSchemaAction(id)),
+    push: payload => dispatch(push(payload))
   };
 }
 

@@ -95,7 +95,7 @@ const DashboardLayout = function(props) {
                 path="/record-activity"
                 component={RecordActivityPage}
               />
-              <Route exact path="/schemas/:schema" component={EditSchemaPage} />
+              <Route exact path="/forms/:schema" component={EditSchemaPage} />
               <Route component={NotFoundPage} />
             </Switch>
           </PageBody>

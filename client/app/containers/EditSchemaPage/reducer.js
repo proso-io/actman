@@ -21,7 +21,9 @@ import {
   GETTING_SCHEMA
 } from "./constants";
 
-export const initialState = {};
+export const initialState = {
+  schemaData: {}
+};
 
 /* eslint-disable default-case, no-param-reassign */
 const editSchemaPageReducer = (state = initialState, action) =>
@@ -42,7 +44,7 @@ const editSchemaPageReducer = (state = initialState, action) =>
         draft.getSchemaState = GETTING_SCHEMA;
         break;
       case GET_SCHEMA_RESPONSE_ACTION:
-        console.log("reducer", GET_SCHEMA_RESPONSE_ACTION);
+        console.log("reducer", GET_SCHEMA_RESPONSE_ACTION, action);
         draft.schemaData = action.data;
         draft.getSchemaState = action.status;
     }

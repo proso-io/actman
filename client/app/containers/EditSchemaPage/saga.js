@@ -26,8 +26,8 @@ function* saveSchema(action) {
   try {
     const userData = yield select(makeSelectUserData());
     let params = {
-      schema: schema,
-      title: "Form Title"
+      schema: schema.schema,
+      title: schema.title
     };
     let url = SCHEMA_ENDPOINT;
     let method = "POST";

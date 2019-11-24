@@ -67,7 +67,7 @@ export function YourFormsPage(props) {
           text="Create new form"
           onClick={e => {
             e.preventDefault();
-            props.push(`/schemas/new`);
+            props.push(`/forms/new`);
           }}
         />
         <SchemaListContainer>
@@ -83,7 +83,7 @@ export function YourFormsPage(props) {
                     href="#"
                     onClick={e => {
                       e.preventDefault();
-                      props.push(`/schemas/${form._id}`);
+                      props.push(`/forms/${form._id}`);
                     }}
                   >
                     Edit
