@@ -28,9 +28,23 @@ const makeSelectUserFetchingState = () =>
     appState => appState.currentUserFetchStatus
   );
 
+const makeSelectForms = () =>
+  createSelector(
+    selectApp,
+    substate => substate.forms
+  );
+
+const makeSelectFormsRequestState = () =>
+  createSelector(
+    selectApp,
+    substate => substate.formsFetchState
+  );
+
 export {
   makeSelectLocation,
   makeSelectUserData,
   makeSelectUserFetchingState,
-  makeSelectOrgId
+  makeSelectOrgId,
+  makeSelectForms,
+  makeSelectFormsRequestState
 };

@@ -3,6 +3,7 @@ export const defaultTheme = {
   primary: "#102A43",
   primary20: "#334E68",
   primary40: "#627D98",
+  primary60: "#9FB3C8",
   primary80: "#D9E2EC",
   secondary: "#F0F4F8",
   black: "#000",

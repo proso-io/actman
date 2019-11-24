@@ -10,7 +10,9 @@ import {
   CURRENT_USER_ENDPOINT,
   CURRENT_USER_REQUEST_FAILED,
   CURRENT_USER_REQUEST_IN_PROGRESS,
-  CURRENT_USER_REQUEST_SUCCEEDED
+  CURRENT_USER_REQUEST_SUCCEEDED,
+  FORMS_REQUEST_ACTION,
+  FORMS_RESPONSE_ACTION
 } from "./constants";
 
 export function userRequestAction() {
@@ -22,6 +24,20 @@ export function userRequestAction() {
 export function userResponseAction(status, data) {
   return {
     type: USER_RESPONSE_ACTION,
+    data: data,
+    status: status
+  };
+}
+
+export function formsRequestAction() {
+  return {
+    type: FORMS_REQUEST_ACTION
+  };
+}
+
+export function formsResponseAction(status, data) {
+  return {
+    type: FORMS_RESPONSE_ACTION,
     data: data,
     status: status
   };
