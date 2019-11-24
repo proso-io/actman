@@ -13,6 +13,7 @@ import { Helmet } from "react-helmet";
 import { FormattedMessage } from "react-intl";
 import { createStructuredSelector } from "reselect";
 import { compose } from "redux";
+import { toast } from "react-toastify";
 
 import { useInjectSaga } from "utils/injectSaga";
 import { useInjectReducer } from "utils/injectReducer";
@@ -47,7 +48,7 @@ const ProgramsGrid = styled.div`
 `;
 
 const ProgramCard = styled.div`
-  height: 180px;
+  height: 200px;
   width: 20%;
   box-shadow: 3px 3px 6px rgba(0, 0, 0, 0.2);
   border: 1px solid ${props => props.theme.primary80};
@@ -56,12 +57,12 @@ const ProgramCard = styled.div`
 `;
 
 const ProgramHeader = styled.div`
-  height: 120px;
+  height: 150px;
   background: ${props => props.theme.primary60};
 `;
 
 const ProgramBody = styled.div`
-  height: 60px;
+  height: 50px;
 `;
 
 const StyledFormBuilder = styled(FormBuilder)`
@@ -72,8 +73,8 @@ const StyledFormBuilder = styled(FormBuilder)`
   margin-bottom: ${props => props.theme.spacing.twentyfour} !important;
 `;
 
-function getFormByProgramId(forms, programId) {
-  return forms.find(form => form.pid === programId);
+function getFormByProgramId(forms, schemaId) {
+  return forms.find(form => form._id === schemaId);
 }
 
 export function RecordActivity(props) {
@@ -86,7 +87,7 @@ export function RecordActivity(props) {
   const [selectedProgram, setSelectedProgram] = useState(null);
 
   const selectedForm = selectedProgram
-    ? getFormByProgramId(forms, selectedProgram._id)
+    ? getFormByProgramId(forms, selectedProgram.sid)
     : null;
 
   useEffect(() => {
@@ -164,11 +165,22 @@ export function RecordActivity(props) {
             builderMode={false}
             formSchema={selectedForm.schema}
             onDataSubmit={(formData, formSchema) => {
+              let mergeObj = {
+                name: "",
+                pid: selectedProgram._id
+              };
+
               formDataUploader(
-                "/api/media",
                 formData,
                 formSchema,
+                mergeObj,
+                "/api/activities",
+                "POST",
+                "/api/media",
                 "/form-sw.js"
+              );
+              toast.success(
+                "Form upload started. You will be notified once activity is uploaded."
               );
               setTimeout(function() {
                 props.push("/");
