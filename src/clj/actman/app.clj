@@ -224,13 +224,13 @@
           {
             :get {
               :coercion reitit.coercion.schema/coercion
-              :parameters {:query {:query sc/Any} }
+              :parameters {:query {:query sc/Any}}
               :handler (fn [{{{:keys [query]} :query} :parameters :as request}] (perform-operation request opns/get-activities
                 (json/decode query)))
             }
             :post {
               :coercion reitit.coercion.schema/coercion
-              :parameters {:body activities/insertion-schema }
+              :parameters {:body activities/insertion-schema}
               :handler (fn [{{:keys [body]} :parameters :as request}] (perform-operation request opns/create-activity nil body))
             }
             }]
@@ -238,7 +238,7 @@
           {
             :get {
               :coercion reitit.coercion.schema/coercion
-              :parameters {:path {:id sc/Str}  }
+              :parameters {:path {:id sc/Str}}
               :handler (fn [{{{:keys [id]} :path} :parameters :as request}] (perform-operation request opns/get-activity id))
             }
             :put {
