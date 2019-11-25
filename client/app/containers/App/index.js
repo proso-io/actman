@@ -68,8 +68,6 @@ const PageRightContainer = styled.div`
 `;
 
 const DashboardLayout = function(props) {
-  console.log("Dashboar layout props", props);
-
   const userData = props.userData || { teams: [] };
 
   return (
@@ -117,33 +115,27 @@ const DashboardLayout = function(props) {
 };
 
 function App(props) {
-  console.log("App props", props);
   useInjectReducer({ key: "appPage", reducer });
   useInjectSaga({ key: "appPage", saga });
+
+  const { currentUserFetchStatus, userData } = props;
+
   useEffect(() => {
-    console.log(
-      "in use effect",
-      props.userData,
-      !props.userData,
-      props.currentUserFetchStatus
-    );
-    if (
-      !props.userData &&
-      (!props.currentUserFetchStatus ||
-        props.currentUserFetchStatus === USER_NOT_FETCHED)
-    ) {
+    if (!userData && currentUserFetchStatus === USER_NOT_FETCHED) {
       props.onLoaded();
     }
   });
+
   return (
     <ThemeProvider theme={defaultTheme}>
       <div>
-        {props.fetchingCurrentUser && false ? (
+        {currentUserFetchStatus === USER_NOT_FETCHED ||
+        currentUserFetchStatus === CURRENT_USER_REQUEST_IN_PROGRESS ? (
           <p>Loading...</p>
         ) : (
           <div>
-            {props.userData &&
-            props.currentUserFetchStatus !== CURRENT_USER_REQUEST_FAILED ? (
+            {userData &&
+            currentUserFetchStatus !== CURRENT_USER_REQUEST_FAILED ? (
               <DashboardLayout {...props} />
             ) : (
               <Switch>

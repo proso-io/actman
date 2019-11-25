@@ -1,6 +1,7 @@
 import { take, call, put, select, takeLatest } from "redux-saga/effects";
 import { LOGIN_REQUEST_ACTION, LOGIN_ENDPOINT } from "./constants";
 import { loginResponseAction } from "./actions";
+import { resetCurrentUserStateAction } from "containers/App/actions";
 
 function loginRequest(data) {
   let formData = new FormData();
@@ -14,7 +15,6 @@ function loginRequest(data) {
 }
 
 export function* login(data) {
-  console.log(data);
   try {
     const response = yield call(loginRequest, data);
     let url = response.url;
@@ -23,6 +23,7 @@ export function* login(data) {
 
     if (urlParams.get("success") === "true") {
       yield put(loginResponseAction(1));
+      yield put(resetCurrentUserStateAction());
     } else {
       yield put(loginResponseAction(-1));
     }
