@@ -5,6 +5,7 @@
     [actman.operations-api :as ops :refer [defOperation]]
     [actman.db.teams :as teams]
     [actman.db.activities :as activities]
+    [clojure.set :refer [difference]]
     [actman.config :refer [env]]))
 
 (def ID (-> env :addons :watcher))
@@ -16,13 +17,29 @@
   (when activity
     (activities/update-addon-data activity-id ID {:is-special status})))
 
+(defn update-verified-by-list
+  [activity verified-by-object]
+  (let [
+    id-keyword (keyword ID)
+    verified-set (->> activity :addonsmetadata id-keyword :verified-by (into #{}))
+    ]
+    (reduce
+      (fn [verified-set key-val-pair]
+        (if (second key-val-pair)
+          (conj verified-set (-> key-val-pair first name))
+          (difference verified-set #{(-> key-val-pair first name)}))
+        )
+      verified-set
+      verified-by-object)))
+
 (defn update-verified-action
   "Action function for update-verified operation.
   Update verified status of an activity.
   update-verification-object is map of team and verification status"
-  [activity activity-id update-verification-obj]
+  [activity activity-id verified-by-object]
   (when activity
-    (activities/update-addon-data activity-id ID {:verified-by update-verification-obj})))
+    (activities/update-addon-data activity-id ID
+      {:verified-by (update-verified-by-list activity verified-by-object)})))
 
 (defn is-special-action
   "Action function for is-special operation.
@@ -76,3 +93,8 @@
         (:data (get-approved-activities current-user query args))
         (:data (get-special-activities current-user query args))))
     ))
+
+(defn update-activity-data
+  [{:keys [oid username teams] :as current-user} activity-id addons-data]
+  (update-special current-user activity-id (:is-special addons-data))
+  (update-verified current-user activity-id (:verified-by addons-data)))

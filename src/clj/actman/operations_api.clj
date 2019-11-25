@@ -8,6 +8,7 @@
     [actman.db.activities :as activities]
     [actman.filestorage.core :as filestorage]
     [actman.utils.model :as mutils]
+    [actman.utils.general :as gutils]
     [actman.db.form-schemas :as schemas]))
 
 (defn view-schema-action
@@ -74,6 +75,7 @@
     (println "associng team" team)
     (->
       activity
+      (assoc :mstring (gutils/stringify-map-values (:mdata activity)))
       (assoc-in [:accessroles :view] [team])
       (assoc-in [:accessroles :create] [])
       (assoc-in [:accessroles :edit] [])

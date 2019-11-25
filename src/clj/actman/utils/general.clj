@@ -20,3 +20,7 @@
           (recur (inc n) match)
           match)
     ))))
+
+(defn stringify-map-values
+  [map-obj]
+  (reduce #(str %1 " " (%2 map-obj)) "" (keys map-obj)))

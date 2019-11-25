@@ -28,13 +28,27 @@
   [team]
   (teams/insert-doc team))
 
-(defn perform-operation
+(defn perform-operation-internal
   [request operation-fn query & [operation-args]]
   (let [
     user (current-user request)
     operation-fn (if (= operation-fn opns/get-activities)   watcher/get-allowed-activities operation-fn)
     ]
-    (ok (operation-fn user query operation-args)))
+    (operation-fn user query operation-args))
+  )
+
+(defn perform-operation
+  [request operation-fn query & [operation-args]]
+  (ok (perform-operation-internal request operation-fn query operation-args)))
+
+(defn create-activity
+  [request {:keys [activitydata addonsdata] :as data}]
+  (let [
+    activity-resp (perform-operation-internal request opns/create-activity nil data)
+    id (-> activity-resp :data :_id)
+    ]
+    (ok
+      (perform-operation-internal request watcher/update-activity-data id addonsdata)))
   )
 
 (defn api-routes []
@@ -224,14 +238,14 @@
           {
             :get {
               :coercion reitit.coercion.schema/coercion
-              :parameters {:query {:query sc/Any} }
+              :parameters {:query {:query sc/Any} :header {:authorization sc/Str}}
               :handler (fn [{{{:keys [query]} :query} :parameters :as request}] (perform-operation request opns/get-activities
                 (json/decode query)))
             }
             :post {
               :coercion reitit.coercion.schema/coercion
               :parameters {:body activities/insertion-schema }
-              :handler (fn [{{:keys [body]} :parameters :as request}] (perform-operation request opns/create-activity nil body))
+              :handler (fn [{{:keys [body]} :parameters :as request}] (create-activity request body))
             }
             }]
         ["/:id"
