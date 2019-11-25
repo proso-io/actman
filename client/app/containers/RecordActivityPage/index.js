@@ -180,8 +180,8 @@ export function RecordActivity(props) {
                   mergeObj,
                   submitUrl: "/api/activities",
                   submitMethod: "POST",
-                  mediaUploadUrl: "/api/media",
-                  serviceWorkerUrl: "/form-sw.js"
+                  mediaUploadUrl: "/api/media"
+                  //serviceWorkerUrl: "/form-sw.js"
                 });
               });
               props.push("/");
