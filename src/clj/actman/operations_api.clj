@@ -93,7 +93,7 @@
   "This method is assigned to operations defined by defOperation"
   [entity-db-ns operation-key action-fn find-by-query? addon-id {:keys [oid username teams] :as current-user} entity-query & [action-args]]
   (let [
-    entity-query (assoc entity-query :oid oid)
+    entity-query (if (string? entity-query) entity-query (assoc entity-query :oid oid))
     model-key @(ns-resolve entity-db-ns 'COLL)
     model-authorized? (auth/authorize-operation current-user model-key operation-key nil addon-id)
     p (println "\nperform operation authorized check done" model-authorized?)
