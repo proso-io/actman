@@ -30,6 +30,7 @@
 
 (defn perform-operation-internal
   [request operation-fn query & [operation-args]]
+  (println "perform=operation-interna-" query)
   (let [
     user (current-user request)
     operation-fn (if (= operation-fn opns/get-activities) watcher/get-allowed-activities operation-fn)
@@ -51,6 +52,22 @@
     (ok
       (perform-operation-internal request watcher/update-activity-data id addonsdata)))
   )
+
+(defn get-media
+  [request tags]
+  (println "get-media" tags (if tags true false))
+  (ok
+    (perform-operation-internal
+      request
+      opns/search-media
+      (if tags
+        {
+          :tags {
+            "$in" tags
+          }
+        }
+        {})
+      )))
 
 (defn api-routes []
   [
@@ -283,6 +300,13 @@
         {:swagger {:tags ["Media"]}}
         [""
           {
+            :get {
+              :coercion reitit.coercion.schema/coercion
+              :parameters {:query {:tags sc/Str}}
+              :handler (fn [{{{:keys [tags]} :query} :parameters :as request}]
+                (println "media" tags)
+                (get-media request (when tags (clojure.string/split tags #","))))
+            }
             :post {
               :handler (fn [{{:keys [multipart]} :parameters :as request}]
                   (perform-operation request opns/upload-media nil

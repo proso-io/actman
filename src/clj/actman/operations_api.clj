@@ -195,6 +195,10 @@
   "Get media metadata"
   'actman.db.media-meta-data :view view-media-action)
 
+(defOperation search-media
+  "Get media metadata"
+  'actman.db.media-meta-data :view view-media-action true)
+
 (defOperation create-activity
   "Create a new activity"
   'actman.db.activities :create create-activity-action)
