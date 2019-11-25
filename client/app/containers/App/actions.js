@@ -14,7 +14,8 @@ import {
   FORMS_REQUEST_ACTION,
   FORMS_RESPONSE_ACTION,
   RESET_FORMS_FETCH_STATE_ACTION,
-  UPLOAD_FORM_DATA_REQUEST_ACTION
+  UPLOAD_FORM_DATA_REQUEST_ACTION,
+  RESET_CURRENT_USER_STATE_ACTION
 } from "./constants";
 
 export function userRequestAction() {
@@ -42,6 +43,12 @@ export function formsResponseAction(status, data) {
     type: FORMS_RESPONSE_ACTION,
     data: data,
     status: status
+  };
+}
+
+export function resetCurrentUserStateAction() {
+  return {
+    type: RESET_CURRENT_USER_STATE_ACTION
   };
 }
 

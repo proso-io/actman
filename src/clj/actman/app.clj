@@ -238,7 +238,7 @@
           {
             :get {
               :coercion reitit.coercion.schema/coercion
-              :parameters {:query {:query sc/Any} :header {:authorization sc/Str}}
+              :parameters {:query {:query sc/Any}}
               :handler (fn [{{{:keys [query]} :query} :parameters :as request}] (perform-operation request opns/get-activities
                 (json/decode query)))
             }
@@ -252,7 +252,7 @@
           {
             :get {
               :coercion reitit.coercion.schema/coercion
-              :parameters {:path {:id sc/Str}  }
+              :parameters {:path {:id sc/Str}}
               :handler (fn [{{{:keys [id]} :path} :parameters :as request}] (perform-operation request opns/get-activity id))
             }
             :put {

@@ -4,9 +4,10 @@
  *
  */
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import PropTypes from "prop-types";
 import { connect } from "react-redux";
+import { push } from "connected-react-router";
 import { Helmet } from "react-helmet";
 import { FormattedMessage } from "react-intl";
 import { createStructuredSelector } from "reselect";
@@ -41,12 +42,19 @@ const StyledInput = styled(Input)`
 `;
 
 export function LoginPage(props) {
-  console.log(props, props.loginPage.loginStatus);
   useInjectReducer({ key: "loginPage", reducer });
   useInjectSaga({ key: "loginPage", saga });
 
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
+
+  useEffect(() => {
+    if (props.loginPage.loginStatus === 1) {
+      props.push("/");
+    }
+  });
+
+  const isLoading = props.loginPage.loginStatus === 0;
 
   return (
     <div>
@@ -76,6 +84,8 @@ export function LoginPage(props) {
               />
             </div>
             <Button
+              loading={isLoading}
+              disabled={isLoading}
               text={<FormattedMessage {...messages.submit} />}
               onClick={() => {
                 props.onSubmit(username, password);
@@ -103,7 +113,8 @@ const mapStateToProps = createStructuredSelector({
 function mapDispatchToProps(dispatch) {
   return {
     onSubmit: (username, password) =>
-      dispatch(loginRequestAction(username, password))
+      dispatch(loginRequestAction(username, password)),
+    push: payload => dispatch(push(payload))
   };
 }
 

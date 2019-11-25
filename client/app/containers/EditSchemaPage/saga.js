@@ -59,14 +59,11 @@ function* saveSchema(action) {
 }
 
 function* getSchema(action) {
-  console.log("getSchema saga", action);
   const schemaData = yield select(makeSelectForms());
-  console.log("schema redux data", schemaData);
   try {
     //const userData = yield select(makeSelectUserData());
     let url = SCHEMA_ENDPOINT + "/" + action.id;
     const response = yield call(request, url);
-    console.log("getSchema", response);
     if (response.performed) {
       yield put(getSchemaResponseAction(GET_SCHEMA_SUCCEEDED, response.data));
     } else {
