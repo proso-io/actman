@@ -54,7 +54,7 @@ export function LoginPage(props) {
     }
   });
 
-  const isLoading = props.loginPage.loginStatus === 1;
+  const isLoading = props.loginPage.loginStatus === 0;
 
   return (
     <div>
