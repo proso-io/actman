@@ -3,6 +3,8 @@
   (:require
     [actman.db.activities :as activities]
     [actman.operations-api :as ops :refer [defOperation]]
+    [actman.db.teams :as teams]
+    [actman.db.activities :as activities]
     [actman.config :refer [env]]))
 
 (def ID (-> env :addons :watcher))
@@ -49,3 +51,28 @@
 (defOperation get-activity-verified-data
   "Get verified data for an activity"
   'actman.db.activities :view-verified get-verified-by-action false ID)
+
+(defn get-query-path
+  [key]
+  (str "addonsmetadata." ID "." key))
+
+(defOperation get-approved-activities
+  "Get activity details for watcher addon"
+  'actman.db.activities :view-approved-activities ops/get-activities-action true {(get-query-path "is-approved") true} ID)
+
+(defOperation get-special-activities
+  "Get activity details for watcher addon"
+  'actman.db.activities :view-special-activities ops/get-activities-action true {(get-query-path "is-special") true} ID)
+
+(defn get-allowed-activities
+  [{:keys [oid username teams] :as current-user} query args]
+  (println "watcher get-allowed-activities" current-user ID)
+  (let [
+    team (first teams)
+    ]
+    (if (= (:rl team) "Head")
+      (:data (ops/get-activities current-user query args))
+      (concat
+        (:data (get-approved-activities current-user query args))
+        (:data (get-special-activities current-user query args))))
+    ))

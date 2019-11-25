@@ -36,7 +36,7 @@
 (defn is-team-role-equal
   "Checks if value of :t, :tu and :rl keys of team1 and team2 are equal"
   [team1 team2]
-  (gutil/is-object-equal-for-keys? team1 team2 (db-utils/get-team-role-keys)))
+  (gutil/is-object-equal-for-keys? team1 team2 [:t :rl])); (db-utils/get-team-role-keys)))
 
 (defn team-role-exists?
   "Checks if `teams` contains `team`"
@@ -61,14 +61,14 @@
     b (println "query" a)
     docs (accres/get-docs a)
     b (println "docs" (first docs))
-    rolespath (if addon-id [:addonsaccess (key addon-id) :accessroles operation] [:accessroles operation])
-    userspath (if addon-id [:addonsaccess (key addon-id) :accessusers operation] [:accessusers operation])
+    rolespath (if addon-id [:addonsaccess (keyword addon-id) :accessroles operation] [:accessroles operation])
+    userspath (if addon-id [:addonsaccess (keyword addon-id) :accessusers operation] [:accessusers operation])
     global-access
       (->
         {:oid oid :opn (name operation) :addon addon-id :ent entity-type}
         (accres/get-docs)
         (first))
-    a (println "got global access" global-access)
+    a (println "got global access" global-access entity)
     entity-roles-access (get-in entity rolespath)
     entity-users-access (get-in entity userspath)
     ]
