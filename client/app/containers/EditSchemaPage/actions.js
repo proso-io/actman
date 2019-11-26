@@ -17,7 +17,8 @@ import {
   GET_SCHEMA_REQUEST_ACTION,
   GET_SCHEMA_RESPONSE_ACTION,
   GET_SCHEMA_SUCCEEDED,
-  GET_SCHEMA_FAILED
+  GET_SCHEMA_FAILED,
+  UPDATE_SCHEMA_SAVE_STATE_ACTION
 } from "./constants";
 
 export function defaultAction() {
@@ -58,5 +59,12 @@ export function getSchemaResponseAction(status, data) {
     type: GET_SCHEMA_RESPONSE_ACTION,
     status: status,
     data: data
+  };
+}
+
+export function updateSchemaSaveState(status) {
+  return {
+    type: UPDATE_SCHEMA_SAVE_STATE_ACTION,
+    status: status
   };
 }

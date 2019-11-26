@@ -35,3 +35,6 @@ export const GET_SCHEMA_SUCCEEDED = "app/EditSchemaPage/GET_SCHEMA_SUCCEEDED";
 export const GET_SCHEMA_FAILED = "app/EditSchemaPage/GET_SCHEMA_FAILED";
 
 export const GETTING_SCHEMA = "app/EditSchemaPage/GETTING_SCHEMA";
+
+export const UPDATE_SCHEMA_SAVE_STATE_ACTION =
+  "app/EditSchemaPage/UPDATE_SCHEMA_SAVE_STATE_ACTION";
