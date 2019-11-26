@@ -59,7 +59,7 @@ function* getForms() {
 }
 
 function* sendUploadRequest({ type, requestData }) {
-  const response = yield formDataUploader(
+  formDataUploader(
     requestData.formData,
     requestData.formSchema,
     requestData.mergeObj,
@@ -68,7 +68,6 @@ function* sendUploadRequest({ type, requestData }) {
     requestData.mediaUploadUrl,
     requestData.serviceWorkerUrl
   );
-  console.log(response);
 }
 
 // Individual exports for testing

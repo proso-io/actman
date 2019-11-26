@@ -16,7 +16,7 @@ const selectActivityDetailsDomain = state =>
  * Default selector used by ActivityDetails
  */
 
-const makeSelectActivityDetails = () =>
+const makeSelectActivityData = () =>
   createSelector(
     selectActivityDetailsDomain,
     substate => substate.activityData
@@ -28,4 +28,4 @@ const makeSelectActivityDetailsState = () =>
     substate => substate.getActivityState
   );
 
-export { makeSelectActivityDetails, makeSelectActivityDetailsState };
+export { makeSelectActivityData, makeSelectActivityDetailsState };
