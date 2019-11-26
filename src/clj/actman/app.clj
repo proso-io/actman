@@ -60,14 +60,7 @@
     (perform-operation-internal
       request
       opns/search-media
-      (if tags
-        {
-          :tags {
-            "$in" tags
-          }
-        }
-        {})
-      )))
+      (if tags {:tags {"$in" tags}} {}))))
 
 (defn api-routes []
   [

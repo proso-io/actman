@@ -39,6 +39,8 @@ import NotFoundPage from "containers/NotFoundPage";
 import RecordActivityPage from "containers/RecordActivityPage";
 import EditSchemaPage from "containers/EditSchemaPage";
 import ActivityDetails from "containers/ActivityDetails";
+import SearchActivities from "containers/SearchActivities";
+import MediaSearchPage from "containers/MediaSearchPage";
 
 import "react-toastify/dist/ReactToastify.css";
 
@@ -102,9 +104,15 @@ const DashboardLayout = function(props) {
               <Route exact path="/forms/:schema" component={EditSchemaPage} />
               <Route
                 exact
+                path="/activities/search"
+                component={SearchActivities}
+              />
+              <Route
+                exact
                 path="/activities/:activityId"
                 component={ActivityDetails}
               />
+              <Route exact path="/media/search" component={MediaSearchPage} />
               <Route component={NotFoundPage} />
             </Switch>
           </PageBody>

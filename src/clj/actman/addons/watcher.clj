@@ -156,10 +156,23 @@
     team (first teams)
     ]
     (if (= (:rl team) "Head")
-      (:data (ops/get-activities current-user query args))
-      (concat
-        (:data (get-approved-activities current-user query args))
-        (:data (get-special-activities current-user query args))))
+      (ops/get-activities current-user query args)
+      (let [
+        approved (get-approved-activities current-user query args)
+        special (get-special-activities current-user query args)
+        ]
+        {
+          :performed
+            (or (:performed approved) (:performed special))
+          :accessed-existing-entities
+            (concat
+              (:accessed-existing-entities approved)
+              (:accessed-existing-entities special))
+          :data
+            (concat
+              (:data approved)
+              (:data special))
+          }))
     ))
 
 
