@@ -332,7 +332,7 @@
             }]
       ]
       ["/watcher"
-        ["/is-activity-special/id"
+        ["/is-activity-special/:id"
           {
             :get {
               :coercion reitit.coercion.schema/coercion
@@ -347,7 +347,7 @@
             }
           }
         ]
-        ["/is-activity-verified/id"
+        ["/is-activity-verified/:id"
           {
             :get {
               :coercion reitit.coercion.schema/coercion
@@ -362,7 +362,7 @@
             }
           }
         ]
-        ["/is-activity-approved/id"
+        ["/is-activity-approved/:id"
           {
             :get {
               :coercion reitit.coercion.schema/coercion
@@ -377,7 +377,7 @@
             }
           }
         ]
-        ["/activity-id"
+        ["/project/:id"
           {
             :get {
               :coercion reitit.coercion.schema/coercion
