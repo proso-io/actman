@@ -14,6 +14,7 @@
   (let [
     {:keys [username] :as auth-user} (friend/current-authentication request)
     ]
+    (println "raw current user" auth-user)
     (when username
       (->
         (users/get-doc username)
@@ -64,6 +65,7 @@
         {:oid oid :opn (name operation) :addon addon-id :ent entity-type}
         (accres/get-docs)
         (first))
+    a (println "global-access" a global-access)
     entity-roles-access (get-in entity rolespath)
     entity-users-access (get-in entity userspath)
     ]

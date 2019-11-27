@@ -1,2 +1,6 @@
-{:prod true
- :port 8080}
+{
+  :prod true
+  :port 8080
+  :database-url "mongodb://127.0.0.1/actmandb"
+  :azure-blob-connection-string "DefaultEndpointsProtocol=https;AccountName=actman;AccountKey=V84g3UfURkqgx0EMEW+xwRY54orbmCEIqgv8toyh2CniduFJD2sqEjgceyH2yZDCh36bafM6bLSmcTrYAD79og==;EndpointSuffix=core.windows.net"
+ }
