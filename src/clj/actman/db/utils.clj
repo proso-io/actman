@@ -7,7 +7,7 @@
     :map [
       [:t sc/Str "Team Id"]
       [:rl sc/Str "Role in the team"]
-      [:tu sc/Str "Team unit id"]]
+      [:tu sc/Str "Team unit id" :opt]]
     }
   })
 
