@@ -21,3 +21,5 @@ export const SEARCHING = "app/SearchActivities/SEARCHING";
 export const NOT_SEARCHED = "app/SearchActivities/NOT_SEARCHED";
 
 export const SEARCH_ENDPOINT = "/api/activities";
+
+export const RESET_SEARCH_ACTION = "RESET_SEARCH_ACTION";

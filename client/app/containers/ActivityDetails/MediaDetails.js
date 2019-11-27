@@ -275,6 +275,7 @@ export default function MediaDetails({
                             /\/api\/media\/(.*)\/thumbnail/
                           )[1];
                           updateAddonData({
+                            entity: "media",
                             entityId: mediaId,
                             addOnType: "is-media-verified",
                             addOnValue: { status: true }

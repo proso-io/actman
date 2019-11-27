@@ -4,7 +4,7 @@
  *
  */
 
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import PropTypes from "prop-types";
 import { Switch, Route } from "react-router-dom";
 import { connect } from "react-redux";
@@ -30,7 +30,11 @@ import FlexContainer from "../../components/FlexContainer";
 import SideMenu from "../../components/SideMenu";
 
 import makeSelectLoginPage from "containers/LoginPage/selectors";
-import { makeSelectUserData, makeSelectUserFetchingState } from "./selectors";
+import {
+  makeSelectUserData,
+  makeSelectUserFetchingState,
+  makeSelectUserPerms
+} from "./selectors";
 
 import LoginPage from "containers/LoginPage";
 import YourFormsPage from "containers/YourFormsPage";
@@ -69,9 +73,60 @@ const PageRightContainer = styled.div`
   flex: 1;
 `;
 
+const allLinks = [
+  { title: "Home", link: "/" },
+  {
+    title: "Record an activity",
+    link: "/record-activity",
+    requiredPerm: "Activities__create"
+  },
+  { title: "Your forms", link: "/forms", requiredPerm: "FormSchemas__view" },
+  {
+    title: "Search Activities",
+    link: "/activities/search",
+    requiredPerm: "Activities__view"
+  },
+  {
+    title: "Search Media",
+    link: "/media/search",
+    requiredPerm: "MediaMetaData__view"
+  }
+];
+
+function getSidemenuLinks(userPermissions, activeLink) {
+  let links = allLinks.filter(link => {
+    let val,
+      requiredPerm = link.requiredPerm;
+    for (let index = 0; index < userPermissions.length; index++) {
+      const element = userPermissions[index];
+      const elementPermString = `${element.ent}__${element.opn}`;
+      if (requiredPerm) {
+        if (elementPermString === requiredPerm) {
+          val = true;
+          break;
+        } else {
+          val = false;
+        }
+      } else {
+        val = true;
+        break;
+      }
+    }
+    return val;
+  });
+  links.forEach(linkObj => {
+    if (linkObj.link === activeLink) {
+      linkObj.isActive = true;
+    } else {
+      linkObj.isActive = false;
+    }
+  });
+  return links;
+}
+
 const DashboardLayout = function(props) {
   const userData = props.userData || { teams: [] };
-
+  const [activeLink, setActiveLink] = useState("/");
   return (
     <FlexContainer mainAxis="stretch" crossAxis="flex-start">
       <SideMenu
@@ -79,11 +134,8 @@ const DashboardLayout = function(props) {
           activeTeamIndex: 0,
           ...userData
         }}
-        actions={[
-          { title: "Home", link: "/", isActive: true },
-          { title: "Record an activity", link: "/record" },
-          { title: "Quick Upload Images", link: "/quick-upload" }
-        ]}
+        onLinkChange={link => setActiveLink(link)}
+        actions={getSidemenuLinks(props.perms, activeLink)}
       />
       <PageRightContainer>
         <FlexContainer
@@ -174,7 +226,8 @@ App.propTypes = {
 const mapStateToProps = createStructuredSelector({
   loginPage: makeSelectLoginPage(),
   userData: makeSelectUserData(),
-  currentUserFetchStatus: makeSelectUserFetchingState()
+  currentUserFetchStatus: makeSelectUserFetchingState(),
+  perms: makeSelectUserPerms()
 });
 
 function mapDispatchToProps(dispatch) {

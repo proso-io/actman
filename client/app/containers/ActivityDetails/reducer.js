@@ -47,8 +47,12 @@ const activityDetailsReducer = (state = initialState, action) =>
         break;
       case UPDATE_ADDON_RESPONSE_ACTION:
         draft.updateAddonState = action.status;
-        if (action.status === UPDATE_ADDON_SUCCEEDED) {
-          draft.activityData = action.data;
+        if (
+          action.status === UPDATE_ADDON_SUCCEEDED &&
+          action.data.entity === "activity"
+        ) {
+          draft.activityData.mdata = action.data.mdata;
+          draft.activityData.addonsmetadata = action.data.addonsmetadata;
         }
     }
   });

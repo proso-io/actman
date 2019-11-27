@@ -37,6 +37,7 @@
   Update verified status of an activity.
   update-verification-object is map of team and verification status"
   [activity activity-id status _]
+  (println "in update-activity-verified-action" activity activity-id status _)
   (when activity
     (activities/update-addon-data activity-id ID
       {:is-verified status})))

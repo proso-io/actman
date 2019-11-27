@@ -22,6 +22,12 @@ const makeSelectOrgId = () =>
     appState => appState.userData.oid
   );
 
+const makeSelectUserPerms = () =>
+  createSelector(
+    selectApp,
+    appState => (appState.userData ? appState.userData.perms : {})
+  );
+
 const makeSelectUserFetchingState = () =>
   createSelector(
     selectApp,
@@ -46,5 +52,6 @@ export {
   makeSelectUserFetchingState,
   makeSelectOrgId,
   makeSelectForms,
+  makeSelectUserPerms,
   makeSelectFormsRequestState
 };

@@ -17,34 +17,59 @@ import makeSelectSearchActivities from "./selectors";
 import reducer from "./reducer";
 import saga from "./saga";
 import styled from "styled-components";
+import { push } from "connected-react-router";
 
 import { Tags } from "@proso-io/fobu/dist/components";
 import Button from "components/Button";
 import FlexContainer from "components/FlexContainer";
-import { searchRequestAcion } from "./actions";
+import { searchRequestAcion, resetSearchResultsAction } from "./actions";
 import ActivityTile from "components/ActivityTile";
+import Text from "components/Text";
+import Spacing from "components/Spacing";
 
 const TagsContainer = styled.div`
   background: ${props => props.theme.secondary};
-  margin: ${props => props.theme.spacing.sixteen};
-  padding: ${props => props.theme.spacing.sixteen}
-    ${props => props.theme.spacing.thirtysix};
-  display: inline-flex;
-  width: 100%;
+  padding: ${props => props.theme.spacing.sixteen};
+  width: 60%;
 `;
 
 const StyledTags = styled(Tags)`
-  width: 100%;
+  width: 90%;
+  min-height: 80px;
   margin-right: ${props => props.theme.spacing.sixteen};
-  .tags__newInput {
-    width: 100%;
-    height: 100%;
+
+  & label.tags__label {
+    margin-bottom: 0;
   }
 `;
 
-const ResultsContainer = styled.div`
-  display: flex;
-  flex-wrap: wrap;
+function getFieldFromMdata(mdata, field) {
+  for (let key in mdata) {
+    if (key.indexOf(field) !== -1) {
+      return mdata[key];
+    }
+  }
+  return "";
+}
+
+function getAllImages(mdata) {
+  let allImages = [];
+  Object.keys(mdata)
+    .filter(key => key.indexOf("imagesWithTags") !== -1)
+    .forEach(key => {
+      let images = mdata[key];
+      allImages = [].concat(allImages, images.map(image => image.fileUrl));
+    });
+  return allImages;
+}
+
+const ActivityTileContainer = styled.div`
+  margin-left: ${props => props.theme.spacing.twentyfour};
+  margin-bottom: ${props => props.theme.spacing.twentyfour};
+
+  :first-child {
+    margin-left: 0;
+  }
 `;
 
 export function SearchActivities(props) {
@@ -59,26 +84,49 @@ export function SearchActivities(props) {
         <title>SearchActivities</title>
         <meta name="description" content="Description of SearchActivities" />
       </Helmet>
-      <TagsContainer>
-        <StyledTags
-          id="tags"
-          label="Search By Tags"
-          value={searchTags}
-          onValueChange={(id, tags) => setSearchTags(tags)}
-        />
-        <Button text="Search" onClick={() => props.search(searchTags)} />
-      </TagsContainer>
-      <ResultsContainer>
+      <Spacing spacing="thirtysix" />
+      <Text type="caption">Search activities</Text>
+      <Spacing spacing="sixteen" />
+      <div className="fobuComponents">
+        <TagsContainer>
+          <FlexContainer mainAxis="flex-start" crossAxis="flex-start">
+            <StyledTags
+              id="tags"
+              value={searchTags}
+              onValueChange={(id, tags) => {
+                setSearchTags(tags);
+                props.resetSearch();
+              }}
+            />
+            <Button text="Search" onClick={() => props.search(searchTags)} />
+          </FlexContainer>
+        </TagsContainer>
+      </div>
+      <Spacing spacing="thirtysix" />
+      {props.searchActivities.searchResult &&
+      props.searchActivities.searchResult.length > 0
+        ? `Showing recent ${
+            props.searchActivities.searchResult.length
+          } results for activities containing keywords ${searchTags.join(", ")}`
+        : ""}
+      <Spacing spacing="twentyfour" />
+      <FlexContainer mainAxis="flex-start" wrap="wrap">
         {props.searchActivities.searchResult &&
           props.searchActivities.searchResult.map(item => (
-            <ActivityTile
-              programName={item.programName}
-              imageUrls={[
-                "https://images.unsplash.com/photo-1574441170839-b40201becb6b"
-              ]}
-            />
+            <ActivityTileContainer
+              onClick={() => props.push(`/activities/${item._id}`)}
+            >
+              <ActivityTile
+                programName={item.programName}
+                location={getFieldFromMdata(item.mdata, "location")}
+                imageUrls={getAllImages(item.mdata)}
+                startDate={getFieldFromMdata(item.mdata, "startDate")}
+                endDate={getFieldFromMdata(item.mdata, "endDate")}
+                commentsCount="0"
+              />
+            </ActivityTileContainer>
           ))}
-      </ResultsContainer>
+      </FlexContainer>
     </div>
   );
 }
@@ -93,7 +141,9 @@ const mapStateToProps = createStructuredSelector({
 
 function mapDispatchToProps(dispatch) {
   return {
-    search: tags => dispatch(searchRequestAcion(tags))
+    search: tags => dispatch(searchRequestAcion(tags)),
+    resetSearch: () => dispatch(resetSearchResultsAction()),
+    push: payload => dispatch(push(payload))
   };
 }
 

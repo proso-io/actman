@@ -73,7 +73,7 @@ export default function TextDetails({ schema, mdata }) {
             width="100%"
             onClick={() => setActiveChain(`${parentBlockId}-->${block.id}-->`)}
           >
-            <Text type="body" weight="semibold" color="primary40">
+            <Text type="body" weight="semibold" color={"primary20"}>
               {title}
             </Text>
             <StyledChevron />
@@ -114,14 +114,16 @@ export default function TextDetails({ schema, mdata }) {
       activeChainArray.shift();
     }
     return activeChainArray.map((blockId, index) => {
+      const activeIndex = localSchema.children.findIndex(
+        block => block.id === blockId
+      );
+
       const markup = (
         <Column key={`level-${index}`}>
           {getMarkupForLevel(localSchema.children, formData, parentId)}
         </Column>
       );
-      const activeIndex = localSchema.children.findIndex(
-        block => block.id === blockId
-      );
+
       if (activeIndex !== -1) {
         parentId = `${parentId}-->${blockId}`;
         localSchema = localSchema.children[activeIndex];

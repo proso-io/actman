@@ -57,7 +57,7 @@ function Button(props) {
 }
 
 Button.propTypes = {
-  text: PropTypes.object,
+  text: PropTypes.oneOfType([PropTypes.string, PropTypes.object]),
   type: PropTypes.oneOf(["primary", "secondary", "link"]),
   state: PropTypes.oneOf(["loading", "disabled", "enabled"]),
   onClick: PropTypes.func,
