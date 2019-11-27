@@ -38,6 +38,7 @@ import MediaDetails from "./MediaDetails";
 import CommentDetails from "./CommentDetails";
 import Button from "../../components/Button";
 import { Input } from "@proso-io/fobu/dist/components";
+import { makeSelectUserPerms } from "../App/selectors";
 
 const PageContainer = styled.div`
   padding-top: ${props => props.theme.spacing.thirtysix};
@@ -62,6 +63,48 @@ const ProjectInput = styled(Input)`
     height: 40px;
   }
 `;
+
+const permMap = {
+  activity: {
+    "is-verified": {
+      ent: "Activities",
+      opn: "update-verified"
+    },
+    "is-special": {
+      ent: "Activities",
+      opn: "update-special"
+    },
+    "is-approved": {
+      ent: "Activities",
+      opn: "update-approved"
+    },
+    edit: {
+      ent: "Activities",
+      opn: "edit"
+    },
+    project: {
+      ent: "Activities",
+      opn: "update-project"
+    }
+  },
+  media: {
+    "is-verified": {
+      ent: "MediaMetaData",
+      opn: "update-verified"
+    }
+  }
+};
+
+function hasRight(entity, opn, userPermissions) {
+  const permObj = permMap[entity][opn];
+  for (let index = 0; index < userPermissions.length; index++) {
+    const element = userPermissions[index];
+    if (permObj.ent === element.ent && permObj.opn === element.opn) {
+      return true;
+    }
+  }
+  return false;
+}
 
 export function ActivityDetails(props) {
   useInjectReducer({ key: "activityDetails", reducer });
@@ -107,51 +150,74 @@ export function ActivityDetails(props) {
         <FlexContainer mainAxis="space-between">
           <div style={{ width: "50%" }}>
             <FlexContainer mainAxis="flex-start">
-              <Button
-                type="primary"
-                text={
-                  addonsData && addonsData["is-verified"]
-                    ? "Marked as verified"
-                    : "Mark as verified"
-                }
-                disabled={addonsData && addonsData["is-verified"]}
-                onClick={() =>
-                  updateAddon("is-activity-verified", { status: true })
-                }
-              />
+              {hasRight("activity", "is-verified", props.perms) && (
+                <Button
+                  type="primary"
+                  text={
+                    addonsData && addonsData["is-verified"]
+                      ? "Marked as verified"
+                      : "Mark as verified"
+                  }
+                  disabled={addonsData && addonsData["is-verified"]}
+                  onClick={() =>
+                    updateAddon("is-activity-verified", { status: true })
+                  }
+                />
+              )}
+
               <Spacing type="horizontal" spacing="sixteen" />
-              <Button
-                type="secondary"
-                text={
-                  addonsData && addonsData["is-special"]
-                    ? "Marked as special"
-                    : "Mark as special"
-                }
-                disabled={addonsData && addonsData["is-special"]}
-                onClick={() =>
-                  updateAddon("is-activity-special", { status: true })
-                }
-              />
+              {hasRight("activity", "is-special", props.perms) && (
+                <Button
+                  type="secondary"
+                  text={
+                    addonsData && addonsData["is-special"]
+                      ? "Marked as special"
+                      : "Mark as special"
+                  }
+                  disabled={addonsData && addonsData["is-special"]}
+                  onClick={() =>
+                    updateAddon("is-activity-special", { status: true })
+                  }
+                />
+              )}
+
+              <Spacing type="horizontal" spacing="sixteen" />
+              {hasRight("activity", "is-approved", props.perms) && (
+                <Button
+                  type="secondary"
+                  text={
+                    addonsData && addonsData["is-approved"]
+                      ? "Marked as approved"
+                      : "Mark as approved"
+                  }
+                  disabled={addonsData && addonsData["is-approved"]}
+                  onClick={() =>
+                    updateAddon("is-activity-approved", { status: true })
+                  }
+                />
+              )}
             </FlexContainer>
           </div>
-          <div className="fobuComponents" style={{ width: "50%" }}>
-            <FlexContainer mainAxis="flex-end">
-              <ProjectInput
-                id="project-name"
-                placeholder="Eg. Google"
-                value={projectName}
-                onValueChange={(id, value) => setProjectName(value)}
-              />
-              <Spacing type="horizontal" spacing="eight" />
-              <Button
-                type="secondary"
-                text="Add project"
-                onClick={() => {
-                  updateAddon("project", { project: projectName });
-                }}
-              />
-            </FlexContainer>
-          </div>
+          {hasRight("activity", "project", props.perms) && (
+            <div className="fobuComponents" style={{ width: "50%" }}>
+              <FlexContainer mainAxis="flex-end">
+                <ProjectInput
+                  id="project-name"
+                  placeholder="Eg. Google"
+                  value={projectName}
+                  onValueChange={(id, value) => setProjectName(value)}
+                />
+                <Spacing type="horizontal" spacing="eight" />
+                <Button
+                  type="secondary"
+                  text="Add project"
+                  onClick={() => {
+                    updateAddon("project", { project: projectName });
+                  }}
+                />
+              </FlexContainer>
+            </div>
+          )}
         </FlexContainer>
       </ActionsBar>
       <PageContainer>
@@ -171,6 +237,12 @@ export function ActivityDetails(props) {
               updateAddonData={props.updateAddonData}
               schema={schema}
               mdata={mdata}
+              allowMediaVerification={hasRight(
+                "media",
+                "is-verified",
+                props.perms
+              )}
+              allowTagsEdit={hasRight("activity", "edit", props.perms)}
             />
             <CommentDetails />
           </div>
@@ -189,7 +261,8 @@ ActivityDetails.propTypes = {
 const mapStateToProps = createStructuredSelector({
   activityDetails: makeSelectActivityData(),
   activityDetailsState: makeSelectActivityDetailsState(),
-  updateActivityState: makeSelectUpdateActivityDetailsState()
+  updateActivityState: makeSelectUpdateActivityDetailsState(),
+  perms: makeSelectUserPerms()
 });
 
 function mapDispatchToProps(dispatch) {

@@ -17,6 +17,7 @@ import {
   UPDATE_ADDON_RESPONSE_ACTION,
   UPDATE_ADDON_SUCCEEDED
 } from "./constants";
+import { LOCATION_CHANGE } from "connected-react-router";
 
 export const initialState = {
   activityData: null
@@ -26,6 +27,10 @@ export const initialState = {
 const activityDetailsReducer = (state = initialState, action) =>
   produce(state, draft => {
     switch (action.type) {
+      case LOCATION_CHANGE:
+        draft.getActivityState = null;
+        draft.activityData = null;
+        break;
       case DEFAULT_ACTION:
         break;
       case GET_ACTIVITY_REQUEST_ACTION:
