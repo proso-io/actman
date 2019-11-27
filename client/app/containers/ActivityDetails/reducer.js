@@ -54,7 +54,7 @@ const activityDetailsReducer = (state = initialState, action) =>
         draft.updateAddonState = action.status;
         if (
           action.status === UPDATE_ADDON_SUCCEEDED &&
-          action.data.entity === "activity"
+          action.entity === "activity"
         ) {
           draft.activityData.mdata = action.data.mdata;
           draft.activityData.addonsmetadata = action.data.addonsmetadata;
