@@ -14,7 +14,6 @@
   (let [
     {:keys [username] :as auth-user} (friend/current-authentication request)
     ]
-    (println "current user" auth-user)
     (when username
       (->
         (users/get-doc username)
@@ -46,7 +45,6 @@
 (defn contains-valid-team-role?
   "Checks if any of roles from `member-teams` exists in `allowed-teams`"
   [allowed-teams member-teams]
-  (println "checking valid team role" allowed-teams member-teams)
   (reduce
     #(or %1 (team-role-exists? allowed-teams %2))
     false
@@ -58,9 +56,7 @@
   [{:keys [oid username teams] :as current-user} entity-type operation entity & [addon-id]]
   (let [
     a {:oid oid :opn (name operation) :addon addon-id :ent entity-type}
-    b (println "query" a)
     docs (accres/get-docs a)
-    b (println "docs" (first docs))
     rolespath (if addon-id [:addonsaccess (keyword addon-id) :accessroles operation] [:accessroles operation])
     userspath (if addon-id [:addonsaccess (keyword addon-id) :accessusers operation] [:accessusers operation])
     global-access
@@ -68,11 +64,9 @@
         {:oid oid :opn (name operation) :addon addon-id :ent entity-type}
         (accres/get-docs)
         (first))
-    a (println "got global access" global-access entity)
     entity-roles-access (get-in entity rolespath)
     entity-users-access (get-in entity userspath)
     ]
-    (println "authorize operation" entity)
     (or
       (some #(= username %) entity-users-access)
       (some #(= username %) (:users global-access))

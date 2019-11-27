@@ -18,7 +18,8 @@ import {
   GET_SCHEMA_RESPONSE_ACTION,
   GET_SCHEMA_SUCCEEDED,
   GET_SCHEMA_FAILED,
-  GETTING_SCHEMA
+  GETTING_SCHEMA,
+  UPDATE_SCHEMA_SAVE_STATE_ACTION
 } from "./constants";
 
 export const initialState = {
@@ -36,7 +37,10 @@ const editSchemaPageReducer = (state = initialState, action) =>
         break;
       case SCHEMA_SAVE_RESPONSE_ACTION:
         console.log("reducer", SCHEMA_SAVE_RESPONSE_ACTION);
-        draft.schemaSaveState = action.status;
+        draft.schemaSaveState =
+          action.status === SCHEMA_SAVE_SUCCEEDED
+            ? SCHEMA_SAVED_STATE
+            : SCHEMA_UNSAVED_STATE;
         draft.schemaData = action.data;
         break;
       case GET_SCHEMA_REQUEST_ACTION:
@@ -47,6 +51,10 @@ const editSchemaPageReducer = (state = initialState, action) =>
         console.log("reducer", GET_SCHEMA_RESPONSE_ACTION, action);
         draft.schemaData = action.data;
         draft.getSchemaState = action.status;
+        break;
+      case UPDATE_SCHEMA_SAVE_STATE_ACTION:
+        draft.schemaSaveState = action.status;
+        break;
     }
   });
 

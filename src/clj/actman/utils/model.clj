@@ -13,7 +13,6 @@
 
 (defn get-form-schema;-internal
   [sid]
-  (println "get-form-shemas-internal" sid)
   (form-schemas/get-doc sid))
 
 ;(def get-form-schema (memo/ttl get-form-schema-internal))
@@ -31,7 +30,6 @@
     program (get-program pid)
     form-schema (get-form-schema (:sid program))
     ]
-    (println "get-program-schema" program form-schema)
     (:schema form-schema)))
 
 (defn get-all-input-elements
@@ -48,16 +46,28 @@
 
 (defn get-media-elements
   [schema]
-  (filterv #(= "media" (:type %)) (get-all-input-elements schema)))
+  (let [
+    all-eles (get-all-input-elements schema)
+    ]
+    (filterv #(= "imagesWithTags" (:type %)) all-eles)))
 
 (defn get-media-id-from-url
   [url]
-  (last (str/split url #"/")))
+  (let [
+    parts (str/split url #"/")
+    ]
+    (nth parts (- (count parts) 2))))
 
-(defn get-media-tag-map
-  [schema]
-  (reduce
-    (fn [tag-map element]
-      (assoc (get-media-id-from-url (:file element)) (:tags element)))
-    {}
-    (get-media-elements schema)))
+(defn get-media-tags-map
+  [schema activity]
+  (let [
+    all-eles (get-media-elements schema)
+    ]
+    (reduce
+      (fn [tag-map {:keys [id] :as element}]
+        (reduce
+          #(assoc %1 (get-media-id-from-url (:fileUrl %2)) (:tags %2))
+          tag-map
+          ((keyword id) (:mdata activity))))
+      {}
+      all-eles)))

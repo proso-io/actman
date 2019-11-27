@@ -30,9 +30,10 @@
 
 (defn perform-operation-internal
   [request operation-fn query & [operation-args]]
+  (println "perform=operation-interna-" query)
   (let [
     user (current-user request)
-    operation-fn (if (= operation-fn opns/get-activities)   watcher/get-allowed-activities operation-fn)
+    operation-fn (if (= operation-fn opns/get-activities) watcher/get-allowed-activities operation-fn)
     ]
     (operation-fn user query operation-args))
   )
@@ -42,14 +43,31 @@
   (ok (perform-operation-internal request operation-fn query operation-args)))
 
 (defn create-activity
-  [request {:keys [activitydata addonsdata] :as data}]
+  [request activity]
   (let [
-    activity-resp (perform-operation-internal request opns/create-activity nil data)
+    addonsdata (:addonsmetadata activity)
+    activity-resp (perform-operation-internal request opns/create-activity nil (dissoc activity :addonsmetadata))
     id (-> activity-resp :data :_id)
     ]
     (ok
       (perform-operation-internal request watcher/update-activity-data id addonsdata)))
   )
+
+(defn get-media
+  [request tags]
+  (println "get-media" tags (if tags true false))
+  (ok
+    (perform-operation-internal
+      request
+      opns/search-media
+      (if tags
+        {
+          :tags {
+            "$in" tags
+          }
+        }
+        {})
+      )))
 
 (defn api-routes []
   [
@@ -282,6 +300,13 @@
         {:swagger {:tags ["Media"]}}
         [""
           {
+            :get {
+              :coercion reitit.coercion.schema/coercion
+              :parameters {:query {:tags sc/Str}}
+              :handler (fn [{{{:keys [tags]} :query} :parameters :as request}]
+                (println "media" tags)
+                (get-media request (when tags (clojure.string/split tags #","))))
+            }
             :post {
               :handler (fn [{{:keys [multipart]} :parameters :as request}]
                   (perform-operation request opns/upload-media nil
@@ -314,7 +339,7 @@
             }]
       ]
       ["/watcher"
-        ["/is-special-activity/:activity-id"
+        ["/is-activity-special/:id"
           {
             :get {
               :coercion reitit.coercion.schema/coercion
@@ -325,7 +350,67 @@
               :coercion reitit.coercion.schema/coercion
               :parameters {:path {:id sc/Str} :body {:status sc/Bool}  }
               :handler (fn [{{{:keys [id]} :path {:keys [status]} :body} :parameters :as request}]
-                  (perform-operation request watcher/is-activity-special? id status))
+                  (perform-operation request watcher/update-special id status))
+            }
+          }
+        ]
+        ["/is-activity-verified/:id"
+          {
+            :get {
+              :coercion reitit.coercion.schema/coercion
+              :parameters {:path {:id sc/Str}  }
+              :handler (fn [{{{:keys [id]} :path} :parameters :as request}] (perform-operation request watcher/is-activity-verified? id))
+            }
+            :post {
+              :coercion reitit.coercion.schema/coercion
+              :parameters {:path {:id sc/Str} :body {:status sc/Bool}  }
+              :handler (fn [{{{:keys [id]} :path {:keys [status]} :body} :parameters :as request}]
+                  (perform-operation request watcher/update-verified-activity id status))
+            }
+          }
+        ]
+        ["/is-activity-approved/:id"
+          {
+            :get {
+              :coercion reitit.coercion.schema/coercion
+              :parameters {:path {:id sc/Str}  }
+              :handler (fn [{{{:keys [id]} :path} :parameters :as request}] (perform-operation request watcher/is-activity-approved? id))
+            }
+            :post {
+              :coercion reitit.coercion.schema/coercion
+              :parameters {:path {:id sc/Str} :body {:status sc/Bool}  }
+              :handler (fn [{{{:keys [id]} :path {:keys [status]} :body} :parameters :as request}]
+                  (perform-operation request watcher/update-activity-approved id status))
+            }
+          }
+        ]
+        ["/project/:id"
+          {
+            :get {
+              :coercion reitit.coercion.schema/coercion
+              :parameters {:path {:id sc/Str}  }
+              :handler (fn [{{{:keys [id]} :path} :parameters :as request}] (perform-operation request watcher/get-activity-project id))
+            }
+            :post {
+              :coercion reitit.coercion.schema/coercion
+              :parameters {:path {:id sc/Str} :body {:project sc/Str}  }
+              :handler (fn [{{{:keys [id]} :path {:keys [status]} :body} :parameters :as request}]
+                  (perform-operation request watcher/update-activity-project id status))
+            }
+          }
+        ]
+        ["/is-media-verified/:id"
+          {
+            :get {
+              :coercion reitit.coercion.schema/coercion
+              :parameters {:path {:id sc/Str}  }
+              :handler (fn [{{{:keys [id]} :path} :parameters :as request}] (perform-operation request watcher/is-media-approved? id))
+            }
+            :post {
+              :coercion reitit.coercion.schema/coercion
+              :parameters {:path {:id sc/Str} :body {:status sc/Bool}  }
+              :handler (fn [{{{:keys [id]} :path {:keys [status]} :body} :parameters :as request}]
+                  (perform-operation request watcher/update-verified-media id status))
             }
           }
         ]

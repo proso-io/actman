@@ -16,7 +16,6 @@
 (defn get-user-access-operations
   "Get all accessible operations for user and roles"
   [userid roles]
-  (println "in accress" userid roles)
   (let [
     docs
       (get-docs

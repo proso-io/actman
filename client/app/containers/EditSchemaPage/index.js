@@ -22,7 +22,11 @@ import messages from "./messages";
 
 import { FormBuilder } from "@proso-io/fobu/dist/components";
 import styled from "styled-components";
-import { saveSchemaAction, getSchemaAction } from "./actions";
+import {
+  saveSchemaAction,
+  getSchemaAction,
+  updateSchemaSaveState
+} from "./actions";
 import { push } from "connected-react-router";
 import {
   DEFAULT_ACTION,
@@ -86,12 +90,10 @@ export function EditSchemaPage(props) {
         <StyledFormBuilder
           builderMode={true}
           onSchemaSubmit={schema => props.saveSchema(schema, schemaId)}
-          saveFormSchemaState={
-            newSchema
-              ? props.editSchemaPage.schemaSaveState || SCHEMA_SAVED_STATE
-              : SCHEMA_UNSAVED_STATE
-          }
+          saveFormSchemaState={props.editSchemaPage.schemaSaveState || ""}
+          formTitle={newSchema ? "" : props.editSchemaPage.schemaData.title}
           formSchema={schema}
+          onFormSchemaChange={props.updateSchemaSaveState}
         />
       )}
     </div>
@@ -110,7 +112,9 @@ function mapDispatchToProps(dispatch) {
   return {
     saveSchema: (schema, id) => dispatch(saveSchemaAction(schema, id)),
     getSchema: id => dispatch(getSchemaAction(id)),
-    push: payload => dispatch(push(payload))
+    push: payload => dispatch(push(payload)),
+    updateSchemaSaveState: () =>
+      dispatch(updateSchemaSaveState(SCHEMA_UNSAVED_STATE))
   };
 }
 

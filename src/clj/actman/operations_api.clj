@@ -66,13 +66,18 @@
 
 (defn create-activity-action
   "Action function for create-activity operation"
-  [_1 _2 activity current-user]
+  [_1 _2 {:keys [pid] :as activity} current-user]
   (println "creating activity" activity (:teams current-user))
   (let [
     team (first (:teams current-user))
     team (assoc team :rl "Head")
+    schema (mutils/get-program-schema pid)
+    media-tags-map (mutils/get-media-tags-map schema activity)
     ]
-    (println "associng team" team)
+    (println "associng team" team media-tags-map)
+    (mapv
+      #(mmd/update-doc % {:tags (get media-tags-map %)})
+      (keys media-tags-map))
     (->
       activity
       (assoc :mstring (gutils/stringify-map-values (:mdata activity)))
@@ -189,6 +194,10 @@
 (defOperation view-media
   "Get media metadata"
   'actman.db.media-meta-data :view view-media-action)
+
+(defOperation search-media
+  "Get media metadata"
+  'actman.db.media-meta-data :view view-media-action true)
 
 (defOperation create-activity
   "Create a new activity"
