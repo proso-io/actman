@@ -9,7 +9,7 @@
     [clojure.set :refer [difference]]
     [actman.config :refer [env]]))
 
-(def ID "5dda490a8616d9699b05e7ab"); (-> env :addons :watcher keyword))
+(def ID "5ddddc72998b5b5f60b7888a"); (-> env :addons :watcher keyword))
 
 (defn update-special-action
   "Action function for update-special operation.

@@ -52,5 +52,6 @@ export const ADDON_ENDPOINTS = {
   "is-media-verified": "/api/watcher/is-media-verified",
   "is-activity-verified": "/api/watcher/is-activity-verified",
   "is-activity-approved": "/api/watcher/is-activity-approved",
-  "is-activity-special": "/api/watcher/is-activity-special"
+  "is-activity-special": "/api/watcher/is-activity-special",
+  project: "/api/watcher/project"
 };
