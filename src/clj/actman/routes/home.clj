@@ -25,7 +25,10 @@
                  middleware/wrap-formats]}
     ["/" {:get serve-index}]
     ["/:page" {:get serve-index}]
-    ["/:p1/:p2" {:get serve-index}]
-    ["/:p1/:p2/:p3" {:get serve-index}]
-    ["/:p1/:p2/:p3/:p4" {:get serve-index}]
+    ["/activities/:p2" {:get serve-index}]
+    ["/media/:p2" {:get serve-index}]
+    ["/forms/:p2" {:get serve-index}]
+    ["/activities/:p2/:p3" {:get serve-index}]
+    ["/media/:p2/:p3" {:get serve-index}]
+    ["/forms/:p2/:p3" {:get serve-index}]
     ])
