@@ -75,6 +75,8 @@
       ["/current-user"
         {
           :get {
+            :coercion reitit.coercion.schema/coercion
+            :parameters {:header {(sc/optional-key :authorization) sc/Str}}
             :handler (fn [req] (ok  (api/get-current-user (current-user req))))
             }
         }
@@ -93,12 +95,12 @@
           {
             :get {
               :coercion reitit.coercion.schema/coercion
-              :parameters {:path {:id sc/Str}  }
+              :parameters {:path {:id sc/Str}}
               :handler (fn [{{{:keys [id]} :path} :parameters}] (ok (users/get-doc id)))
             }
             :put {
               :coercion reitit.coercion.schema/coercion
-              :parameters {:body users/updation-schema :path {:id sc/Str}  }
+              :parameters {:body users/updation-schema :path {:id sc/Str} }
               :handler (fn [{{:keys [path body]} :parameters}] (ok (users/update-doc (:id path) body)))
             }
           }
@@ -220,12 +222,12 @@
           {
             :get {
               :coercion reitit.coercion.schema/coercion
-              :parameters {:query {:oid (:oid form-schemas/insertion-schema)}}
+              :parameters {:query {:oid (:oid form-schemas/insertion-schema)} :header {(sc/optional-key :authorization) sc/Str}}
               :handler (fn [{{{:keys [oid]} :query} :parameters :as request}] (perform-operation request opns/get-schemas {:oid oid}))
             }
             :post {
               :coercion reitit.coercion.schema/coercion
-              :parameters {:body form-schemas/insertion-schema}
+              :parameters {:body form-schemas/insertion-schema :header {(sc/optional-key :authorization) sc/Str}}
               :handler (fn [{{:keys [body]} :parameters :as request}] (perform-operation request opns/add-schema nil body))
             }
             }]
@@ -233,12 +235,12 @@
           {
             :get {
               :coercion reitit.coercion.schema/coercion
-              :parameters {:path {:id sc/Str}}
+              :parameters {:path {:id sc/Str} :header {(sc/optional-key :authorization) sc/Str}}
               :handler (fn [{{{:keys [id]} :path} :parameters :as request}] (perform-operation request opns/get-schema id))
             }
             :put {
               :coercion reitit.coercion.schema/coercion
-              :parameters {:body form-schemas/updation-schema :path {:id sc/Str}}
+              :parameters {:body form-schemas/updation-schema :path {:id sc/Str} :header {(sc/optional-key :authorization) sc/Str}}
               :handler (fn [{{:keys [path body]} :parameters :as request}] (perform-operation request opns/edit-schema (:id path) body))
             }
             }]
@@ -249,13 +251,13 @@
           {
             :get {
               :coercion reitit.coercion.schema/coercion
-              :parameters {:query {:query sc/Any}}
+              :parameters {:query {(sc/optional-key :query) sc/Any} :header {(sc/optional-key :authorization) sc/Str}}
               :handler (fn [{{{:keys [query]} :query} :parameters :as request}] (perform-operation request opns/get-activities
                 (json/decode query)))
             }
             :post {
               :coercion reitit.coercion.schema/coercion
-              :parameters {:body activities/insertion-schema }
+              :parameters {:body activities/insertion-schema :header {(sc/optional-key :authorization) sc/Str}}
               :handler (fn [{{:keys [body]} :parameters :as request}] (create-activity request body))
             }
             }]
@@ -263,12 +265,12 @@
           {
             :get {
               :coercion reitit.coercion.schema/coercion
-              :parameters {:path {:id sc/Str}}
+              :parameters {:path {:id sc/Str} :header {(sc/optional-key :authorization) sc/Str}}
               :handler (fn [{{{:keys [id]} :path} :parameters :as request}] (perform-operation request opns/get-activity id))
             }
             :put {
               :coercion reitit.coercion.schema/coercion
-              :parameters {:body activities/updation-schema :path {:id sc/Str}  }
+              :parameters {:body activities/updation-schema :path {:id sc/Str} :header {(sc/optional-key :authorization) sc/Str} }
               :handler (fn [{{:keys [path body]} :parameters :as request}] (perform-operation request opns/edit-activity (:id path) body))
             }
             }]
@@ -279,12 +281,12 @@
           {
             :get {
               :coercion reitit.coercion.schema/coercion
-              :parameters {:query {:oid (:oid programs/insertion-schema)}}
+              :parameters {:query {:oid (:oid programs/insertion-schema)} :header {(sc/optional-key :authorization) sc/Str}}
               :handler (fn [{{{:keys [oid]} :query} :parameters}] (ok (programs/get-docs {:oid oid})))
             }
             :post {
               :coercion reitit.coercion.schema/coercion
-              :parameters {:body programs/insertion-schema}
+              :parameters {:body programs/insertion-schema :header {(sc/optional-key :authorization) sc/Str}}
               :handler (fn [{{:keys [body]} :parameters}] (ok (programs/insert-doc body)))
             }
             }]
@@ -295,7 +297,7 @@
           {
             :get {
               :coercion reitit.coercion.schema/coercion
-              :parameters {:query {:tags sc/Str}}
+              :parameters {:query {:tags sc/Str} :header {(sc/optional-key :authorization) sc/Str}}
               :handler (fn [{{{:keys [tags]} :query} :parameters :as request}]
                 (println "media" tags)
                 (get-media request (when tags (clojure.string/split tags #","))))
@@ -312,7 +314,7 @@
           {
             :get {
               :coercion reitit.coercion.schema/coercion
-              :parameters {:path {:id sc/Str}  }
+              :parameters {:path {:id sc/Str} :header {(sc/optional-key :authorization) sc/Str} }
               :handler (fn [{{:keys [multipart]} :parameters :as request}]
                   (perform-operation request opns/upload-media nil
                     (assoc multipart :current-user (current-user request))))
@@ -322,7 +324,7 @@
           {
             :get {
               :coercion reitit.coercion.schema/coercion
-              :parameters {:path {:id sc/Str}  }
+              :parameters {:path {:id sc/Str}  :header {(sc/optional-key :authorization) sc/Str}}
               :handler
                 (fn [{{{:keys [id]} :path} :parameters :as request}]
                     (let [d (perform-operation request opns/view-media id)]
@@ -336,12 +338,12 @@
           {
             :get {
               :coercion reitit.coercion.schema/coercion
-              :parameters {:path {:id sc/Str}  }
+              :parameters {:path {:id sc/Str} :header {(sc/optional-key :authorization) sc/Str} }
               :handler (fn [{{{:keys [id]} :path} :parameters :as request}] (perform-operation request watcher/is-activity-special? id))
             }
             :post {
               :coercion reitit.coercion.schema/coercion
-              :parameters {:path {:id sc/Str} :body {:status sc/Bool}  }
+              :parameters {:path {:id sc/Str} :body {:status sc/Bool} :header {(sc/optional-key :authorization) sc/Str}}
               :handler (fn [{{{:keys [id]} :path {:keys [status]} :body} :parameters :as request}]
                   (perform-operation request watcher/update-special id status))
             }
@@ -351,12 +353,12 @@
           {
             :get {
               :coercion reitit.coercion.schema/coercion
-              :parameters {:path {:id sc/Str}  }
+              :parameters {:path {:id sc/Str} :header {(sc/optional-key :authorization) sc/Str} }
               :handler (fn [{{{:keys [id]} :path} :parameters :as request}] (perform-operation request watcher/is-activity-verified? id))
             }
             :post {
               :coercion reitit.coercion.schema/coercion
-              :parameters {:path {:id sc/Str} :body {:status sc/Bool}  }
+              :parameters {:path {:id sc/Str} :body {:status sc/Bool} :header {(sc/optional-key :authorization) sc/Str} }
               :handler (fn [{{{:keys [id]} :path {:keys [status]} :body} :parameters :as request}]
                   (perform-operation request watcher/update-verified-activity id status))
             }
@@ -366,12 +368,12 @@
           {
             :get {
               :coercion reitit.coercion.schema/coercion
-              :parameters {:path {:id sc/Str}  }
+              :parameters {:path {:id sc/Str} :header {(sc/optional-key :authorization) sc/Str} }
               :handler (fn [{{{:keys [id]} :path} :parameters :as request}] (perform-operation request watcher/is-activity-approved? id))
             }
             :post {
               :coercion reitit.coercion.schema/coercion
-              :parameters {:path {:id sc/Str} :body {:status sc/Bool}  }
+              :parameters {:path {:id sc/Str} :body {:status sc/Bool} :header {(sc/optional-key :authorization) sc/Str} }
               :handler (fn [{{{:keys [id]} :path {:keys [status]} :body} :parameters :as request}]
                   (perform-operation request watcher/update-activity-approved id status))
             }
@@ -381,12 +383,12 @@
           {
             :get {
               :coercion reitit.coercion.schema/coercion
-              :parameters {:path {:id sc/Str}  }
+              :parameters {:path {:id sc/Str} :header {(sc/optional-key :authorization) sc/Str} }
               :handler (fn [{{{:keys [id]} :path} :parameters :as request}] (perform-operation request watcher/get-activity-project id))
             }
             :post {
               :coercion reitit.coercion.schema/coercion
-              :parameters {:path {:id sc/Str} :body {:project sc/Str}  }
+              :parameters {:path {:id sc/Str} :body {:project sc/Str} :header {(sc/optional-key :authorization) sc/Str}}
               :handler (fn [{{{:keys [id]} :path {:keys [status]} :body} :parameters :as request}]
                   (perform-operation request watcher/update-activity-project id status))
             }
@@ -396,12 +398,12 @@
           {
             :get {
               :coercion reitit.coercion.schema/coercion
-              :parameters {:path {:id sc/Str}  }
+              :parameters {:path {:id sc/Str} :header {(sc/optional-key :authorization) sc/Str} }
               :handler (fn [{{{:keys [id]} :path} :parameters :as request}] (perform-operation request watcher/is-media-approved? id))
             }
             :post {
               :coercion reitit.coercion.schema/coercion
-              :parameters {:path {:id sc/Str} :body {:status sc/Bool}  }
+              :parameters {:path {:id sc/Str} :body {:status sc/Bool} :header {(sc/optional-key :authorization) sc/Str} }
               :handler (fn [{{{:keys [id]} :path {:keys [status]} :body} :parameters :as request}]
                   (perform-operation request watcher/update-verified-media id status))
             }
