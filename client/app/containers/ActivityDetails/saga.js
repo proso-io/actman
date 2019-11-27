@@ -80,7 +80,7 @@ function* updateAddonData(action) {
         updateAddonResponseAction(
           UPDATE_ADDON_SUCCEEDED,
           response.data,
-          action.data.type
+          action.data.entity
         )
       );
     } else {
