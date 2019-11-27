@@ -87,11 +87,6 @@
       (assoc-in [:accessusers] [(:username current-user)])
       (activities/insert-doc))))
 
-(defn edit-activity-action
-  "Action function for edit-activity operation"
-  [valid-activity _2 activity]
-  (when valid-activity (activities/update-doc activity)))
-
 (defn add-activity-aux-data
   [{:keys [pid] :as activity}]
   (println "add-activity-aux-data" activity)
@@ -99,6 +94,16 @@
     activity
     (assoc :programName (mutils/get-program-name pid))
     (assoc :schema (mutils/get-program-schema pid))))
+
+(defn edit-activity-action
+  "Action function for edit-activity operation"
+  [valid-activity id activity _2]
+  (when valid-activity 
+    (->
+      (activities/update-doc id activity)
+      (add-activity-aux-data)
+  )
+  ))
 
 (defn get-activities-action
   "Action function for get-activities operation"

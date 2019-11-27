@@ -8,7 +8,14 @@ import {
   DEFAULT_ACTION,
   GET_ACTIVITY_REQUEST_ACTION,
   GETTING_ACTIVITY,
-  GET_ACTIVITY_RESPONSE_ACTION
+  GET_ACTIVITY_RESPONSE_ACTION,
+  UPDATE_ACTIVITY_REQUEST_ACTION,
+  UPDATE_ACTIVITY_RESPONSE_ACTION,
+  UPDATING_ACTIVITY,
+  UPDATE_ACTIVITY_SUCCEEDED,
+  UPDATE_ADDON_REQUEST_ACTION,
+  UPDATE_ADDON_RESPONSE_ACTION,
+  UPDATE_ADDON_SUCCEEDED
 } from "./constants";
 
 export const initialState = {
@@ -27,6 +34,22 @@ const activityDetailsReducer = (state = initialState, action) =>
       case GET_ACTIVITY_RESPONSE_ACTION:
         draft.activityData = action.data;
         draft.getActivityState = action.status;
+      case UPDATE_ACTIVITY_REQUEST_ACTION:
+        draft.updateActivityState = UPDATING_ACTIVITY;
+        break;
+      case UPDATE_ACTIVITY_RESPONSE_ACTION:
+        draft.updateActivityState = action.status;
+        if (action.status === UPDATE_ACTIVITY_SUCCEEDED) {
+          draft.activityData = action.data;
+        }
+      case UPDATE_ADDON_REQUEST_ACTION:
+        draft.updateAddonState = UPDATING_ACTIVITY;
+        break;
+      case UPDATE_ADDON_RESPONSE_ACTION:
+        draft.updateAddonState = action.status;
+        if (action.status === UPDATE_ADDON_SUCCEEDED) {
+          draft.activityData = action.data;
+        }
     }
   });
 

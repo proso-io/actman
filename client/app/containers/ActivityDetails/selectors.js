@@ -16,10 +16,16 @@ const selectActivityDetailsDomain = state =>
  * Default selector used by ActivityDetails
  */
 
-const makeSelectActivityDetails = () =>
+const makeSelectActivityData = () =>
   createSelector(
     selectActivityDetailsDomain,
     substate => substate.activityData
+  );
+
+const makeSelectActivityId = () =>
+  createSelector(
+    selectActivityDetailsDomain,
+    substate => substate.activityData._id
   );
 
 const makeSelectActivityDetailsState = () =>
@@ -28,4 +34,15 @@ const makeSelectActivityDetailsState = () =>
     substate => substate.getActivityState
   );
 
-export { makeSelectActivityDetails, makeSelectActivityDetailsState };
+const makeSelectUpdateActivityDetailsState = () =>
+  createSelector(
+    selectActivityDetailsDomain,
+    substate => substate.updateActivityState
+  );
+
+export {
+  makeSelectActivityData,
+  makeSelectActivityDetailsState,
+  makeSelectUpdateActivityDetailsState,
+  makeSelectActivityId
+};
