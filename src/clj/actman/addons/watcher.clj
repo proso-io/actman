@@ -97,7 +97,7 @@
 
 (defOperation update-verified-activity
   "Update verified status for an activity"
-  'actman.db.activities :update-verified update-activity-verified-action {} false ID)
+  'actman.db.activities :update-verified update-activity-verified-action false {} ID)
 
 (defOperation update-activity-approved
   "Update special status for an activity"
