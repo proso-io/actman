@@ -24,7 +24,11 @@ import {
 import reducer from "./reducer";
 import saga from "./saga";
 import messages from "./messages";
-import { getActivityAction, updateActivityAction } from "./actions";
+import {
+  getActivityAction,
+  updateActivityAction,
+  updateAddonRequestAction
+} from "./actions";
 import Text from "components/Text";
 import FlexContainer from "../../components/FlexContainer";
 import Spacing from "../../components/Spacing";
@@ -39,11 +43,12 @@ const PageContainer = styled.div`
 export function ActivityDetails(props) {
   useInjectReducer({ key: "activityDetails", reducer });
   useInjectSaga({ key: "activityDetails", saga });
-  let schema, mdata;
+  let schema, mdata, addonsmetadata;
   const activityId = props.match.params.activityId;
   if (props.activityDetails) {
     schema = props.activityDetails.schema;
     mdata = props.activityDetails.mdata;
+    addonsmetadata = props.activityDetails.addonsmetadata;
   }
   useEffect(() => {
     if (!props.activityDetailsState) {
@@ -55,7 +60,7 @@ export function ActivityDetails(props) {
     <div>
       <Helmet>
         <title>Activity Details</title>
-        <meta name="description" content="Description of ActivityDetails" />
+        <meta name="description" content="Activity Details" />
       </Helmet>
       <PageContainer>
         {props.activityDetails ? (
@@ -70,6 +75,8 @@ export function ActivityDetails(props) {
                 activityData.mdata = updatedMdata;
                 props.updateActivityDetails(activityData);
               }}
+              addonsmetadata={addonsmetadata}
+              updateAddonData={props.updateAddonData}
               schema={schema}
               mdata={mdata}
             />
@@ -96,7 +103,8 @@ const mapStateToProps = createStructuredSelector({
 function mapDispatchToProps(dispatch) {
   return {
     getActivityDetails: activityId => dispatch(getActivityAction(activityId)),
-    updateActivityDetails: payload => dispatch(updateActivityAction(payload))
+    updateActivityDetails: payload => dispatch(updateActivityAction(payload)),
+    updateAddonData: data => dispatch(updateAddonRequestAction(data))
   };
 }
 

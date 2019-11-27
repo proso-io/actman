@@ -9,7 +9,9 @@ import {
   GET_ACTIVITY_REQUEST_ACTION,
   GET_ACTIVITY_RESPONSE_ACTION,
   UPDATE_ACTIVITY_REQUEST_ACTION,
-  UPDATE_ACTIVITY_RESPONSE_ACTION
+  UPDATE_ACTIVITY_RESPONSE_ACTION,
+  UPDATE_ADDON_REQUEST_ACTION,
+  UPDATE_ADDON_RESPONSE_ACTION
 } from "./constants";
 
 export function defaultAction() {
@@ -43,6 +45,21 @@ export function updateActivityAction(payload) {
 export function updateActivityResponseAction(status, payload) {
   return {
     type: UPDATE_ACTIVITY_RESPONSE_ACTION,
+    status: status,
+    data: payload
+  };
+}
+
+export function updateAddonRequestAction(payload) {
+  return {
+    type: UPDATE_ADDON_REQUEST_ACTION,
+    data: payload
+  };
+}
+
+export function updateAddonResponseAction(status, payload) {
+  return {
+    type: UPDATE_ADDON_RESPONSE_ACTION,
     status: status,
     data: payload
   };

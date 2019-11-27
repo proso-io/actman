@@ -7,11 +7,16 @@ import {
   UPDATE_ACTIVITY_REQUEST_ACTION,
   UPDATING_ACTIVITY,
   UPDATE_ACTIVITY_SUCCEEDED,
-  UPDATE_ACTIVITY_FAILED
+  UPDATE_ACTIVITY_FAILED,
+  UPDATE_ADDON_REQUEST_ACTION,
+  UPDATE_ADDON_SUCCEEDED,
+  UPDATE_ADDON_FAILED,
+  ADDON_ENDPOINTS
 } from "./constants";
 import {
   getActivityResponseAction,
-  updateActivityResponseAction
+  updateActivityResponseAction,
+  updateAddonResponseAction
 } from "./actions";
 import { makeSelectActivityId } from "./selectors";
 import request from "utils/request";
@@ -58,9 +63,35 @@ function* updateActivity(action) {
   }
 }
 
+function* updateAddonData(action) {
+  try {
+    let url =
+      ADDON_ENDPOINTS[action.data.addOnType] + "/" + action.data.entityId;
+    const response = yield call(request, url, {
+      method: "POST",
+      body: JSON.stringify(action.data.addOnValue),
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json"
+      }
+    });
+    if (response.performed) {
+      yield put(
+        updateAddonResponseAction(UPDATE_ADDON_SUCCEEDED, response.data)
+      );
+    } else {
+      yield put(updateAddonResponseAction(UPDATE_ADDON_FAILED, null));
+    }
+  } catch (err) {
+    console.log(err);
+    yield put(updateAddonResponseAction(UPDATE_ADDON_FAILED, null));
+  }
+}
+
 // Individual exports for testing
 export default function* editSchemaPageSaga() {
   // See example in containers/HomePage/saga.js
   yield takeLatest(GET_ACTIVITY_REQUEST_ACTION, getActivity);
   yield takeLatest(UPDATE_ACTIVITY_REQUEST_ACTION, updateActivity);
+  yield takeLatest(UPDATE_ADDON_REQUEST_ACTION, updateAddonData);
 }

@@ -167,6 +167,8 @@ function getUpdateMdata(mdata, selectedImages, tagInputText) {
 export default function MediaDetails({
   schema,
   mdata,
+  addonsmetadata,
+  updateAddonData,
   onUpdateActivityDetails
 }) {
   const [activeTag, setActiveTag] = useState(null);
@@ -264,8 +266,38 @@ export default function MediaDetails({
                       ACTIONS
                     </Text>
                     <Spacing spacing="eight" />
-                    <Text type="body">Mark as verified</Text>
-                    <Text type="body">Download all</Text>
+                    <a
+                      href="#"
+                      onClick={e => {
+                        e.preventDefault();
+                        selectedImages.forEach(image => {
+                          const mediaId = image.match(
+                            /\/api\/media\/(.*)\/thumbnail/
+                          )[1];
+                          updateAddonData({
+                            entityId: mediaId,
+                            addOnType: "is-media-verified",
+                            addOnValue: { status: true }
+                          });
+                        });
+                      }}
+                    >
+                      <Text type="body">Mark as verified</Text>
+                    </a>
+                    <a
+                      href="#"
+                      onClick={e => {
+                        e.preventDefault();
+                        selectedImages.forEach(imageUrl => {
+                          let elem = document.createElement("a");
+                          elem.href = imageUrl;
+                          elem.setAttribute("download", true);
+                          elem.click();
+                        });
+                      }}
+                    >
+                      <Text type="body">Download all</Text>
+                    </a>
                   </FlexContainer>
                 </MediaActionsContainer>
               ) : (
