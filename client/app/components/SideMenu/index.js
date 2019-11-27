@@ -8,7 +8,9 @@ import React, { useState } from "react";
 import PropTypes from "prop-types";
 import styled from "styled-components";
 import { push } from "connected-react-router";
-import { connect } from "react-redux";
+import { connect, dispatch } from "react-redux";
+import { createStructuredSelector } from "reselect";
+import { compose } from "redux";
 
 import { FormattedMessage } from "react-intl";
 import messages from "./messages";
@@ -99,7 +101,12 @@ function SideMenu(props) {
             return (
               <MenuItemContainer
                 key={action.title}
-                onClick={() => push(action.link)}
+                onClick={() => {
+                  props.push(action.link);
+                  if (props.onLinkChange) {
+                    props.onLinkChange(action.link);
+                  }
+                }}
                 isActive={action.isActive}
               >
                 <Text type="body" color={action.isActive ? "white" : "primary"}>
@@ -141,10 +148,21 @@ SideMenu.propTypes = {
     })
   ).isRequired,
   onLogout: PropTypes.func.isRequired,
-  onTeamChange: PropTypes.func.isRequired
+  onLinkChange: PropTypes.func,
+  onTeamChange: PropTypes.func
 };
 
-export default connect(
-  null,
-  { push }
-)(SideMenu);
+const mapStateToProps = createStructuredSelector({});
+
+function mapDispatchToProps(dispatch) {
+  return {
+    push: payload => dispatch(push(payload))
+  };
+}
+
+const withConnect = connect(
+  mapStateToProps,
+  mapDispatchToProps
+);
+
+export default compose(withConnect)(SideMenu);

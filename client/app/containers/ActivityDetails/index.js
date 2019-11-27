@@ -66,10 +66,9 @@ const ProjectInput = styled(Input)`
 export function ActivityDetails(props) {
   useInjectReducer({ key: "activityDetails", reducer });
   useInjectSaga({ key: "activityDetails", saga });
-  let schema, mdata, addonsmetadata;
+  let schema, mdata, addonsmetadata, addonsData;
   const activityId = props.match.params.activityId;
 
-  const [projectName, setProjectName] = useState("");
   if (props.activityDetails) {
     schema = props.activityDetails.schema;
     mdata = props.activityDetails.mdata;
@@ -81,13 +80,22 @@ export function ActivityDetails(props) {
     }
   });
 
-  function updateAddon(type, value) {
+  function updateAddon(type, valueObj) {
     props.updateAddonData({
       entityId: activityId,
       addOnType: type,
-      addOnValue: { status: value }
+      addOnValue: valueObj,
+      entity: "activity"
     });
   }
+
+  if (addonsmetadata) {
+    addonsData = addonsmetadata[Object.keys(addonsmetadata)[0]];
+  }
+
+  const [projectName, setProjectName] = useState(
+    addonsData ? addonsData["project"] || "" : ""
+  );
 
   return (
     <div>
@@ -101,14 +109,28 @@ export function ActivityDetails(props) {
             <FlexContainer mainAxis="flex-start">
               <Button
                 type="primary"
-                text="Mark as verified"
-                onClick={() => updateAddon("is-activity-verified", true)}
+                text={
+                  addonsData && addonsData["is-verified"]
+                    ? "Marked as verified"
+                    : "Mark as verified"
+                }
+                disabled={addonsData && addonsData["is-verified"]}
+                onClick={() =>
+                  updateAddon("is-activity-verified", { status: true })
+                }
               />
               <Spacing type="horizontal" spacing="sixteen" />
               <Button
                 type="secondary"
-                text="Mark as special"
-                onClick={() => updateAddon("is-activity-special", true)}
+                text={
+                  addonsData && addonsData["is-special"]
+                    ? "Marked as special"
+                    : "Mark as special"
+                }
+                disabled={addonsData && addonsData["is-special"]}
+                onClick={() =>
+                  updateAddon("is-activity-special", { status: true })
+                }
               />
             </FlexContainer>
           </div>
@@ -125,7 +147,7 @@ export function ActivityDetails(props) {
                 type="secondary"
                 text="Add project"
                 onClick={() => {
-                  updateAddon("project", projectName);
+                  updateAddon("project", { project: projectName });
                 }}
               />
             </FlexContainer>

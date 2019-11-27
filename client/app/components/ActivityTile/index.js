@@ -68,6 +68,12 @@ const StyledImages = styled(Images)`
   margin-right: ${props => props.theme.spacing.four};
 `;
 
+const ColoredDefault = styled.div`
+  width: 100%;
+  height: 100%;
+  background: #ffd1d1;
+`;
+
 function ActivityTile(props) {
   const {
     imageUrls,
@@ -80,9 +86,13 @@ function ActivityTile(props) {
   return (
     <ActivityTileContainer>
       <ActivityTileHeaderContainer>
-        <ActivityImageContainer imageUrl={imageUrls[0]}>
-          <StyledImage src={imageUrls[0]} />
-        </ActivityImageContainer>
+        {imageUrls.length > 0 ? (
+          <ActivityImageContainer imageUrl={imageUrls[0]}>
+            <StyledImage src={imageUrls[0]} />
+          </ActivityImageContainer>
+        ) : (
+          <ColoredDefault />
+        )}
       </ActivityTileHeaderContainer>
       <ActivityTileBodyContainer>
         <FlexContainer
@@ -95,9 +105,13 @@ function ActivityTile(props) {
             {programName}, {location}
           </Text>
           <Spacing spacing="four" />
-          <Text type="small" color="primary60">
-            {startDate} to {endDate}
-          </Text>
+          {startDate && endDate ? (
+            <Text type="small" color="primary60">
+              {startDate} to {endDate}
+            </Text>
+          ) : (
+            ""
+          )}
 
           <ActivityStatsContainer mainAxis="flex-start">
             <ActivityStatContainer>

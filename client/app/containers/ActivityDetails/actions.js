@@ -57,10 +57,11 @@ export function updateAddonRequestAction(payload) {
   };
 }
 
-export function updateAddonResponseAction(status, payload) {
+export function updateAddonResponseAction(status, payload, entity) {
   return {
     type: UPDATE_ADDON_RESPONSE_ACTION,
     status: status,
-    data: payload
+    data: payload,
+    entity: entity
   };
 }

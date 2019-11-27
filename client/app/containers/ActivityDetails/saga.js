@@ -77,7 +77,11 @@ function* updateAddonData(action) {
     });
     if (response.performed) {
       yield put(
-        updateAddonResponseAction(UPDATE_ADDON_SUCCEEDED, response.data)
+        updateAddonResponseAction(
+          UPDATE_ADDON_SUCCEEDED,
+          response.data,
+          action.data.type
+        )
       );
     } else {
       yield put(updateAddonResponseAction(UPDATE_ADDON_FAILED, null));
