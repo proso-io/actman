@@ -63,6 +63,10 @@ function getUserContextString({ orgName, teams, activeTeamIndex }) {
   return displayString;
 }
 
+function deleteCookie(name) {
+  document.cookie = name + "=;expires=Thu, 01 Jan 1970 00:00:01 GMT;";
+}
+
 function SideMenu(props) {
   const [open, setOpen] = useState(true);
   return (
@@ -117,7 +121,12 @@ function SideMenu(props) {
           })}
         </MenuContainer>
       </SideMenuBody>
-      <SideMenuFooter onClick={props.onLogout}>
+      <SideMenuFooter
+        onClick={() => {
+          deleteCookie("ring-session");
+          window.location("/login");
+        }}
+      >
         <Text type="body" color="primary">
           <FormattedMessage {...messages.logoutText} />
         </Text>
@@ -147,7 +156,6 @@ SideMenu.propTypes = {
       isActive: PropTypes.boolean
     })
   ).isRequired,
-  onLogout: PropTypes.func.isRequired,
   onLinkChange: PropTypes.func,
   onTeamChange: PropTypes.func
 };
