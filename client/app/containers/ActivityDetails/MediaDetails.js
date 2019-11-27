@@ -169,7 +169,9 @@ export default function MediaDetails({
   mdata,
   addonsmetadata,
   updateAddonData,
-  onUpdateActivityDetails
+  onUpdateActivityDetails,
+  allowTagsEdit,
+  allowMediaVerification
 }) {
   const [activeTag, setActiveTag] = useState(null);
   const [selectedImages, setSelectedImages] = useState([]);
@@ -239,52 +241,60 @@ export default function MediaDetails({
                     mainAxis="flex-start"
                     crossAxis="flex-start"
                   >
-                    <Text type="body" weight="semibold">
-                      Bulk add tags
-                    </Text>
-                    <Input
-                      id="bulk-add-tags"
-                      value={tagInputText}
-                      onValueChange={(id, value) => {
-                        setTagInputText(value);
-                      }}
-                    />
-                    <Button
-                      type="primary"
-                      text="Add"
-                      onClick={() => {
-                        const updatedMdata = getUpdateMdata(
-                          mdata,
-                          selectedImages,
-                          tagInputText
-                        );
-                        onUpdateActivityDetails(updatedMdata);
-                      }}
-                    />
+                    {allowTagsEdit && (
+                      <div>
+                        <Text type="body" weight="semibold">
+                          Bulk add tags
+                        </Text>
+                        <Input
+                          id="bulk-add-tags"
+                          value={tagInputText}
+                          onValueChange={(id, value) => {
+                            setTagInputText(value);
+                          }}
+                        />
+                        <Button
+                          type="primary"
+                          text="Add"
+                          onClick={() => {
+                            const updatedMdata = getUpdateMdata(
+                              mdata,
+                              selectedImages,
+                              tagInputText
+                            );
+                            onUpdateActivityDetails(updatedMdata);
+                          }}
+                        />
+                      </div>
+                    )}
+
                     <Spacing spacing="thirtysix" />
                     <Text type="body" color="primary60">
                       ACTIONS
                     </Text>
                     <Spacing spacing="eight" />
-                    <a
-                      href="#"
-                      onClick={e => {
-                        e.preventDefault();
-                        selectedImages.forEach(image => {
-                          const mediaId = image.match(
-                            /\/api\/media\/(.*)\/thumbnail/
-                          )[1];
-                          updateAddonData({
-                            entity: "media",
-                            entityId: mediaId,
-                            addOnType: "is-media-verified",
-                            addOnValue: { status: true }
+                    {allowMediaVerification && (
+                      <a
+                        href="#"
+                        onClick={e => {
+                          e.preventDefault();
+                          selectedImages.forEach(image => {
+                            const mediaId = image.match(
+                              /\/api\/media\/(.*)\/thumbnail/
+                            )[1];
+                            updateAddonData({
+                              entity: "media",
+                              entityId: mediaId,
+                              addOnType: "is-media-verified",
+                              addOnValue: { status: true }
+                            });
                           });
-                        });
-                      }}
-                    >
-                      <Text type="body">Mark as verified</Text>
-                    </a>
+                        }}
+                      >
+                        <Text type="body">Mark as verified</Text>
+                      </a>
+                    )}
+
                     <a
                       href="#"
                       onClick={e => {

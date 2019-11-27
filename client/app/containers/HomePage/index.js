@@ -10,12 +10,15 @@ import { connect } from "react-redux";
 import { Helmet } from "react-helmet";
 import { createStructuredSelector } from "reselect";
 import { compose } from "redux";
+import { push } from "connected-react-router";
 
 import styled from "styled-components";
 
 import { Tags } from "@proso-io/fobu/dist/components";
 import Button from "components/Button";
+import Text from "components/Text";
 import FlexContainer from "components/FlexContainer";
+import Spacing from "components/Spacing";
 import { searchRequestAcion } from "./actions";
 import ActivityTile from "components/ActivityTile";
 
@@ -25,6 +28,7 @@ import makeSelectHomePage from "./selectors";
 import reducer from "./reducer";
 import saga from "./saga";
 import { makeSelectUserData } from "containers/App/selectors";
+import FormDataService from "../../services/FormDataService";
 
 import {
   SEARCH_REQUEST_ACTION,
@@ -139,14 +143,51 @@ function getGroupedActivities(props) {
   return activities;
 }
 
+function getFieldFromMdata(mdata, field) {
+  for (let key in mdata) {
+    if (key.indexOf(field) !== -1) {
+      return mdata[key];
+    }
+  }
+  return "";
+}
+
+function getAllImages(mdata) {
+  let allImages = [];
+  Object.keys(mdata)
+    .filter(key => key.indexOf("imagesWithTags") !== -1)
+    .forEach(key => {
+      let images = mdata[key];
+      allImages = [].concat(allImages, images.map(image => image.fileUrl));
+    });
+  return allImages;
+}
+
+const ActivityTileContainer = styled.div`
+  margin-left: ${props => props.theme.spacing.twentyfour};
+  margin-bottom: ${props => props.theme.spacing.twentyfour};
+
+  :first-child {
+    margin-left: 0;
+  }
+`;
+
 export function HomePage(props) {
   useInjectReducer({ key: "homePage", reducer });
   useInjectSaga({ key: "homePage", saga });
+
+  let pendingRequest;
 
   useEffect(() => {
     if (props.homePage.searchStatus === NOT_SEARCHED) {
       props.search();
     }
+    FormDataService.hasPendingUploads().then(pendingFormRequest => {
+      if (pendingFormRequest && pendingFormRequest.length > 0) {
+        pendingRequest = pendingFormRequest[0];
+      }
+      console.log(pendingRequest);
+    });
   });
 
   const activities = getGroupedActivities(props);
@@ -157,6 +198,24 @@ export function HomePage(props) {
         <title>HomePage</title>
         <meta name="description" content="Description of HomePage" />
       </Helmet>
+      <Spacing spacing="thirtysix" />
+      <Text type="subtitle">Your activities</Text>
+      <Spacing spacing="twentyfour" />
+      {pendingRequest && (
+        <ActivityTileContainer
+          onClick={() => props.push(`/activities/${item._id}/edit`)}
+        >
+          <ActivityTile
+            key="pending"
+            programName={pendingRequest.mergeObj.name}
+            location={""}
+            imageUrls={getAllImages(pendingRequest.formData)}
+            startDate={getFieldFromMdata(pendingRequest.formData, "startDate")}
+            endDate={getFieldFromMdata(pendingRequest.formData, "endDate")}
+            commentsCount={0}
+          />
+        </ActivityTileContainer>
+      )}
 
       {activities &&
         activities.map(group => {
@@ -166,12 +225,19 @@ export function HomePage(props) {
               <ResultsContainer>
                 {group.values &&
                   group.values.map(item => (
-                    <ActivityTile
-                      programName={item.programName}
-                      imageUrls={[
-                        "https://images.unsplash.com/photo-1574441170839-b40201becb6b"
-                      ]}
-                    />
+                    <ActivityTileContainer
+                      key={item._id}
+                      onClick={() => props.push(`/activities/${item._id}`)}
+                    >
+                      <ActivityTile
+                        programName={item.programName}
+                        location={getFieldFromMdata(item.mdata, "location")}
+                        imageUrls={getAllImages(item.mdata)}
+                        startDate={getFieldFromMdata(item.mdata, "startDate")}
+                        endDate={getFieldFromMdata(item.mdata, "endDate")}
+                        commentsCount={0}
+                      />
+                    </ActivityTileContainer>
                   ))}
               </ResultsContainer>
               <br />
@@ -193,7 +259,8 @@ const mapStateToProps = createStructuredSelector({
 
 function mapDispatchToProps(dispatch) {
   return {
-    search: () => dispatch(searchRequestAcion())
+    search: () => dispatch(searchRequestAcion()),
+    push: payload => dispatch(push(payload))
   };
 }
 

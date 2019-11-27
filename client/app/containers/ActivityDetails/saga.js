@@ -76,11 +76,12 @@ function* updateAddonData(action) {
       }
     });
     if (response.performed) {
+      console.log(action);
       yield put(
         updateAddonResponseAction(
           UPDATE_ADDON_SUCCEEDED,
           response.data,
-          action.data.type
+          action.data.entity
         )
       );
     } else {
