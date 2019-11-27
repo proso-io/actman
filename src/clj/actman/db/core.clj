@@ -56,7 +56,7 @@
   [addon-id diff-addon-meta]
   (reduce
     (fn [update-meta update-key]
-      (assoc-in update-meta
+      (assoc update-meta
         (str "addonsmetadata." addon-id "." (name update-key))
         (update-key diff-addon-meta)))
     {}
@@ -124,7 +124,6 @@
             (mc/find-and-modify db '~coll-name {:_id id#} {"$set" (get-addon-update-obj addon-id# update-obj#)} {:return-new true})))
       (intern *ns* '~'get-docs-for-addon-data
         (fn [addon-id# query-obj#]
-          (println "gettng docs for addo data" addon-id# query-obj#)
           (mc/find-maps db '~coll-name query-obj#)))
       (intern *ns* '~'get-only-opn-auth-docs
         (fn [team-roles# userid# query-obj# operation# & [addon-id#]]

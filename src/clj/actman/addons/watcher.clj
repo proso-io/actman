@@ -9,7 +9,7 @@
     [clojure.set :refer [difference]]
     [actman.config :refer [env]]))
 
-(def ID (-> env :addons :watcher keyword))
+(def ID "5dda490a8616d9699b05e7ab"); (-> env :addons :watcher keyword))
 
 (defn update-special-action
   "Action function for update-special operation.
@@ -93,39 +93,39 @@
 
 (defOperation update-special
   "Update special status for an activity"
-  'actman.db.activities :update-special update-special-action false ID)
+  'actman.db.activities :update-special update-special-action false {} ID)
 
 (defOperation update-verified-activity
   "Update verified status for an activity"
-  'actman.db.activities :update-verified update-activity-verified-action false ID)
+  'actman.db.activities :update-verified update-activity-verified-action {} false ID)
 
 (defOperation update-activity-approved
   "Update special status for an activity"
-  'actman.db.activities :update-approved update-special-action false ID)
+  'actman.db.activities :update-approved update-special-action false {} ID)
 
 (defOperation update-activity-project
   ""
-  'actman.db.activities :update-project update-activity-project-action false ID)
+  'actman.db.activities :update-project update-activity-project-action false {} ID)
 
 (defOperation is-activity-special?
   "Get special status for an activity"
-  'actman.db.activities :view-special is-special-action false ID)
+  'actman.db.activities :view-special is-special-action false {} ID)
 
 (defOperation is-activity-verified?
   "Get verified status for activity"
-  'actman.db.activities :view-verified is-verified-action false ID)
+  'actman.db.activities :view-verified is-verified-action false {} ID)
 
 (defOperation is-activity-approved?
   "Get approved status for activity"
-  'actman.db.activities :view-approved is-approved-action false ID)
+  'actman.db.activities :view-approved is-approved-action false {} ID)
 
 (defOperation get-activity-project
   ""
-  'actman.db.activities :view-project get-activity-project-action false ID)
+  'actman.db.activities :view-project get-activity-project-action false {} ID)
 
 (defOperation is-media-approved?
   "Get approved status for activity"
-  'actman.db.media-meta-data :view-approved is-approved-action false ID)
+  'actman.db.media-meta-data :view-approved is-approved-action false {} ID)
 
 
 
@@ -147,7 +147,7 @@
 
 (defOperation update-verified-media
   "Update verified status for an activity"
-  'actman.db.media-meta-data :update-verified update-media-verified-action false ID)
+  'actman.db.media-meta-data :update-verified update-media-verified-action false {} ID)
 
 (defn get-allowed-activities
   [{:keys [oid username teams] :as current-user} query args]
