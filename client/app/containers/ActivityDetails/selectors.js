@@ -22,10 +22,27 @@ const makeSelectActivityData = () =>
     substate => substate.activityData
   );
 
+const makeSelectActivityId = () =>
+  createSelector(
+    selectActivityDetailsDomain,
+    substate => substate.activityData._id
+  );
+
 const makeSelectActivityDetailsState = () =>
   createSelector(
     selectActivityDetailsDomain,
     substate => substate.getActivityState
   );
 
-export { makeSelectActivityData, makeSelectActivityDetailsState };
+const makeSelectUpdateActivityDetailsState = () =>
+  createSelector(
+    selectActivityDetailsDomain,
+    substate => substate.updateActivityState
+  );
+
+export {
+  makeSelectActivityData,
+  makeSelectActivityDetailsState,
+  makeSelectUpdateActivityDetailsState,
+  makeSelectActivityId
+};

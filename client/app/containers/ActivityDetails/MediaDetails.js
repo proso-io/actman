@@ -2,8 +2,9 @@ import React, { useEffect, useState } from "react";
 import styled from "styled-components";
 import Text from "components/Text";
 import FlexContainer from "../../components/FlexContainer";
-import Spacing from "../../components/Spacing";
-import { Tags } from "@proso-io/fobu/dist/components";
+import Spacing from "components/Spacing";
+import Button from "components/Button";
+import { Tags, Input } from "@proso-io/fobu/dist/components";
 import { ChevronRight } from "styled-icons/boxicons-regular/ChevronRight";
 
 const StyledDetails = styled.details`
@@ -49,13 +50,15 @@ const TagsContainer = styled.div`
   cursor: pointer;
 `;
 
-const ImageTagsContainer = styled.div`
+const ImageTagsContainer = styled.a`
   width: 30%;
   height: 300px;
   background: ${props => props.theme.white};
   box-shadow: 0px 3px 6px rgba(0, 0, 0, 0.16);
   margin-bottom: ${props => props.theme.spacing.twentyfour};
   margin-left: ${props => props.theme.spacing.twelve};
+  border: 1px solid
+    ${props => (props.selected ? props.theme.primary40 : "transparent")};
 `;
 
 const MediaImageContainer = styled.div`
@@ -86,15 +89,32 @@ const MediaTagsContainer = styled(Tags)`
     overflow-y: scroll;
   }
 
+  & .tag {
+    color: initial;
+    text-decoration: none;
+  }
+
   & .tag__cross {
     display: none;
   }
 `;
 
 const StyledLink = styled.a`
-  text-decoration: none;
   color: ${props => props.theme.secondary};
   font-size: ${props => props.theme.fontSizes.small};
+  text-decoration: none;
+`;
+
+const StyledButton = styled(Button)`
+  background: ${props => props.theme.primary40};
+  width: 100%;
+`;
+
+const MediaActionsContainer = styled.div`
+  background: ${props => props.theme.primary80};
+  min-height: 150px;
+  width: 80%;
+  padding: ${props => props.theme.spacing.sixteen};
 `;
 
 function getUniqueTags(mdata) {
@@ -127,8 +147,33 @@ function getAllImages(mdata, activeTag) {
   return allImages;
 }
 
-export default function MediaDetails({ schema, mdata }) {
+function getUpdateMdata(mdata, selectedImages, tagInputText) {
+  for (let key in mdata) {
+    if (key.indexOf("imagesWithTags") !== -1) {
+      let images = mdata[key];
+      // get all selected images in this key
+      let filteredImages = images.filter(
+        image => selectedImages.indexOf(image.fileUrl) !== -1
+      );
+      // add the new tag
+      filteredImages.forEach(image => {
+        image.tags.push(tagInputText);
+      });
+    }
+  }
+  return mdata;
+}
+
+export default function MediaDetails({
+  schema,
+  mdata,
+  onUpdateActivityDetails
+}) {
   const [activeTag, setActiveTag] = useState(null);
+  const [selectedImages, setSelectedImages] = useState([]);
+  const [selectMode, setSelectMode] = useState(false);
+  const [tagInputText, setTagInputText] = useState("");
+
   const visibleImages = getAllImages(mdata, activeTag);
 
   return (
@@ -164,9 +209,10 @@ export default function MediaDetails({ schema, mdata }) {
                 <Spacing spacing="eight" />
                 {getUniqueTags(mdata).map(tag => (
                   <Text
+                    key={tag}
                     type="body"
                     case="title"
-                    color="secondary"
+                    color={tag === activeTag ? "primary60" : "secondary"}
                     onClick={() => setActiveTag(tag)}
                   >
                     {tag}
@@ -174,10 +220,83 @@ export default function MediaDetails({ schema, mdata }) {
                   </Text>
                 ))}
               </TagsContainer>
+              <Spacing spacing="twentyfour" />
+              <StyledButton
+                onClick={() => {
+                  setSelectMode(!selectMode);
+                  setSelectedImages([]);
+                }}
+                type="secondary"
+                text={selectMode ? "De-select images" : "Select images"}
+              />
+              <Spacing spacing="twentyfour" />
+              {selectedImages.length > 0 ? (
+                <MediaActionsContainer>
+                  <FlexContainer
+                    direction="column"
+                    mainAxis="flex-start"
+                    crossAxis="flex-start"
+                  >
+                    <Text type="body" weight="semibold">
+                      Bulk add tags
+                    </Text>
+                    <Input
+                      id="bulk-add-tags"
+                      value={tagInputText}
+                      onValueChange={(id, value) => {
+                        setTagInputText(value);
+                      }}
+                    />
+                    <Button
+                      type="primary"
+                      text="Add"
+                      onClick={() => {
+                        const updatedMdata = getUpdateMdata(
+                          mdata,
+                          selectedImages,
+                          tagInputText
+                        );
+                        onUpdateActivityDetails(updatedMdata);
+                      }}
+                    />
+                    <Spacing spacing="thirtysix" />
+                    <Text type="body" color="primary60">
+                      ACTIONS
+                    </Text>
+                    <Spacing spacing="eight" />
+                    <Text type="body">Mark as verified</Text>
+                    <Text type="body">Download all</Text>
+                  </FlexContainer>
+                </MediaActionsContainer>
+              ) : (
+                ""
+              )}
             </ActionsContainer>
             <MediaContainer wrap="wrap" mainAxis="flex-start">
               {visibleImages.map((image, index) => (
-                <ImageTagsContainer>
+                <ImageTagsContainer
+                  key={image.fileUrl}
+                  href={selectMode ? "#" : image.fileUrl}
+                  target="_blank"
+                  selected={selectedImages.indexOf(image.fileUrl) > -1}
+                  onClick={
+                    selectMode
+                      ? e => {
+                          e.preventDefault();
+                          const index = selectedImages.indexOf(image.fileUrl);
+                          let newSelectedImages = [].concat(selectedImages);
+                          if (index !== -1) {
+                            newSelectedImages.splice(index, 1);
+                            setSelectedImages(newSelectedImages);
+                          } else {
+                            let newSelectedImages = [].concat(selectedImages);
+                            newSelectedImages.push(image.fileUrl);
+                            setSelectedImages(newSelectedImages);
+                          }
+                        }
+                      : () => {}
+                  }
+                >
                   <MediaImageContainer>
                     <StyledImage src={image.fileUrl} />
                   </MediaImageContainer>

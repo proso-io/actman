@@ -3,9 +3,17 @@ import {
   ACTIVITIES_ENDPOINT,
   GET_ACTIVITY_SUCCEEDED,
   GET_ACTIVITY_FAILED,
-  GET_ACTIVITY_REQUEST_ACTION
+  GET_ACTIVITY_REQUEST_ACTION,
+  UPDATE_ACTIVITY_REQUEST_ACTION,
+  UPDATING_ACTIVITY,
+  UPDATE_ACTIVITY_SUCCEEDED,
+  UPDATE_ACTIVITY_FAILED
 } from "./constants";
-import { getActivityResponseAction } from "./actions";
+import {
+  getActivityResponseAction,
+  updateActivityResponseAction
+} from "./actions";
+import { makeSelectActivityId } from "./selectors";
 import request from "utils/request";
 
 function* getActivity({ id }) {
@@ -25,8 +33,34 @@ function* getActivity({ id }) {
   }
 }
 
+function* updateActivity(action) {
+  try {
+    const activityId = yield select(makeSelectActivityId());
+    let url = ACTIVITIES_ENDPOINT + "/" + activityId;
+    const response = yield call(request, url, {
+      method: "PUT",
+      body: JSON.stringify(action.data),
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json"
+      }
+    });
+    if (response.performed) {
+      yield put(
+        updateActivityResponseAction(UPDATE_ACTIVITY_SUCCEEDED, response.data)
+      );
+    } else {
+      yield put(updateActivityResponseAction(UPDATE_ACTIVITY_FAILED, null));
+    }
+  } catch (err) {
+    console.log(err);
+    yield put(updateActivityResponseAction(UPDATE_ACTIVITY_FAILED, null));
+  }
+}
+
 // Individual exports for testing
 export default function* editSchemaPageSaga() {
   // See example in containers/HomePage/saga.js
   yield takeLatest(GET_ACTIVITY_REQUEST_ACTION, getActivity);
+  yield takeLatest(UPDATE_ACTIVITY_REQUEST_ACTION, updateActivity);
 }

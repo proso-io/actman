@@ -18,12 +18,13 @@ import { useInjectSaga } from "utils/injectSaga";
 import { useInjectReducer } from "utils/injectReducer";
 import {
   makeSelectActivityData,
-  makeSelectActivityDetailsState
+  makeSelectActivityDetailsState,
+  makeSelectUpdateActivityDetailsState
 } from "./selectors";
 import reducer from "./reducer";
 import saga from "./saga";
 import messages from "./messages";
-import { getActivityAction } from "./actions";
+import { getActivityAction, updateActivityAction } from "./actions";
 import Text from "components/Text";
 import FlexContainer from "../../components/FlexContainer";
 import Spacing from "../../components/Spacing";
@@ -60,7 +61,18 @@ export function ActivityDetails(props) {
         {props.activityDetails ? (
           <div>
             <TextDetails schema={schema} mdata={mdata} />
-            <MediaDetails schema={schema} mdata={mdata} />
+            <MediaDetails
+              onUpdateActivityDetails={updatedMdata => {
+                let activityData = Object.assign({}, props.activityDetails);
+                delete activityData["schema"];
+                delete activityData["_id"];
+                delete activityData["programName"];
+                activityData.mdata = updatedMdata;
+                props.updateActivityDetails(activityData);
+              }}
+              schema={schema}
+              mdata={mdata}
+            />
             <CommentDetails />
           </div>
         ) : (
@@ -77,12 +89,14 @@ ActivityDetails.propTypes = {
 
 const mapStateToProps = createStructuredSelector({
   activityDetails: makeSelectActivityData(),
-  activityDetailsState: makeSelectActivityDetailsState()
+  activityDetailsState: makeSelectActivityDetailsState(),
+  updateActivityState: makeSelectUpdateActivityDetailsState()
 });
 
 function mapDispatchToProps(dispatch) {
   return {
-    getActivityDetails: activityId => dispatch(getActivityAction(activityId))
+    getActivityDetails: activityId => dispatch(getActivityAction(activityId)),
+    updateActivityDetails: payload => dispatch(updateActivityAction(payload))
   };
 }
 
