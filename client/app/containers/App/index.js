@@ -112,6 +112,11 @@ const DashboardLayout = function(props) {
                 path="/activities/:activityId"
                 component={ActivityDetails}
               />
+              <Route
+                exact
+                path="/activities/:activityId/edit"
+                component={RecordActivityPage}
+              />
               <Route exact path="/media/search" component={MediaSearchPage} />
               <Route component={NotFoundPage} />
             </Switch>

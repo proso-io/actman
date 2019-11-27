@@ -19,13 +19,19 @@ import { useInjectSaga } from "utils/injectSaga";
 import { useInjectReducer } from "utils/injectReducer";
 import {
   makeSelectPrograms,
-  makeSelectProgramsRequestState
+  makeSelectProgramsRequestState,
+  makeSelectActivity,
+  makeSelectActivityRequestState
 } from "./selectors";
 import reducer from "./reducer";
 import saga from "./saga";
 import messages from "./messages";
-import { programsRequestAction } from "./actions";
-import { PROGRAMS_NOT_FETCHED } from "./constants";
+import { programsRequestAction, activityRequestAction } from "./actions";
+import {
+  PROGRAMS_NOT_FETCHED,
+  ACTIVITY_NOT_FETCHED,
+  GET_ACTIVITY_ENDPOINT
+} from "./constants";
 
 import {
   formsRequestAction,
@@ -87,88 +93,113 @@ export function RecordActivity(props) {
   const [showPrograms, setShowPrograms] = useState(true);
   const [selectedProgram, setSelectedProgram] = useState(null);
 
-  const selectedForm = selectedProgram
+  const activityId = props.match.params.activityId;
+
+  console.log("activityId: ", activityId);
+
+  const selectedForm = activityId
+    ? props.activity && {
+        schema: props.activity.schema,
+        title: props.activity.name
+      }
+    : selectedProgram
     ? getFormByProgramId(forms, selectedProgram.sid)
+    : activityId
+    ? { title: null }
     : null;
 
   useEffect(() => {
-    if (props.programsRequestState === PROGRAMS_NOT_FETCHED) {
+    if (activityId) {
+      if (props.activityRequestState === ACTIVITY_NOT_FETCHED) {
+        props.fetchActivity(activityId);
+      }
+    } else if (props.programsRequestState === PROGRAMS_NOT_FETCHED) {
       props.onComponentLoaded();
     }
   });
 
+  let submitUrl = GET_ACTIVITY_ENDPOINT;
+  if (activityId) {
+    submitUrl += "/" + activityId;
+  }
+
+  let submitMethod = activityId ? "PUT" : "POST";
+
   return (
     <div>
       <Helmet>
-        <title>Record Activity</title>
+        <title>{activityId ? "Edit" : "Record"} Activity</title>
         <meta name="description" content="Description of RecordActivity" />
       </Helmet>
       <PageContainer>
-        {selectedProgram ? (
-          <div>
-            <Text type="caption" weight="semibold">
-              Chosen program:
-            </Text>
-            <ListItem>
-              <FlexContainer mainAxis="space-between">
-                <Text type="body" weight="semibold">
-                  {selectedProgram.name}
-                </Text>
-                <a
-                  href="#"
-                  onClick={e => {
-                    e.preventDefault();
-                    setSelectedProgram(null);
-                  }}
-                >
-                  Edit
-                </a>
-              </FlexContainer>
-            </ListItem>
-          </div>
-        ) : (
-          <ProgramsGrid show={showPrograms}>
-            <Text type="caption" weight="semibold">
-              Choose a program:
-            </Text>
-            <Spacing spacing="sixteen" />
-            <FlexContainer
-              mainAxis="flex-start"
-              crossAxis="flex-start"
-              wrap="wrap"
-            >
-              {programs.map(program => {
-                return (
-                  <ProgramCard
-                    key={program._id}
-                    onClick={() => setSelectedProgram(program)}
+        {!activityId &&
+          (selectedProgram ? (
+            <div>
+              <Text type="caption" weight="semibold">
+                Chosen program:
+              </Text>
+              <ListItem>
+                <FlexContainer mainAxis="space-between">
+                  <Text type="body" weight="semibold">
+                    {selectedProgram.name}
+                  </Text>
+                  <a
+                    href="#"
+                    onClick={e => {
+                      e.preventDefault();
+                      setSelectedProgram(null);
+                    }}
                   >
-                    <ProgramHeader>
-                      <FlexContainer height="100%">
-                        <Text type="subtitle">{program.name}</Text>
-                      </FlexContainer>
-                    </ProgramHeader>
+                    Edit
+                  </a>
+                </FlexContainer>
+              </ListItem>
+            </div>
+          ) : (
+            <ProgramsGrid show={showPrograms}>
+              <Text type="caption" weight="semibold">
+                Choose a program:
+              </Text>
+              <Spacing spacing="sixteen" />
+              <FlexContainer
+                mainAxis="flex-start"
+                crossAxis="flex-start"
+                wrap="wrap"
+              >
+                {programs.map(program => {
+                  return (
+                    <ProgramCard
+                      key={program._id}
+                      onClick={() => setSelectedProgram(program)}
+                    >
+                      <ProgramHeader>
+                        <FlexContainer height="100%">
+                          <Text type="subtitle">{program.name}</Text>
+                        </FlexContainer>
+                      </ProgramHeader>
 
-                    <ProgramBody>
-                      <FlexContainer height="100%">
-                        <Text type="body">{program.desc}</Text>
-                      </FlexContainer>
-                    </ProgramBody>
-                  </ProgramCard>
-                );
-              })}
-            </FlexContainer>
-          </ProgramsGrid>
-        )}
-        {selectedForm ? (
+                      <ProgramBody>
+                        <FlexContainer height="100%">
+                          <Text type="body">{program.desc}</Text>
+                        </FlexContainer>
+                      </ProgramBody>
+                    </ProgramCard>
+                  );
+                })}
+              </FlexContainer>
+            </ProgramsGrid>
+          ))}
+        {selectedForm &&
+        (!activityId || (activityId && props.activity.mdata)) ? (
           <StyledFormBuilder
             formTitle={selectedForm.title}
             builderMode={false}
             formSchema={selectedForm.schema}
+            formData={activityId ? props.activity.mdata : {}}
             onDataSubmit={(formData, formSchema) => {
               let mergeObj = {
-                name: "",
-                pid: selectedProgram._id,
+                name: selectedForm.title,
+                pid: activityId ? props.activity.pid : selectedProgram._id,
                 oid: props.orgId
               };
               toast.success(
@@ -179,8 +210,8 @@ export function RecordActivity(props) {
                   formData,
                   formSchema,
                   mergeObj,
-                  submitUrl: "/api/activities",
-                  submitMethod: "POST",
+                  submitUrl: submitUrl,
+                  submitMethod: submitMethod, // submitMethod,
                   mediaUploadUrl: "/api/media"
                   //serviceWorkerUrl: "/form-sw.js"
                 });
@@ -208,7 +239,9 @@ const mapStateToProps = createStructuredSelector({
   forms: makeSelectForms(),
   programs: makeSelectPrograms(),
   programsRequestState: makeSelectProgramsRequestState(),
-  orgId: makeSelectOrgId()
+  orgId: makeSelectOrgId(),
+  activity: makeSelectActivity(),
+  activityRequestState: makeSelectActivityRequestState()
 });
 
 function mapDispatchToProps(dispatch) {
@@ -218,7 +251,8 @@ function mapDispatchToProps(dispatch) {
       dispatch(formsRequestAction());
     },
     uploadFormData: data => dispatch(uploadFormDataRequestAction(data)),
-    push: payload => dispatch(push(payload))
+    push: payload => dispatch(push(payload)),
+    fetchActivity: id => dispatch(activityRequestAction(id))
   };
 }
 
