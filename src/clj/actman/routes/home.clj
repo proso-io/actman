@@ -24,4 +24,4 @@
     {:middleware [middleware/wrap-csrf
                  middleware/wrap-formats]}
     ["/" {:get serve-index}]
-    ["/about" {:get about-page}]])
+    ["/:page" {:get serve-index}]])

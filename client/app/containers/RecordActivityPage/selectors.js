@@ -28,4 +28,21 @@ const makeSelectProgramsRequestState = () =>
     substate => substate.programsFetchState
   );
 
-export { makeSelectPrograms, makeSelectProgramsRequestState };
+const makeSelectActivity = () =>
+  createSelector(
+    selectRecordActivityDomain,
+    substate => substate.activity
+  );
+
+const makeSelectActivityRequestState = () =>
+  createSelector(
+    selectRecordActivityDomain,
+    substate => substate.activityFetchState
+  );
+
+export {
+  makeSelectPrograms,
+  makeSelectProgramsRequestState,
+  makeSelectActivity,
+  makeSelectActivityRequestState
+};

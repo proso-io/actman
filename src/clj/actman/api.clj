@@ -23,7 +23,7 @@
       )))
 
 (defn register-user
-  [{:keys [email] :as user-info} req]
+  [{:keys [email] :as user-info} & [req]]
   (if (users/get-user-for-email email)
     {:error (getstr :USER_EMAIL_USED)}
     (->

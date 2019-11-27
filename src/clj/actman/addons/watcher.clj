@@ -102,7 +102,7 @@
 
 (defOperation update-activity-approved
   "Update special status for an activity"
-  'actman.db.activities :update-approved update-special-action false {} ID)
+  'actman.db.activities :update-approved update-activity-approved-action false {} ID)
 
 (defOperation update-activity-project
   ""
@@ -155,9 +155,11 @@
   (println "watcher get-allowed-activities" current-user ID)
   (let [
     team (first teams)
+    all-activities (ops/get-activities current-user query args)
     ]
-    (if (= (:rl team) "Head")
-      (ops/get-activities current-user query args)
+    (println "get-allowed-activities" all-activities)
+    (if (:performed all-activities) ;(= (:rl team) "Head")
+      all-activities; (ops/get-activities current-user query args)
       (let [
         approved (get-approved-activities current-user query args)
         special (get-special-activities current-user query args)
