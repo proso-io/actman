@@ -13,6 +13,10 @@
   [:users [sc/Str] "Array of user ids" :opt]
   ])
 
+(defn remove-team-units
+  [roles]
+  (mapv #(assoc {} :t (:t %) :rl (:rl %)) roles))
+
 (defn get-user-access-operations
   "Get all accessible operations for user and roles"
   [userid roles]
@@ -22,7 +26,7 @@
         {
           "$or" [
             {:users userid}
-            {:roles {"$elemMatch" {"$or" roles}}}
+            {:roles {"$elemMatch" {"$or" (remove-team-units roles)}}}
           ]
         })
     ]
