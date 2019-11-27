@@ -86,7 +86,11 @@ const allLinks = [
     link: "/activities/search",
     requiredPerm: "Activities__view"
   },
-  { title: "Search Media", link: "/media/search", requiredPerm: "Media__view" }
+  {
+    title: "Search Media",
+    link: "/media/search",
+    requiredPerm: "MediaMetaData__view"
+  }
 ];
 
 function getSidemenuLinks(userPermissions, activeLink) {

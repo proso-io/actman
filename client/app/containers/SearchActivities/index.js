@@ -17,6 +17,7 @@ import makeSelectSearchActivities from "./selectors";
 import reducer from "./reducer";
 import saga from "./saga";
 import styled from "styled-components";
+import { push } from "connected-react-router";
 
 import { Tags } from "@proso-io/fobu/dist/components";
 import Button from "components/Button";
@@ -112,7 +113,9 @@ export function SearchActivities(props) {
       <FlexContainer mainAxis="flex-start" wrap="wrap">
         {props.searchActivities.searchResult &&
           props.searchActivities.searchResult.map(item => (
-            <ActivityTileContainer>
+            <ActivityTileContainer
+              onClick={() => props.push(`/activities/${item._id}`)}
+            >
               <ActivityTile
                 programName={item.programName}
                 location={getFieldFromMdata(item.mdata, "location")}
@@ -139,7 +142,8 @@ const mapStateToProps = createStructuredSelector({
 function mapDispatchToProps(dispatch) {
   return {
     search: tags => dispatch(searchRequestAcion(tags)),
-    resetSearch: () => dispatch(resetSearchResultsAction())
+    resetSearch: () => dispatch(resetSearchResultsAction()),
+    push: payload => dispatch(push(payload))
   };
 }
 

@@ -21,3 +21,5 @@ export const SEARCHING = "app/MediaSearchPage/SEARCHING";
 export const NOT_SEARCHED = "app/MediaSearchPage/NOT_SEARCHED";
 
 export const SEARCH_ENDPOINT = "/api/media";
+
+export const RESET_SEARCH_ACTION = "RESET_SEARCH_ACTION";
