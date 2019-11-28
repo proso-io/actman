@@ -32,6 +32,7 @@ import Text from "components/Text";
 import Button from "components/Button";
 import FlexContainer from "components/FlexContainer";
 import ListItem from "../../components/ListItem";
+import { makeSelectUserPerms } from "../App/selectors";
 
 const SchemaListContainer = styled.div`
   margin-top: ${props => props.theme.spacing.thirtysix};
@@ -40,6 +41,16 @@ const SchemaListContainer = styled.div`
 const PageContainer = styled.div`
   padding-top: ${props => props.theme.spacing.thirtysix};
 `;
+
+function checkFormPerm(opn, perms) {
+  for (let index = 0; index < perms.length; index++) {
+    const element = perms[index];
+    if ("FormSchemas" === element.ent && opn === element.opn) {
+      return true;
+    }
+  }
+  return false;
+}
 
 export function YourFormsPage(props) {
   useInjectReducer({ key: "yourFormsPage", reducer });
@@ -50,6 +61,9 @@ export function YourFormsPage(props) {
       props.onComponentLoaded();
     }
   });
+
+  const allowCreateForm = checkFormPerm("create", props.perms);
+  const allowEditForm = checkFormPerm("edit", props.perms);
 
   return (
     <div>
@@ -62,14 +76,18 @@ export function YourFormsPage(props) {
       </Helmet>
 
       <PageContainer>
-        <Button
-          type="primary"
-          text="Create new form"
-          onClick={e => {
-            e.preventDefault();
-            props.push(`/forms/new`);
-          }}
-        />
+        {allowCreateForm ? (
+          <Button
+            type="primary"
+            text="Create new form"
+            onClick={e => {
+              e.preventDefault();
+              props.push(`/forms/new`);
+            }}
+          />
+        ) : (
+          ""
+        )}
         <SchemaListContainer>
           <Text type="caption">Saved forms</Text>
           {props.forms &&
@@ -80,15 +98,19 @@ export function YourFormsPage(props) {
                     <Text type="body" weight="semibold">
                       {form.title}
                     </Text>
-                    <a
-                      href="#"
-                      onClick={e => {
-                        e.preventDefault();
-                        props.push(`/forms/${form._id}`);
-                      }}
-                    >
-                      Edit
-                    </a>
+                    {allowEditForm ? (
+                      <a
+                        href="#"
+                        onClick={e => {
+                          e.preventDefault();
+                          props.push(`/forms/${form._id}`);
+                        }}
+                      >
+                        Edit
+                      </a>
+                    ) : (
+                      ""
+                    )}
                   </FlexContainer>
                 </ListItem>
               );
@@ -107,7 +129,8 @@ YourFormsPage.propTypes = {
 
 const mapStateToProps = createStructuredSelector({
   forms: makeSelectForms(),
-  formsRequestState: makeSelectFormsRequestState()
+  formsRequestState: makeSelectFormsRequestState(),
+  perms: makeSelectUserPerms()
 });
 
 function mapDispatchToProps(dispatch) {

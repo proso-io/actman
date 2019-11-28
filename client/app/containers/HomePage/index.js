@@ -4,7 +4,7 @@
  *
  */
 
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import PropTypes from "prop-types";
 import { connect } from "react-redux";
 import { Helmet } from "react-helmet";
@@ -163,6 +163,14 @@ function getAllImages(mdata) {
   return allImages;
 }
 
+function chunkArray(arr, n) {
+  return arr.reduce((all, cur, i) => {
+    const ch = Math.floor(i / n);
+    all[ch] = [].concat(all[ch] || [], cur);
+    return all;
+  }, []);
+}
+
 const ActivityTileContainer = styled.div`
   margin-left: ${props => props.theme.spacing.twentyfour};
   margin-bottom: ${props => props.theme.spacing.twentyfour};
@@ -176,7 +184,7 @@ export function HomePage(props) {
   useInjectReducer({ key: "homePage", reducer });
   useInjectSaga({ key: "homePage", saga });
 
-  let pendingRequest;
+  const [pendingRequest, setPendingRequest] = useState(null);
 
   useEffect(() => {
     if (props.homePage.searchStatus === NOT_SEARCHED) {
@@ -184,9 +192,8 @@ export function HomePage(props) {
     }
     FormDataService.hasPendingUploads().then(pendingFormRequest => {
       if (pendingFormRequest && pendingFormRequest.length > 0) {
-        pendingRequest = pendingFormRequest[0];
+        setPendingRequest(pendingFormRequest[0]);
       }
-      console.log(pendingRequest);
     });
   });
 
@@ -201,22 +208,26 @@ export function HomePage(props) {
       <Spacing spacing="thirtysix" />
       <Text type="subtitle">Your activities</Text>
       <Spacing spacing="twentyfour" />
-      {pendingRequest && (
-        <ActivityTileContainer
-          onClick={() => props.push(`/activities/${item._id}/edit`)}
-        >
-          <ActivityTile
-            key="pending"
-            programName={pendingRequest.mergeObj.name}
-            location={""}
-            imageUrls={getAllImages(pendingRequest.formData)}
-            startDate={getFieldFromMdata(pendingRequest.formData, "startDate")}
-            endDate={getFieldFromMdata(pendingRequest.formData, "endDate")}
-            commentsCount={0}
-          />
-        </ActivityTileContainer>
-      )}
-
+      <div>
+        {pendingRequest && (
+          <ActivityTileContainer
+            onClick={() => props.push(`/activities/${item._id}/edit`)}
+          >
+            <ActivityTile
+              key="pending"
+              programName={
+                pendingRequest.requestParams.mergeObj.name || "Uploading..."
+              }
+              location={""}
+              imageUrls={getAllImages(pendingRequest.data)}
+              startDate={getFieldFromMdata(pendingRequest.data, "startDate")}
+              endDate={getFieldFromMdata(pendingRequest.data, "endDate")}
+              commentsCount={0}
+            />
+            <Spacing spacing="twentyfour" />
+          </ActivityTileContainer>
+        )}
+      </div>
       {activities &&
         activities.map(group => {
           return (

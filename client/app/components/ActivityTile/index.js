@@ -102,7 +102,7 @@ function ActivityTile(props) {
           height="100%"
         >
           <Text type="body" weight="semibold">
-            {programName}, {location}
+            {programName} {location}
           </Text>
           <Spacing spacing="four" />
           {startDate && endDate ? (
