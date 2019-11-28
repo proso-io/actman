@@ -64,7 +64,7 @@ function getUserContextString({ orgName, teams, activeTeamIndex }) {
 }
 
 function deleteCookie(name) {
-  document.cookie = name + "=;expires=Thu, 01 Jan 1970 00:00:01 GMT;";
+  document.cookie = name + "=;expires=Thu, 01 Jan 1970 00:00:00 GMT;path=/;";
 }
 
 function SideMenu(props) {
@@ -124,7 +124,7 @@ function SideMenu(props) {
       <SideMenuFooter
         onClick={() => {
           deleteCookie("ring-session");
-          window.location("/login");
+          window.location.assign("/login");
         }}
       >
         <Text type="body" color="primary">

@@ -163,6 +163,14 @@ function getAllImages(mdata) {
   return allImages;
 }
 
+function chunkArray(arr, n) {
+  return arr.reduce((all, cur, i) => {
+    const ch = Math.floor(i / n);
+    all[ch] = [].concat(all[ch] || [], cur);
+    return all;
+  }, []);
+}
+
 const ActivityTileContainer = styled.div`
   margin-left: ${props => props.theme.spacing.twentyfour};
   margin-bottom: ${props => props.theme.spacing.twentyfour};
