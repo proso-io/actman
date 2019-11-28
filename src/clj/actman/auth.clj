@@ -60,7 +60,7 @@
     a {:oid oid :opn (name operation) :addon addon-id :ent entity-type}
     docs (accres/get-docs a)
     rolespath (if addon-id [:addonsaccess (keyword addon-id) :accessroles operation] [:accessroles operation])
-    userspath (if addon-id [:addonsaccess (keyword addon-id) :accessusers operation] [:accessusers operation])
+    userspath (if addon-id [:addonsaccess (keyword addon-id) :accessusers operation] [:accessusers]) ;[:accessusers operation]
     global-access
       (->
         {:oid oid :opn (name operation) :addon addon-id :ent entity-type}
@@ -69,7 +69,7 @@
     a (println "global-access" a global-access)
     entity-roles-access (get-in entity rolespath)
     entity-users-access (get-in entity userspath)
-    a (println "\n" docs global-access rolespath userspath entity-roles-access entity-users-access "\n")
+    a (println "\n" entity entity-roles-access entity-users-access "\n")
     ]
     (or
       (some #(= username %) entity-users-access)
