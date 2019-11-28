@@ -48,7 +48,7 @@ const ResultsContainer = styled.div`
 `;
 
 const ImageTagsContainer = styled.div`
-  width: 30%;
+  width: 20%;
   height: 300px;
   background: ${props => props.theme.white};
   box-shadow: 0px 3px 6px rgba(0, 0, 0, 0.16);
@@ -136,12 +136,16 @@ export function MediaSearchPage(props) {
       <Spacing spacing="twentyfour" />
       <ResultsContainer>
         {props.mediaSearchPage.searchResult &&
-          props.mediaSearchPage.searchResult.map(item => (
+          props.mediaSearchPage.searchResult.map(image => (
             <ImageTagsContainer key={image.fileUrl} onClick={() => {}}>
               <MediaImageContainer>
-                <StyledImage src={image.turl} />
+                <FlexContainer height="100%">
+                  <StyledImage src={image.turl} />
+                </FlexContainer>
               </MediaImageContainer>
-              <MediaTagsContainer value={image.tags} />
+              <div className="fobuComponents">
+                <MediaTagsContainer value={image.tags} />
+              </div>
             </ImageTagsContainer>
           ))}
       </ResultsContainer>
