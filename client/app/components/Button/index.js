@@ -13,9 +13,11 @@ import { FormattedMessage } from "react-intl";
 import messages from "./messages";
 
 const ButtonWrapper = styled.button`
-  background: ${props => props.theme[props.type]};
+  background: ${props => props.theme[props.themeType]};
   color: ${props =>
-    props.type === "primary" ? props.theme.secondary : props.theme.primary};
+    props.themeType === "primary"
+      ? props.theme.secondary
+      : props.theme.primary};
   padding: ${props => props.theme.spacing.twelve}
     ${props => props.theme.spacing.sixteen};
   border: none;
@@ -30,8 +32,8 @@ const ButtonWrapper = styled.button`
 `;
 
 const Loader = styled(LoaderAlt)`
-  animation: spin 2s linear infinite;
-  width: 15px;
+  animation: spin 1s linear infinite;
+  width: 20px;
 
   @keyframes spin {
     0% {
@@ -44,21 +46,30 @@ const Loader = styled(LoaderAlt)`
 `;
 
 function Button(props) {
-  const { text, type, state, onClick, loading, disabled } = props;
+  const {
+    type,
+    themeType,
+    state,
+    onClick,
+    loading,
+    disabled,
+    children
+  } = props;
   return (
     <ButtonWrapper
       disabled={disabled}
       onClick={state == "enabled" && onClick}
+      themeType={themeType}
       type={type}
     >
-      {loading ? <Loader /> : text}
+      {loading ? <Loader /> : children}
     </ButtonWrapper>
   );
 }
 
 Button.propTypes = {
-  text: PropTypes.oneOfType([PropTypes.string, PropTypes.object]),
-  type: PropTypes.oneOf(["primary", "secondary", "link"]),
+  type: PropTypes.oneOf(["reset", "submit", "button"]),
+  themeType: PropTypes.oneOf(["primary", "secondary", "link"]),
   state: PropTypes.oneOf(["loading", "disabled", "enabled"]),
   onClick: PropTypes.func,
   loading: PropTypes.bool,
@@ -66,7 +77,8 @@ Button.propTypes = {
 };
 
 Button.defaultProps = {
-  type: "primary",
+  type: "button",
+  themeType: "primary",
   state: "enabled",
   onClick: () => {},
   loading: false,

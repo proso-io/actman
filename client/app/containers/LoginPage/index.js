@@ -24,6 +24,7 @@ import messages from "./messages";
 import { loginRequestAction } from "./actions";
 
 import Button from "../../components/Button";
+import Spacing from "../../components/Spacing";
 import FlexContainer from "../../components/FlexContainer";
 import LoginFormCard from "./LoginFormCard";
 import StaticNav from "./StaticNav";
@@ -41,6 +42,13 @@ const StyledInput = styled(Input)`
   }
 `;
 
+const ErrorMessage = styled.div`
+  color: ${props => props.theme.error};
+  padding: ${props => props.theme.spacing.twelve};
+  border: ${props => props.theme.error};
+  background: ${props => props.theme.error60};
+`;
+
 export function LoginPage(props) {
   useInjectReducer({ key: "loginPage", reducer });
   useInjectSaga({ key: "loginPage", saga });
@@ -55,6 +63,7 @@ export function LoginPage(props) {
   });
 
   const isLoading = props.loginPage.loginStatus === 0;
+  const hasError = props.loginPage.loginStatus === -1;
 
   return (
     <div>
@@ -67,10 +76,17 @@ export function LoginPage(props) {
           <h2>ActMan</h2>
         </StaticNav>
         <FlexContainer height="100%">
-          <LoginFormCard {...props}>
+          <LoginFormCard
+            {...props}
+            onSubmit={e => {
+              e.preventDefault();
+              props.onSubmit(username, password);
+            }}
+          >
             <div className="fobuComponents">
               <StyledInput
                 id="username"
+                required={true}
                 label={<FormattedMessage {...messages.username} />}
                 value={username}
                 onValueChange={(id, val) => setUsername(val)}
@@ -78,19 +94,24 @@ export function LoginPage(props) {
               <StyledInput
                 id="password"
                 type="password"
+                required={true}
                 label={<FormattedMessage {...messages.password} />}
                 value={password}
                 onValueChange={(id, val) => setPassword(val)}
               />
             </div>
-            <Button
-              loading={isLoading}
-              disabled={isLoading}
-              text={<FormattedMessage {...messages.submit} />}
-              onClick={() => {
-                props.onSubmit(username, password);
-              }}
-            />
+            <Button type="submit" loading={isLoading} disabled={isLoading}>
+              <FormattedMessage {...messages.submit} />
+            </Button>
+
+            {hasError && (
+              <div>
+                <Spacing spacing="twentyfour" />
+                <ErrorMessage>
+                  Those login details don't sound about right. Try again?
+                </ErrorMessage>
+              </div>
+            )}
           </LoginFormCard>
         </FlexContainer>
       </BackgroundContainer>
