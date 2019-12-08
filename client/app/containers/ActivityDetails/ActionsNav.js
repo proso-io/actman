@@ -6,6 +6,7 @@ import Button from "components/Button";
 import FlexContainer from "../../components/FlexContainer";
 import Spacing from "../../components/Spacing";
 import { Input } from "@proso-io/fobu/dist/components";
+import { UPDATING_ADDON } from "./constants";
 
 const ActionsBar = styled.div`
   position: sticky;
@@ -27,10 +28,20 @@ const ProjectInput = styled(Input)`
   }
 `;
 
-function ActionsNav({ addonsData, hasRight, updateAddon, activityId, perms }) {
+function ActionsNav({
+  addonsData,
+  hasRight,
+  updateAddon,
+  activityId,
+  perms,
+  addonState,
+  updateAddonType
+}) {
   const [projectName, setProjectName] = useState(
     addonsData ? addonsData["project"] || "" : ""
   );
+
+  const isLoading = addonState === UPDATING_ADDON;
 
   const entity = "Activities";
 
@@ -43,6 +54,9 @@ function ActionsNav({ addonsData, hasRight, updateAddon, activityId, perms }) {
               <Button
                 themeType="primary"
                 disabled={addonsData && addonsData["is-verified"]}
+                loading={
+                  isLoading && updateAddonType === "is-activity-verified"
+                }
                 onClick={() =>
                   updateAddon(entity, activityId, "is-activity-verified", {
                     status: true
@@ -61,6 +75,7 @@ function ActionsNav({ addonsData, hasRight, updateAddon, activityId, perms }) {
               <Button
                 themeType="secondary"
                 disabled={addonsData && addonsData["is-special"]}
+                loading={isLoading && updateAddonType === "is-activity-special"}
                 onClick={() =>
                   updateAddon(entity, activityId, "is-activity-special", {
                     status: true
@@ -79,6 +94,9 @@ function ActionsNav({ addonsData, hasRight, updateAddon, activityId, perms }) {
               <Button
                 themeType="secondary"
                 disabled={addonsData && addonsData["is-approved"]}
+                loading={
+                  isLoading && updateAddonType === "is-activity-approved"
+                }
                 onClick={() =>
                   updateAddon(entity, activityId, "is-activity-approved", {
                     status: true
@@ -105,6 +123,7 @@ function ActionsNav({ addonsData, hasRight, updateAddon, activityId, perms }) {
               <Spacing type="horizontal" spacing="eight" />
               <Button
                 themeType="secondary"
+                loading={isLoading && updateAddonType === "project"}
                 onClick={() => {
                   updateAddon(entity, activityId, "project", {
                     project: projectName

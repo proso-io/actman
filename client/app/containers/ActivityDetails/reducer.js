@@ -13,6 +13,7 @@ import {
   UPDATE_ACTIVITY_RESPONSE_ACTION,
   UPDATING_ACTIVITY,
   UPDATE_ACTIVITY_SUCCEEDED,
+  UPDATING_ADDON,
   UPDATE_ADDON_REQUEST_ACTION,
   UPDATE_ADDON_RESPONSE_ACTION,
   UPDATE_ADDON_SUCCEEDED
@@ -39,6 +40,7 @@ const activityDetailsReducer = (state = initialState, action) =>
       case GET_ACTIVITY_RESPONSE_ACTION:
         draft.activityData = action.data;
         draft.getActivityState = action.status;
+        break;
       case UPDATE_ACTIVITY_REQUEST_ACTION:
         draft.updateActivityState = UPDATING_ACTIVITY;
         break;
@@ -47,8 +49,10 @@ const activityDetailsReducer = (state = initialState, action) =>
         if (action.status === UPDATE_ACTIVITY_SUCCEEDED) {
           draft.activityData = action.data;
         }
+        break;
       case UPDATE_ADDON_REQUEST_ACTION:
-        draft.updateAddonState = UPDATING_ACTIVITY;
+        draft.updateAddonState = UPDATING_ADDON;
+        draft.updateAddonType = action.data.addOnType;
         break;
       case UPDATE_ADDON_RESPONSE_ACTION:
         draft.updateAddonState = action.status;
@@ -59,6 +63,7 @@ const activityDetailsReducer = (state = initialState, action) =>
           draft.activityData.mdata = action.data.mdata;
           draft.activityData.addonsmetadata = action.data.addonsmetadata;
         }
+        break;
     }
   });
 

@@ -12,14 +12,15 @@ import { FormattedMessage } from "react-intl";
 import { createStructuredSelector } from "reselect";
 import { compose } from "redux";
 import styled from "styled-components";
-import { ChevronRight } from "styled-icons/boxicons-regular/ChevronRight";
 
 import { useInjectSaga } from "utils/injectSaga";
 import { useInjectReducer } from "utils/injectReducer";
 import {
   makeSelectActivityData,
   makeSelectActivityDetailsState,
-  makeSelectUpdateActivityDetailsState
+  makeSelectUpdateActivityDetailsState,
+  makeSelectUpdateAddonState,
+  makeSelectUpdateAddonType
 } from "./selectors";
 import reducer from "./reducer";
 import saga from "./saga";
@@ -43,13 +44,14 @@ const PageContainer = styled.div`
 export function ActivityDetails(props) {
   useInjectReducer({ key: "activityDetails", reducer });
   useInjectSaga({ key: "activityDetails", saga });
+
   let schema, mdata, addonsmetadata, addonsData;
   const activityId = props.match.params.activityId;
 
-  function updateAddon(entity, entityId, type, valueObj) {
+  function updateAddon(entity, entityId, addOnType, valueObj) {
     props.updateAddonData({
       entityId: entityId,
-      addOnType: type,
+      addOnType: addOnType,
       addOnValue: valueObj,
       entity: entity
     });
@@ -83,6 +85,8 @@ export function ActivityDetails(props) {
         hasRight={props.hasRight}
         addonsData={addonsData}
         perms={props.perms}
+        addonState={props.addonState}
+        updateAddonType={props.updateAddonType}
       />
       <PageContainer>
         {props.activityDetails ? (
@@ -107,11 +111,13 @@ export function ActivityDetails(props) {
                 props.perms
               )}
               allowTagsEdit={props.hasRight("Activities", "edit", props.perms)}
+              addonState={props.addonState}
+              updateAddonType={props.updateAddonType}
             />
             <CommentDetails />
           </div>
         ) : (
-          ""
+          <p>Loading..</p>
         )}
       </PageContainer>
     </div>
@@ -125,10 +131,11 @@ ActivityDetails.propTypes = {
 const mapStateToProps = createStructuredSelector({
   activityDetails: makeSelectActivityData(),
   activityDetailsState: makeSelectActivityDetailsState(),
+  addonState: makeSelectUpdateAddonState(),
+  updateAddonType: makeSelectUpdateAddonType(),
   updateActivityState: makeSelectUpdateActivityDetailsState(),
   perms: makeSelectUserPerms(),
   hasRight: () => (ent, opn, perms) => {
-    console.log(ent, opn);
     for (let index = 0; index < perms.length; index++) {
       const element = perms[index];
       if (ent === element.ent && opn === element.opn) {

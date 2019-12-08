@@ -6,6 +6,7 @@ import Spacing from "components/Spacing";
 import Button from "components/Button";
 import Link from "components/Link";
 import { Tags, Input } from "@proso-io/fobu/dist/components";
+import { UPDATING_ADDON } from "./constants";
 import { ChevronRight } from "styled-icons/boxicons-regular/ChevronRight";
 
 const StyledDetails = styled.details`
@@ -166,7 +167,9 @@ export default function MediaDetails({
   updateAddon,
   onUpdateActivityDetails,
   allowTagsEdit,
-  allowMediaVerification
+  allowMediaVerification,
+  addonState,
+  updateAddonType
 }) {
   const [activeTag, setActiveTag] = useState(null);
   const [selectedImages, setSelectedImages] = useState([]);
@@ -176,6 +179,8 @@ export default function MediaDetails({
   const visibleImages = getAllImages(mdata, activeTag);
 
   const entity = "MediaMetaData";
+
+  const isLoading = addonState === UPDATING_ADDON;
 
   return (
     <StyledDetails>
@@ -289,7 +294,11 @@ export default function MediaDetails({
                           });
                         }}
                       >
-                        <Text type="body">Mark as verified</Text>
+                        <Text type="body">
+                          {isLoading && updateAddonType === "is-media-verified"
+                            ? "Marking..."
+                            : "Mark as verified"}
+                        </Text>
                       </Link>
                     )}
                     <Spacing spacing="four" />
