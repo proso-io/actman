@@ -81,7 +81,7 @@ export function SearchActivities(props) {
   return (
     <div>
       <Helmet>
-        <title>SearchActivities</title>
+        <title>Search activities</title>
         <meta name="description" content="Description of SearchActivities" />
       </Helmet>
       <Spacing spacing="thirtysix" />
@@ -98,7 +98,7 @@ export function SearchActivities(props) {
                 props.resetSearch();
               }}
             />
-            <Button text="Search" onClick={() => props.search(searchTags)} />
+            <Button onClick={() => props.search(searchTags)}>Search</Button>
           </FlexContainer>
         </TagsContainer>
       </div>
