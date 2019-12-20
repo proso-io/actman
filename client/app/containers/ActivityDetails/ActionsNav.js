@@ -35,11 +35,16 @@ function ActionsNav({
   activityId,
   perms,
   addonState,
-  updateAddonType
+  updateAddonType,
+  isFetchingActivity
 }) {
-  const [projectName, setProjectName] = useState(
-    addonsData ? addonsData["project"] || "" : ""
-  );
+  const [projectName, setProjectName] = useState("");
+
+  useEffect(() => {
+    if (!isFetchingActivity && addonsData && addonsData["project"]) {
+      setProjectName(addonsData["project"]);
+    }
+  });
 
   const isLoading = addonState === UPDATING_ADDON;
 
@@ -130,7 +135,7 @@ function ActionsNav({
                   });
                 }}
               >
-                Add project
+                {addonsData && addonsData["project"] ? "Added" : "Add project"}
               </Button>
             </FlexContainer>
           </div>

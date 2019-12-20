@@ -87,6 +87,7 @@ export function ActivityDetails(props) {
         perms={props.perms}
         addonState={props.addonState}
         updateAddonType={props.updateAddonType}
+        isFetchingActivity={!props.activityDetails}
       />
       <PageContainer>
         {props.activityDetails ? (
