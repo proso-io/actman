@@ -71,8 +71,18 @@ const StyledImages = styled(Images)`
 const ColoredDefault = styled.div`
   width: 100%;
   height: 100%;
-  background: #ffd1d1;
+  background: ${props => getRandomColor()};
 `;
+
+function getRandomColor() {
+  const colors = ["#FFFFED", "#ffd1d1", "#FAFFFD", "#FCFCFF"];
+  const index = getRandomInt(0, colors.length - 1);
+  return colors[index];
+}
+
+function getRandomInt(min, max) {
+  return Math.floor(Math.random() * (max - min + 1)) + min;
+}
 
 function ActivityTile(props) {
   const {

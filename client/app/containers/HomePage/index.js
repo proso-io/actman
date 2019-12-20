@@ -34,13 +34,9 @@ import {
   SEARCH_REQUEST_ACTION,
   SEARCH_RESPONSE_ACTION,
   SEARCHING,
-  NOT_SEARCHED
+  NOT_SEARCHED,
+  CHUNK_SIZE
 } from "./constants";
-
-const ResultsContainer = styled.div`
-  display: flex;
-  flex-wrap: wrap;
-`;
 
 function doGroupByApproved(props) {
   let approve = false;
@@ -140,6 +136,9 @@ function getGroupedActivities(props) {
       }
     ];
   }
+  activities.forEach(activity => {
+    activity.values = activity.values = chunkArray(activity.values, CHUNK_SIZE);
+  });
   return activities;
 }
 
@@ -233,24 +232,31 @@ export function HomePage(props) {
           return (
             <div>
               {group.label && <p>{group.label}</p>}
-              <ResultsContainer>
+              <FlexContainer direction="column" crossAxis="flex-start">
                 {group.values &&
-                  group.values.map(item => (
-                    <ActivityTileContainer
-                      key={item._id}
-                      onClick={() => props.push(`/activities/${item._id}`)}
-                    >
-                      <ActivityTile
-                        programName={item.programName}
-                        location={getFieldFromMdata(item.mdata, "location")}
-                        imageUrls={getAllImages(item.mdata)}
-                        startDate={getFieldFromMdata(item.mdata, "startDate")}
-                        endDate={getFieldFromMdata(item.mdata, "endDate")}
-                        commentsCount={0}
-                      />
-                    </ActivityTileContainer>
+                  group.values.map(row => (
+                    <FlexContainer>
+                      {row.map(item => (
+                        <ActivityTileContainer
+                          key={item._id}
+                          onClick={() => props.push(`/activities/${item._id}`)}
+                        >
+                          <ActivityTile
+                            programName={item.programName}
+                            location={getFieldFromMdata(item.mdata, "location")}
+                            imageUrls={getAllImages(item.mdata)}
+                            startDate={getFieldFromMdata(
+                              item.mdata,
+                              "startDate"
+                            )}
+                            endDate={getFieldFromMdata(item.mdata, "endDate")}
+                            commentsCount={0}
+                          />
+                        </ActivityTileContainer>
+                      ))}
+                    </FlexContainer>
                   ))}
-              </ResultsContainer>
+              </FlexContainer>
               <br />
             </div>
           );
