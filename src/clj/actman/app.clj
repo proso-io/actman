@@ -34,6 +34,7 @@
   (let [
     user (current-user request)
     operation-fn (if (= operation-fn opns/get-activities) watcher/get-allowed-activities operation-fn)
+    operation-fn (if (= operation-fn opns/get-activity) watcher/get-allowed-activity operation-fn)
     ]
     (operation-fn user query operation-args))
   )

@@ -142,13 +142,39 @@
   "Get activity details for watcher addon"
   'actman.db.activities :view-approved-activities ops/get-activities-action true {(get-query-path "is-approved") true} ID)
 
+(defOperation get-approved-activity
+  "Get activity details for watcher addon"
+  'actman.db.activities :view-approved-activity ops/get-activities-action false nil ID)
+
 (defOperation get-special-activities
   "Get activity details for watcher addon"
   'actman.db.activities :view-special-activities ops/get-activities-action true {(get-query-path "is-special") true} ID)
 
+(defOperation get-special-activity
+  "Get activity details for watcher addon"
+  'actman.db.activities :view-special-activities ops/get-activities-action false nil ID)
+
 (defOperation update-verified-media
   "Update verified status for an activity"
   'actman.db.media-meta-data :update-verified update-media-verified-action false {} ID)
+
+(defn get-allowed-activity
+  [{:keys [oid username teams] :as current-user} query args]
+  (println "watcher get-allowed-activity" current-user ID)
+  (let [
+    team (first teams)
+    activity (ops/get-activity current-user query args)
+    ]
+    (println "get-allowed-activity" activity)
+    (if (:performed activity) ;(= (:rl team) "Head")
+      activity; (ops/get-activities current-user query args)
+      (let [
+        approved (get-approved-activity current-user query args)
+        ]
+        (if (:performed approved)
+          approved
+          special (get-special-activity current-user query args)))
+    )))
 
 (defn get-allowed-activities
   [{:keys [oid username teams] :as current-user} query args]
