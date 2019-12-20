@@ -124,7 +124,7 @@ function SideMenu(props) {
       <SideMenuFooter
         onClick={() => {
           deleteCookie("ring-session");
-          // window.location.assign("/login");
+          window.location.assign("/login");
         }}
       >
         <Text type="body" color="primary">
