@@ -19,3 +19,5 @@ export const SEARCHING = "app/HomePage/SEARCHING";
 export const NOT_SEARCHED = "app/HomePage/NOT_SEARCHED";
 
 export const SEARCH_ENDPOINT = "/api/activities";
+
+export const CHUNK_SIZE = 4;

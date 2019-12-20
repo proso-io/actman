@@ -63,11 +63,11 @@ const ImageTagsContainer = styled.a`
     ${props => (props.selected ? props.theme.primary40 : "transparent")};
 `;
 
-const MediaImageContainer = styled.div`
+const MediaImageContainer = styled(FlexContainer)`
   height: 220px;
   width: 100%;
   overflow: hidden;
-  background: ${props => props.theme.primary80};
+  background: ${props => props.theme.secondary};
 `;
 
 const StyledImage = styled.img`
@@ -347,7 +347,7 @@ export default function MediaDetails({
                       : () => {}
                   }
                 >
-                  <MediaImageContainer>
+                  <MediaImageContainer direction="column">
                     <StyledImage src={image.fileUrl} />
                   </MediaImageContainer>
                   <MediaTagsContainer value={image.tags} />

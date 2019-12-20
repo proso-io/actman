@@ -70,6 +70,7 @@
         :default-landing-uri "/login?success=true"})
       (wrap-defaults
         (-> site-defaults
+            (assoc-in [:session :cookie-attrs :http-only] false)
             (assoc-in [:security :anti-forgery] false)
             (assoc-in  [:session :store] (ttl-memory-store (* 60 30)))))
       wrap-internal-error))

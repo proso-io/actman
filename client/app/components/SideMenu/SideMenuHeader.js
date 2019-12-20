@@ -4,7 +4,7 @@ export const SideMenuHeader = styled.div`
   width: 100%;
   height: 80px;
   padding: ${props => props.theme.spacing.sixteen}
-    ${props => props.theme.spacing.twelve};
+    ${props => props.theme.spacing.eight};
   position: relative;
   background: ${props => props.theme.white};
   border-bottom: ${props => props.theme.primary80};
@@ -12,12 +12,12 @@ export const SideMenuHeader = styled.div`
 
 export const CaretDownContainer = styled.div`
   color: ${props => props.theme.primary40};
-  width: 10%;
+  width: 7%;
   text-align: left;
 `;
 
 export const UserInfoContainer = styled.div`
-  width: 80%;
+  width: 88%;
 `;
 
 export const UserInfoTextContainer = styled.div`
@@ -26,6 +26,6 @@ export const UserInfoTextContainer = styled.div`
 
 export const CrossContainer = styled.div`
   color: ${props => props.theme.primary40};
-  width: 10%;
+  width: 5%;
   text-align: right;
 `;
