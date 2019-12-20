@@ -390,8 +390,8 @@
             :post {
               :coercion reitit.coercion.schema/coercion
               :parameters {:path {:id sc/Str} :body {:project sc/Str} :header {(sc/optional-key :authorization) sc/Str}}
-              :handler (fn [{{{:keys [id]} :path {:keys [status]} :body} :parameters :as request}]
-                  (perform-operation request watcher/update-activity-project id status))
+              :handler (fn [{{{:keys [id]} :path {:keys [project]} :body} :parameters :as request}]
+                  (perform-operation request watcher/update-activity-project id project))
             }
           }
         ]
