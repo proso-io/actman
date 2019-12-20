@@ -98,7 +98,7 @@
 (defn edit-activity-action
   "Action function for edit-activity operation"
   [valid-activity id activity _2]
-  (when valid-activity 
+  (when valid-activity
     (->
       (activities/update-doc id activity)
       (add-activity-aux-data)

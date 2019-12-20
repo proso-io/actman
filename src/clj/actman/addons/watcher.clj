@@ -144,7 +144,7 @@
 
 (defOperation get-approved-activity
   "Get activity details for watcher addon"
-  'actman.db.activities :view-approved-activity ops/get-activities-action false nil ID)
+  'actman.db.activities :view-approved-activities ops/get-activities-action false nil ID)
 
 (defOperation get-special-activities
   "Get activity details for watcher addon"
@@ -173,7 +173,7 @@
         ]
         (if (:performed approved)
           approved
-          special (get-special-activity current-user query args)))
+          (get-special-activity current-user query args)))
     )))
 
 (defn get-allowed-activities
