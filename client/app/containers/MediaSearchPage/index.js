@@ -105,7 +105,7 @@ export function MediaSearchPage(props) {
   return (
     <div>
       <Helmet>
-        <title>MediaSearchPage</title>
+        <title>Search media</title>
         <meta name="description" content="Description of MediaSearchPage" />
       </Helmet>
       <Spacing spacing="thirtysix" />
@@ -122,7 +122,7 @@ export function MediaSearchPage(props) {
                 props.resetSearch();
               }}
             />
-            <Button text="Search" onClick={() => props.search(searchTags)} />
+            <Button onClick={() => props.search(searchTags)}>Search</Button>
           </FlexContainer>
         </TagsContainer>
       </div>

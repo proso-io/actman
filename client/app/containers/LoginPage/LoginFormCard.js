@@ -1,6 +1,6 @@
 import styled from "styled-components";
 
-const LoginFormCard = styled.div`
+const LoginFormCard = styled.form`
   width: 30%;
   margin: auto;
   padding: ${props => props.theme.spacing.twentyfour};

@@ -76,7 +76,6 @@ function* updateAddonData(action) {
       }
     });
     if (response.performed) {
-      console.log(action);
       yield put(
         updateAddonResponseAction(
           UPDATE_ADDON_SUCCEEDED,
@@ -93,7 +92,6 @@ function* updateAddonData(action) {
   }
 }
 
-// Individual exports for testing
 export default function* editSchemaPageSaga() {
   // See example in containers/HomePage/saga.js
   yield takeLatest(GET_ACTIVITY_REQUEST_ACTION, getActivity);

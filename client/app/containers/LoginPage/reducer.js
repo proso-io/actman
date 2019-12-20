@@ -21,6 +21,7 @@ const loginPageReducer = (state = initialState, action) =>
         break;
       case LOGIN_REQUEST_ACTION:
         draft.loginStatus = 0;
+        break;
       case LOGIN_RESPONSE_ACTION:
         console.log(LOGIN_RESPONSE_ACTION, action);
         draft.loginStatus = action.status;

@@ -22,7 +22,6 @@ import { resetFormFetchStateAction } from "containers/App/actions";
 
 function* saveSchema(action) {
   let schema = action.schema;
-  console.log("saveSchema saga", action);
   try {
     const userData = yield select(makeSelectUserData());
     let params = {
@@ -45,7 +44,6 @@ function* saveSchema(action) {
         "Content-Type": "application/json"
       }
     });
-    console.log("Save schema", response);
     if (response.performed) {
       yield put(saveSchemaResponseAction(SCHEMA_SAVE_SUCCEEDED, response.data));
       yield put(resetFormFetchStateAction());

@@ -12,14 +12,15 @@ import { FormattedMessage } from "react-intl";
 import { createStructuredSelector } from "reselect";
 import { compose } from "redux";
 import styled from "styled-components";
-import { ChevronRight } from "styled-icons/boxicons-regular/ChevronRight";
 
 import { useInjectSaga } from "utils/injectSaga";
 import { useInjectReducer } from "utils/injectReducer";
 import {
   makeSelectActivityData,
   makeSelectActivityDetailsState,
-  makeSelectUpdateActivityDetailsState
+  makeSelectUpdateActivityDetailsState,
+  makeSelectUpdateAddonState,
+  makeSelectUpdateAddonType
 } from "./selectors";
 import reducer from "./reducer";
 import saga from "./saga";
@@ -30,115 +31,47 @@ import {
   updateAddonRequestAction,
   updateAddonResponseAction
 } from "./actions";
-import Text from "components/Text";
-import FlexContainer from "../../components/FlexContainer";
-import Spacing from "../../components/Spacing";
 import TextDetails from "./TextDetails";
 import MediaDetails from "./MediaDetails";
 import CommentDetails from "./CommentDetails";
-import Button from "../../components/Button";
-import { Input } from "@proso-io/fobu/dist/components";
 import { makeSelectUserPerms } from "../App/selectors";
+import ActionsNav from "./ActionsNav";
 
 const PageContainer = styled.div`
   padding-top: ${props => props.theme.spacing.thirtysix};
 `;
 
-const ActionsBar = styled.div`
-  position: sticky;
-  width: 100%;
-  margin-left: -${props => props.theme.spacing.twentyfour};
-  padding: ${props => props.theme.spacing.twentyfour};
-  border-bottom: 1px solid ${props => props.theme.primary80};
-`;
-
-const ProjectInput = styled(Input)`
-  margin-bottom: 0 !important;
-
-  & label.input__label {
-    margin-bottom: 0;
-  }
-
-  & input.input {
-    height: 40px;
-  }
-`;
-
-const permMap = {
-  activity: {
-    "is-verified": {
-      ent: "Activities",
-      opn: "update-verified"
-    },
-    "is-special": {
-      ent: "Activities",
-      opn: "update-special"
-    },
-    "is-approved": {
-      ent: "Activities",
-      opn: "update-approved"
-    },
-    edit: {
-      ent: "Activities",
-      opn: "edit"
-    },
-    project: {
-      ent: "Activities",
-      opn: "update-project"
-    }
-  },
-  media: {
-    "is-verified": {
-      ent: "MediaMetaData",
-      opn: "update-verified"
-    }
-  }
-};
-
-function hasRight(entity, opn, userPermissions) {
-  const permObj = permMap[entity][opn];
-  for (let index = 0; index < userPermissions.length; index++) {
-    const element = userPermissions[index];
-    if (permObj.ent === element.ent && permObj.opn === element.opn) {
-      return true;
-    }
-  }
-  return false;
-}
-
 export function ActivityDetails(props) {
   useInjectReducer({ key: "activityDetails", reducer });
   useInjectSaga({ key: "activityDetails", saga });
+
   let schema, mdata, addonsmetadata, addonsData;
   const activityId = props.match.params.activityId;
 
-  if (props.activityDetails) {
-    schema = props.activityDetails.schema;
-    mdata = props.activityDetails.mdata;
-    addonsmetadata = props.activityDetails.addonsmetadata;
+  function updateAddon(entity, entityId, addOnType, valueObj) {
+    props.updateAddonData({
+      entityId: entityId,
+      addOnType: addOnType,
+      addOnValue: valueObj,
+      entity: entity
+    });
   }
+
   useEffect(() => {
     if (!props.activityDetailsState) {
       props.getActivityDetails(activityId);
     }
   });
 
-  function updateAddon(type, valueObj) {
-    props.updateAddonData({
-      entityId: activityId,
-      addOnType: type,
-      addOnValue: valueObj,
-      entity: "activity"
-    });
+  if (props.activityDetails) {
+    schema = props.activityDetails.schema;
+    mdata = props.activityDetails.mdata;
+    addonsmetadata = props.activityDetails.addonsmetadata;
   }
 
   if (addonsmetadata) {
     addonsData = addonsmetadata[Object.keys(addonsmetadata)[0]];
   }
-
-  const [projectName, setProjectName] = useState(
-    addonsData ? addonsData["project"] || "" : ""
-  );
 
   return (
     <div>
@@ -146,80 +79,15 @@ export function ActivityDetails(props) {
         <title>Activity Details</title>
         <meta name="description" content="Activity Details" />
       </Helmet>
-      <ActionsBar>
-        <FlexContainer mainAxis="space-between">
-          <div style={{ width: "50%" }}>
-            <FlexContainer mainAxis="flex-start">
-              {hasRight("activity", "is-verified", props.perms) && (
-                <Button
-                  type="primary"
-                  text={
-                    addonsData && addonsData["is-verified"]
-                      ? "Marked as verified"
-                      : "Mark as verified"
-                  }
-                  disabled={addonsData && addonsData["is-verified"]}
-                  onClick={() =>
-                    updateAddon("is-activity-verified", { status: true })
-                  }
-                />
-              )}
-
-              <Spacing type="horizontal" spacing="sixteen" />
-              {hasRight("activity", "is-special", props.perms) && (
-                <Button
-                  type="secondary"
-                  text={
-                    addonsData && addonsData["is-special"]
-                      ? "Marked as special"
-                      : "Mark as special"
-                  }
-                  disabled={addonsData && addonsData["is-special"]}
-                  onClick={() =>
-                    updateAddon("is-activity-special", { status: true })
-                  }
-                />
-              )}
-
-              <Spacing type="horizontal" spacing="sixteen" />
-              {hasRight("activity", "is-approved", props.perms) && (
-                <Button
-                  type="secondary"
-                  text={
-                    addonsData && addonsData["is-approved"]
-                      ? "Marked as approved"
-                      : "Mark as approved"
-                  }
-                  disabled={addonsData && addonsData["is-approved"]}
-                  onClick={() =>
-                    updateAddon("is-activity-approved", { status: true })
-                  }
-                />
-              )}
-            </FlexContainer>
-          </div>
-          {hasRight("activity", "project", props.perms) && (
-            <div className="fobuComponents" style={{ width: "50%" }}>
-              <FlexContainer mainAxis="flex-end">
-                <ProjectInput
-                  id="project-name"
-                  placeholder="Eg. Google"
-                  value={projectName}
-                  onValueChange={(id, value) => setProjectName(value)}
-                />
-                <Spacing type="horizontal" spacing="eight" />
-                <Button
-                  type="secondary"
-                  text="Add project"
-                  onClick={() => {
-                    updateAddon("project", { project: projectName });
-                  }}
-                />
-              </FlexContainer>
-            </div>
-          )}
-        </FlexContainer>
-      </ActionsBar>
+      <ActionsNav
+        activityId={activityId}
+        updateAddon={updateAddon}
+        hasRight={props.hasRight}
+        addonsData={addonsData}
+        perms={props.perms}
+        addonState={props.addonState}
+        updateAddonType={props.updateAddonType}
+      />
       <PageContainer>
         {props.activityDetails ? (
           <div>
@@ -234,20 +102,22 @@ export function ActivityDetails(props) {
                 props.updateActivityDetails(activityData);
               }}
               addonsmetadata={addonsmetadata}
-              updateAddonData={props.updateAddonData}
+              updateAddon={updateAddon}
               schema={schema}
               mdata={mdata}
-              allowMediaVerification={hasRight(
-                "media",
-                "is-verified",
+              allowMediaVerification={props.hasRight(
+                "MediaMetaData",
+                "update-verified",
                 props.perms
               )}
-              allowTagsEdit={hasRight("activity", "edit", props.perms)}
+              allowTagsEdit={props.hasRight("Activities", "edit", props.perms)}
+              addonState={props.addonState}
+              updateAddonType={props.updateAddonType}
             />
             <CommentDetails />
           </div>
         ) : (
-          ""
+          <p>Loading..</p>
         )}
       </PageContainer>
     </div>
@@ -261,8 +131,20 @@ ActivityDetails.propTypes = {
 const mapStateToProps = createStructuredSelector({
   activityDetails: makeSelectActivityData(),
   activityDetailsState: makeSelectActivityDetailsState(),
+  addonState: makeSelectUpdateAddonState(),
+  updateAddonType: makeSelectUpdateAddonType(),
   updateActivityState: makeSelectUpdateActivityDetailsState(),
-  perms: makeSelectUserPerms()
+  perms: makeSelectUserPerms(),
+  hasRight: () => (ent, opn, perms) => {
+    for (let index = 0; index < perms.length; index++) {
+      const element = perms[index];
+      if (ent === element.ent && opn === element.opn) {
+        return true;
+      }
+    }
+
+    return false;
+  }
 });
 
 function mapDispatchToProps(dispatch) {

@@ -9,6 +9,8 @@ export const defaultTheme = {
   black: "#000",
   black60: "rgba(0, 0, 0, 0.6)",
   black80: "rgba(0, 0, 0, 0.8)",
+  error: "#EF4E4E",
+  error60: "#FFBDBD",
   white: "#fff",
   spacing: {
     four: "4px",

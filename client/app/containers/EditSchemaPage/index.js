@@ -28,21 +28,7 @@ import {
   updateSchemaSaveState
 } from "./actions";
 import { push } from "connected-react-router";
-import {
-  DEFAULT_ACTION,
-  SCHEMA_SAVED_STATE,
-  SCHEMA_UNSAVED_STATE,
-  SCHEMA_SAVING_STATE,
-  SCHEMA_ENDPOINT,
-  SCHEMA_SAVE_REQUEST_ACTION,
-  SCHEMA_SAVE_RESPONSE_ACTION,
-  SCHEMA_SAVE_SUCCEEDED,
-  SCHEMA_SAVE_FAILED,
-  GET_SCHEMA_REQUEST_ACTION,
-  GET_SCHEMA_RESPONSE_ACTION,
-  GET_SCHEMA_SUCCEEDED,
-  GET_SCHEMA_FAILED
-} from "./constants";
+import { SCHEMA_UNSAVED_STATE } from "./constants";
 
 const StyledFormBuilder = styled(FormBuilder)`
   width: 95% !important;
@@ -59,8 +45,6 @@ export function EditSchemaPage(props) {
 
   const schemaId = newSchema ? null : props.match.params.schema;
 
-  console.log("EditSchemaPage", props);
-
   useEffect(() => {
     if (schemaId) {
       if (!props.editSchemaPage.getSchemaState) {
@@ -76,21 +60,24 @@ export function EditSchemaPage(props) {
     }
   }
 
-  console.log("schema id", schemaId);
-
   const schema = newSchema ? null : props.editSchemaPage.schemaData.schema;
 
   return (
     <div>
       <Helmet>
-        <title>EditSchemaPage</title>
-        <meta name="description" content="Description of EditSchemaPage" />
+        <title>Create a new form</title>
+        <meta
+          name="description"
+          content="New forms for programs are created on this page"
+        />
       </Helmet>
       {(newSchema || (schemaId && schema)) && (
         <StyledFormBuilder
           builderMode={true}
           onSchemaSubmit={schema => props.saveSchema(schema, schemaId)}
-          saveFormSchemaState={props.editSchemaPage.schemaSaveState || ""}
+          saveFormSchemaState={
+            props.editSchemaPage.schemaSaveState || SCHEMA_UNSAVED_STATE
+          }
           formTitle={newSchema ? "" : props.editSchemaPage.schemaData.title}
           formSchema={schema}
           onFormSchemaChange={props.updateSchemaSaveState}

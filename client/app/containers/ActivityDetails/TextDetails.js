@@ -51,7 +51,7 @@ const FormElementColumn = styled.div`
 const Row = styled(FlexContainer)`
   padding: ${props => props.theme.spacing.twelve};
   text-align: left;
-  border-bottom: 1px solid ${props => props.theme.primary60};
+  border-bottom: 1px solid ${props => props.theme.primary80};
 `;
 
 const StyledChevron = styled(ChevronRight)`

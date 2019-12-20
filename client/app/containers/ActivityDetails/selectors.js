@@ -40,9 +40,23 @@ const makeSelectUpdateActivityDetailsState = () =>
     substate => substate.updateActivityState
   );
 
+const makeSelectUpdateAddonState = () =>
+  createSelector(
+    selectActivityDetailsDomain,
+    substate => substate.updateAddonState
+  );
+
+const makeSelectUpdateAddonType = () =>
+  createSelector(
+    selectActivityDetailsDomain,
+    substate => substate.updateAddonType
+  );
+
 export {
   makeSelectActivityData,
   makeSelectActivityDetailsState,
   makeSelectUpdateActivityDetailsState,
-  makeSelectActivityId
+  makeSelectActivityId,
+  makeSelectUpdateAddonState,
+  makeSelectUpdateAddonType
 };

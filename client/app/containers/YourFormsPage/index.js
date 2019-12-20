@@ -79,12 +79,13 @@ export function YourFormsPage(props) {
         {allowCreateForm ? (
           <Button
             type="primary"
-            text="Create new form"
             onClick={e => {
               e.preventDefault();
               props.push(`/forms/new`);
             }}
-          />
+          >
+            Create new form
+          </Button>
         ) : (
           ""
         )}

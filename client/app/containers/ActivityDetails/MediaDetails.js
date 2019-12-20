@@ -4,7 +4,9 @@ import Text from "components/Text";
 import FlexContainer from "../../components/FlexContainer";
 import Spacing from "components/Spacing";
 import Button from "components/Button";
+import Link from "components/Link";
 import { Tags, Input } from "@proso-io/fobu/dist/components";
+import { UPDATING_ADDON } from "./constants";
 import { ChevronRight } from "styled-icons/boxicons-regular/ChevronRight";
 
 const StyledDetails = styled.details`
@@ -91,18 +93,12 @@ const MediaTagsContainer = styled(Tags)`
 
   & .tag {
     color: initial;
-    text-decoration: none;
+    text-decoration: none !important;
   }
 
   & .tag__cross {
     display: none;
   }
-`;
-
-const StyledLink = styled.a`
-  color: ${props => props.theme.secondary};
-  font-size: ${props => props.theme.fontSizes.small};
-  text-decoration: none;
 `;
 
 const StyledButton = styled(Button)`
@@ -168,10 +164,12 @@ export default function MediaDetails({
   schema,
   mdata,
   addonsmetadata,
-  updateAddonData,
+  updateAddon,
   onUpdateActivityDetails,
   allowTagsEdit,
-  allowMediaVerification
+  allowMediaVerification,
+  addonState,
+  updateAddonType
 }) {
   const [activeTag, setActiveTag] = useState(null);
   const [selectedImages, setSelectedImages] = useState([]);
@@ -179,6 +177,10 @@ export default function MediaDetails({
   const [tagInputText, setTagInputText] = useState("");
 
   const visibleImages = getAllImages(mdata, activeTag);
+
+  const entity = "MediaMetaData";
+
+  const isLoading = addonState === UPDATING_ADDON;
 
   return (
     <StyledDetails>
@@ -196,7 +198,9 @@ export default function MediaDetails({
                     TAGS
                   </Text>
                   {activeTag !== null ? (
-                    <StyledLink
+                    <Link
+                      fontSize="small"
+                      color="secondary"
                       href="#"
                       onClick={e => {
                         e.preventDefault();
@@ -204,7 +208,7 @@ export default function MediaDetails({
                       }}
                     >
                       Clear
-                    </StyledLink>
+                    </Link>
                   ) : (
                     ""
                   )}
@@ -230,9 +234,10 @@ export default function MediaDetails({
                   setSelectMode(!selectMode);
                   setSelectedImages([]);
                 }}
-                type="secondary"
-                text={selectMode ? "De-select images" : "Select images"}
-              />
+                themeType="secondary"
+              >
+                {selectMode ? "De-select images" : "Select images"}
+              </StyledButton>
               <Spacing spacing="twentyfour" />
               {selectedImages.length > 0 ? (
                 <MediaActionsContainer>
@@ -254,8 +259,7 @@ export default function MediaDetails({
                           }}
                         />
                         <Button
-                          type="primary"
-                          text="Add"
+                          themeType="primary"
                           onClick={() => {
                             const updatedMdata = getUpdateMdata(
                               mdata,
@@ -264,7 +268,9 @@ export default function MediaDetails({
                             );
                             onUpdateActivityDetails(updatedMdata);
                           }}
-                        />
+                        >
+                          Add
+                        </Button>
                       </div>
                     )}
 
@@ -274,7 +280,7 @@ export default function MediaDetails({
                     </Text>
                     <Spacing spacing="eight" />
                     {allowMediaVerification && (
-                      <a
+                      <Link
                         href="#"
                         onClick={e => {
                           e.preventDefault();
@@ -282,20 +288,21 @@ export default function MediaDetails({
                             const mediaId = image.match(
                               /\/api\/media\/(.*)\/thumbnail/
                             )[1];
-                            updateAddonData({
-                              entity: "media",
-                              entityId: mediaId,
-                              addOnType: "is-media-verified",
-                              addOnValue: { status: true }
+                            updateAddon(entity, mediaId, "is-media-verified", {
+                              status: true
                             });
                           });
                         }}
                       >
-                        <Text type="body">Mark as verified</Text>
-                      </a>
+                        <Text type="body">
+                          {isLoading && updateAddonType === "is-media-verified"
+                            ? "Marking..."
+                            : "Mark as verified"}
+                        </Text>
+                      </Link>
                     )}
-
-                    <a
+                    <Spacing spacing="four" />
+                    <Link
                       href="#"
                       onClick={e => {
                         e.preventDefault();
@@ -308,7 +315,7 @@ export default function MediaDetails({
                       }}
                     >
                       <Text type="body">Download all</Text>
-                    </a>
+                    </Link>
                   </FlexContainer>
                 </MediaActionsContainer>
               ) : (
