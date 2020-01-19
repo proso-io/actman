@@ -61,14 +61,13 @@ import {
 toast.configure();
 
 const PageBody = styled.div`
-  padding-left: ${props => props.theme.spacing.twentyfour};
+  padding-left: ${props => props.theme.spacing.sixteen};
   overflow: auto;
   width: 100%;
   min-height: 100vh;
 `;
 
 const PageRightContainer = styled.div`
-  padding-left: 300px;
   overflow-x: hidden;
   flex: 1;
 `;

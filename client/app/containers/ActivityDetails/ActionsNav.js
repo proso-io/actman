@@ -13,6 +13,7 @@ const ActionsBar = styled.div`
   width: 100%;
   margin-left: -${props => props.theme.spacing.twentyfour};
   padding: ${props => props.theme.spacing.twentyfour};
+  padding-right: 0;
   border-bottom: 1px solid ${props => props.theme.primary80};
 `;
 
@@ -52,73 +53,70 @@ function ActionsNav({
 
   return (
     <ActionsBar>
-      <FlexContainer mainAxis="space-between">
-        <div style={{ width: "50%" }}>
-          <FlexContainer mainAxis="flex-start">
-            {hasRight(entity, "update-verified", perms) && (
-              <Button
-                themeType="primary"
-                disabled={addonsData && addonsData["is-verified"]}
-                loading={
-                  isLoading && updateAddonType === "is-activity-verified"
-                }
-                onClick={() =>
-                  updateAddon(entity, activityId, "is-activity-verified", {
-                    status: true
-                  })
-                }
-              >
-                {addonsData && addonsData["is-verified"]
-                  ? "Marked as verified"
-                  : "Mark as verified"}
-              </Button>
-            )}
+      <FlexContainer width="100%" mainAxis="flex-start" wrap="wrap">
+        {hasRight(entity, "update-verified", perms) && (
+          <Button
+            themeType="primary"
+            disabled={addonsData && addonsData["is-verified"]}
+            loading={isLoading && updateAddonType === "is-activity-verified"}
+            onClick={() =>
+              updateAddon(entity, activityId, "is-activity-verified", {
+                status: true
+              })
+            }
+          >
+            {addonsData && addonsData["is-verified"]
+              ? "Marked as verified"
+              : "Mark as verified"}
+          </Button>
+        )}
 
+        {hasRight(entity, "update-special", perms) && (
+          <div>
             <Spacing type="horizontal" spacing="sixteen" />
+            <Button
+              themeType="secondary"
+              disabled={addonsData && addonsData["is-special"]}
+              loading={isLoading && updateAddonType === "is-activity-special"}
+              onClick={() =>
+                updateAddon(entity, activityId, "is-activity-special", {
+                  status: true
+                })
+              }
+            >
+              {addonsData && addonsData["is-special"]
+                ? "Marked as special"
+                : "Mark as special"}
+            </Button>
+          </div>
+        )}
 
-            {hasRight(entity, "update-special", perms) && (
-              <Button
-                themeType="secondary"
-                disabled={addonsData && addonsData["is-special"]}
-                loading={isLoading && updateAddonType === "is-activity-special"}
-                onClick={() =>
-                  updateAddon(entity, activityId, "is-activity-special", {
-                    status: true
-                  })
-                }
-              >
-                {addonsData && addonsData["is-special"]
-                  ? "Marked as special"
-                  : "Mark as special"}
-              </Button>
-            )}
-
+        {hasRight(entity, "update-approved", perms) && (
+          <div>
             <Spacing type="horizontal" spacing="sixteen" />
+            <Button
+              themeType="secondary"
+              disabled={addonsData && addonsData["is-approved"]}
+              loading={isLoading && updateAddonType === "is-activity-approved"}
+              onClick={() =>
+                updateAddon(entity, activityId, "is-activity-approved", {
+                  status: true
+                })
+              }
+            >
+              {addonsData && addonsData["is-approved"]
+                ? "Marked as approved"
+                : "Mark as approved"}
+            </Button>
+          </div>
+        )}
+      </FlexContainer>
 
-            {hasRight(entity, "update-approved", perms) && (
-              <Button
-                themeType="secondary"
-                disabled={addonsData && addonsData["is-approved"]}
-                loading={
-                  isLoading && updateAddonType === "is-activity-approved"
-                }
-                onClick={() =>
-                  updateAddon(entity, activityId, "is-activity-approved", {
-                    status: true
-                  })
-                }
-              >
-                {addonsData && addonsData["is-approved"]
-                  ? "Marked as approved"
-                  : "Mark as approved"}
-              </Button>
-            )}
-          </FlexContainer>
-        </div>
-
+      <div>
+        <Spacing type="vertical" spacing="twentyfour" />
         {hasRight(entity, "update-project", perms) && (
-          <div className="fobuComponents" style={{ width: "50%" }}>
-            <FlexContainer mainAxis="flex-end">
+          <div className="fobuComponents">
+            <FlexContainer mainAxis="flex-start">
               <ProjectInput
                 id="project-name"
                 placeholder="Eg. Google"
@@ -140,7 +138,7 @@ function ActionsNav({
             </FlexContainer>
           </div>
         )}
-      </FlexContainer>
+      </div>
     </ActionsBar>
   );
 }

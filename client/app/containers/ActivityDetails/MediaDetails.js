@@ -37,6 +37,10 @@ const SummaryText = styled(Text)`
 
 const ActionsContainer = styled.div`
   width: 30%;
+
+  @media only screen and (max-width: 450px) {
+    width: 80%;
+  }
 `;
 
 const MediaContainer = styled(FlexContainer)`
@@ -58,9 +62,13 @@ const ImageTagsContainer = styled.a`
   background: ${props => props.theme.white};
   box-shadow: 0px 3px 6px rgba(0, 0, 0, 0.16);
   margin-bottom: ${props => props.theme.spacing.twentyfour};
-  margin-left: ${props => props.theme.spacing.twelve};
+  margin-right: ${props => props.theme.spacing.twelve};
   border: 1px solid
     ${props => (props.selected ? props.theme.primary40 : "transparent")};
+
+  @media only screen and (max-width: 450px) {
+    width: 80%;
+  }
 `;
 
 const MediaImageContainer = styled(FlexContainer)`
@@ -190,7 +198,12 @@ export default function MediaDetails({
 
       <Well mainAxis="flex-start">
         <div className="fobuComponents" style={{ width: "100%" }}>
-          <FlexContainer mainAxis="stretch" crossAxis="flex-start" width="100%">
+          <FlexContainer
+            mainAxis="stretch"
+            crossAxis="flex-start"
+            wrap="wrap"
+            width="100%"
+          >
             <ActionsContainer>
               <TagsContainer>
                 <FlexContainer mainAxis="space-between" width="100%">

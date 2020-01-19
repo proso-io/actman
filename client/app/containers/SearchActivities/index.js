@@ -31,6 +31,10 @@ const TagsContainer = styled.div`
   background: ${props => props.theme.secondary};
   padding: ${props => props.theme.spacing.sixteen};
   width: 60%;
+
+  @media only screen and (max-width: 450px) {
+    width: 90%;
+  }
 `;
 
 const StyledTags = styled(Tags)`
@@ -64,12 +68,8 @@ function getAllImages(mdata) {
 }
 
 const ActivityTileContainer = styled.div`
-  margin-left: ${props => props.theme.spacing.twentyfour};
+  margin-right: ${props => props.theme.spacing.twentyfour};
   margin-bottom: ${props => props.theme.spacing.twentyfour};
-
-  :first-child {
-    margin-left: 0;
-  }
 `;
 
 export function SearchActivities(props) {
@@ -89,7 +89,11 @@ export function SearchActivities(props) {
       <Spacing spacing="sixteen" />
       <div className="fobuComponents">
         <TagsContainer>
-          <FlexContainer mainAxis="flex-start" crossAxis="flex-start">
+          <FlexContainer
+            mainAxis="flex-start"
+            crossAxis="flex-start"
+            wrap="wrap"
+          >
             <StyledTags
               id="tags"
               value={searchTags}

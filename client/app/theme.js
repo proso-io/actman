@@ -18,7 +18,8 @@ export const defaultTheme = {
     twelve: "12px",
     sixteen: "16px",
     twentyfour: "24px",
-    thirtysix: "36px"
+    thirtysix: "36px",
+    fortytwo: "42px"
   },
   fontSizes: {
     title: "30px",

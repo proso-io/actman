@@ -30,6 +30,10 @@ const TagsContainer = styled.div`
   background: ${props => props.theme.secondary};
   padding: ${props => props.theme.spacing.sixteen};
   width: 60%;
+
+  @media only screen and (max-width: 450px) {
+    width: 90%;
+  }
 `;
 
 const StyledTags = styled(Tags)`
@@ -56,6 +60,14 @@ const ImageTagsContainer = styled.div`
   margin-left: ${props => props.theme.spacing.twelve};
   border: 1px solid
     ${props => (props.selected ? props.theme.primary40 : "transparent")};
+
+  @media only screen and (max-width: 750px) {
+    width: 40%;
+  }
+
+  @media only screen and (max-width: 450px) {
+    width: 50%;
+  }
 `;
 
 const MediaImageContainer = styled.div`
@@ -113,7 +125,11 @@ export function MediaSearchPage(props) {
       <Spacing spacing="sixteen" />
       <div className="fobuComponents">
         <TagsContainer>
-          <FlexContainer mainAxis="flex-start" crossAxis="flex-start">
+          <FlexContainer
+            mainAxis="flex-start"
+            crossAxis="flex-start"
+            wrap="wrap"
+          >
             <StyledTags
               id="tags"
               value={searchTags}
