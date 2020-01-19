@@ -78,7 +78,7 @@ function deleteCookie(name) {
 }
 
 function SideMenu(props) {
-  const [open, setOpen] = useState(true);
+  const [open, setOpen] = useState(false);
   return (
     <div>
       <SideMenuOpenTrigger onClick={() => setOpen(true)}>

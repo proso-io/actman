@@ -119,6 +119,10 @@ const MediaActionsContainer = styled.div`
   min-height: 150px;
   width: 80%;
   padding: ${props => props.theme.spacing.sixteen};
+  margin-bottom: ${props => props.theme.spacing.sixteen};
+  @media only screen and (max-width: 450px) {
+    width: 100%;
+  }
 `;
 
 function getUniqueTags(mdata) {
