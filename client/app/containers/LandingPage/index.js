@@ -19,6 +19,8 @@ import reducer from "./reducer";
 import saga from "./saga";
 import messages from "./messages";
 
+import { FormBuilder, Input } from "@proso-io/fobu/dist/fobu.components";
+
 export function LandingPage() {
   useInjectReducer({ key: "landingPage", reducer });
   useInjectSaga({ key: "landingPage", saga });
@@ -29,6 +31,8 @@ export function LandingPage() {
         <title>LandingPage</title>
         <meta name="description" content="Description of LandingPage" />
       </Helmet>
+      <Input id="sdv" />
+
       <FormattedMessage {...messages.header} />
     </div>
   );

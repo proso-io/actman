@@ -5,7 +5,21 @@
     [actman.db.organisations :as orgs]
     [actman.utils.general :as gutil]
     [actman.db.utils :as db-utils]
+    [cemerick.friend :as friend]
+    [actman.db.users :as users]
     [actman.db.access-restrictions :as accres]))
+
+(defn current-user
+  [request]
+  (let [
+    {:keys [username] :as auth-user} (friend/current-authentication request)
+    ]
+    (println "raw current user" auth-user)
+    (when username
+      (->
+        (users/get-doc username)
+        (assoc :username username)
+        (dissoc :pswd)))))
 
 (defn authorize-team
   "checks if user belongs to a team"
@@ -22,7 +36,7 @@
 (defn is-team-role-equal
   "Checks if value of :t, :tu and :rl keys of team1 and team2 are equal"
   [team1 team2]
-  (gutil/is-object-equal-for-keys? team1 team2 (db-utils/get-team-role-keys)))
+  (gutil/is-object-equal-for-keys? team1 team2 [:t :rl])); (db-utils/get-team-role-keys)))
 
 (defn team-role-exists?
   "Checks if `teams` contains `team`"
@@ -41,16 +55,21 @@
 (defn authorize-operation
   "Checks if user can perform an operation on entity."
   [{:keys [oid username teams] :as current-user} entity-type operation entity & [addon-id]]
+  (println "authorize-operation for" current-user entity-type operation entity addon-id)
   (let [
-    rolespath (if addon-id [:addonsaccess (key addon-id) :accessroles operation] [:accessroles operation])
-    userspath (if addon-id [:addonsaccess (key addon-id) :accessusers operation] [:accessusers operation])
+    a {:oid oid :opn (name operation) :addon addon-id :ent entity-type}
+    docs (accres/get-docs a)
+    rolespath (if addon-id [:addonsaccess (keyword addon-id) :accessroles operation] [:accessroles operation])
+    userspath (if addon-id [:addonsaccess (keyword addon-id) :accessusers operation] [:accessusers]) ;[:accessusers operation]
     global-access
       (->
-        {:oid oid :opn operation :addon addon-id :ent entity-type}
+        {:oid oid :opn (name operation) :addon addon-id :ent entity-type}
         (accres/get-docs)
         (first))
+    a (println "global-access" a global-access)
     entity-roles-access (get-in entity rolespath)
     entity-users-access (get-in entity userspath)
+    a (println "\n" entity entity-roles-access entity-users-access "\n")
     ]
     (or
       (some #(= username %) entity-users-access)
@@ -93,7 +112,7 @@
 ;   [handler auth-fn check-id?]
 ;   `(fn [request#]
 ;     (let [
-;       current-user# {:name "shivam"}; (friend/current-authentication request)
+;       current-user# (current-user request)
 ;       args#
 ;         (if ~check-id?
 ;           [current-user#]

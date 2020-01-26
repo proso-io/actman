@@ -6,8 +6,7 @@
 
 (defCollection Addons [
   [:name sc/Str "Name of Addon"]
-  [:desc sc/Str "Description"]
-  [:pid sc/Str "Program under which activity is created"]
+  [:desc sc/Str "Description" :opt]
   [:opns
     {
       :array {
@@ -17,6 +16,6 @@
         ]
       }
     }
-    "Operation keys provided by"]
+    "Operation keys provided by" :opt]
   ]
   )

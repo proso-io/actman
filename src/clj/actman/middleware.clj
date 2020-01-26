@@ -46,27 +46,31 @@
       ;; since they're not compatible with this middleware
       ((if (:websocket? request) handler wrapped) request))))
 
-(defn get-user-creds-internal
+(defn get-user-creds;-internal
   "Return user object for friend credential-fn."
-  [id]
+  [email]
   (let [
-    creds (users/get-doc id)
+    creds (users/get-user-for-email email)
     ]
+    (println "user creds" email creds)
     (when (:pswd creds)
       (clojure.set/rename-keys creds {:_id :username :pswd :password}))))
 
-(def get-user-creds (memoize get-user-creds-internal))
+;(def get-user-creds (memoize get-user-creds-internal))
 
 (defn wrap-base [handler]
   (-> ((:middleware defaults) handler)
     (friend/authenticate
       {:credential-fn (partial creds/bcrypt-credential-fn get-user-creds)
+        :ensure-session false
+        :redirect-on-auth? false
         :workflows [(workflows/http-basic :realm "/")
                     (workflows/interactive-form)]
-        :login-uri "/login"
-        :default-landing-uri "/dashboard"})
+        :login-uri "/api/login"
+        :default-landing-uri "/login?success=true"})
       (wrap-defaults
         (-> site-defaults
+            (assoc-in [:session :cookie-attrs :http-only] false)
             (assoc-in [:security :anti-forgery] false)
             (assoc-in  [:session :store] (ttl-memory-store (* 60 30)))))
       wrap-internal-error))

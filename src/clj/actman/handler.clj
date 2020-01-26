@@ -45,7 +45,7 @@
                            ;; encoding response body
                            muuntaja/format-response-middleware
                            ;; exception handling
-                           exception/exception-middleware
+                           ;exception/exception-middleware
                            ;; decoding request body
                            muuntaja/format-request-middleware
                            ;; coercing response bodys
