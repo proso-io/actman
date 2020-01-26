@@ -44,9 +44,7 @@ const Column = styled.div`
   }
 `;
 
-const FormElementColumn = styled.div`
-  width: 50%;
-`;
+const FormElementColumn = styled.div``;
 
 const Row = styled(FlexContainer)`
   padding: ${props => props.theme.spacing.twelve};
@@ -82,7 +80,7 @@ export default function TextDetails({ schema, mdata }) {
       } else if (block.type !== "imagesWithTags") {
         const { label, name } = block.elementParams;
         return (
-          <Row key={block.id} mainAxis="space-between" width="100%">
+          <Row key={block.id} mainAxis="space-between" wrap="wrap" width="100%">
             <FormElementColumn>
               <Text type="body" weight="semibold" color="primary40">
                 {label} {name ? `(${name})` : ""}

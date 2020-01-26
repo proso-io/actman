@@ -171,12 +171,8 @@ function chunkArray(arr, n) {
 }
 
 const ActivityTileContainer = styled.div`
-  margin-left: ${props => props.theme.spacing.twentyfour};
+  margin-right: ${props => props.theme.spacing.twentyfour};
   margin-bottom: ${props => props.theme.spacing.twentyfour};
-
-  :first-child {
-    margin-left: 0;
-  }
 `;
 
 export function HomePage(props) {
@@ -235,7 +231,7 @@ export function HomePage(props) {
               <FlexContainer direction="column" crossAxis="flex-start">
                 {group.values &&
                   group.values.map(row => (
-                    <FlexContainer>
+                    <FlexContainer wrap="wrap" mainAxis="flex-start">
                       {row.map(item => (
                         <ActivityTileContainer
                           key={item._id}

@@ -120,9 +120,9 @@ module.exports = [
       }),
 
       new WebpackPwaManifest({
-        name: "React Boilerplate",
-        short_name: "React BP",
-        description: "My React Boilerplate-based project!",
+        name: "Actman",
+        short_name: "Actman",
+        description: "Activity manager for asset and data management",
         background_color: "#fafafa",
         theme_color: "#b1624d",
         inject: true,

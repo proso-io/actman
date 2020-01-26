@@ -15,6 +15,7 @@ import { compose } from "redux";
 import { FormattedMessage } from "react-intl";
 import messages from "./messages";
 import { CaretDown } from "styled-icons/boxicons-regular/CaretDown";
+import { Menu } from "styled-icons/boxicons-regular/Menu";
 
 import Text from "../Text";
 import FlexContainer from "../FlexContainer";
@@ -44,11 +45,20 @@ const SideMenuContainer = styled.div`
   padding: 0;
   margin: 0;
   left: 0;
+  flex-basis: 30%;
+  display: ${props => (props.open ? "block" : "none")};
   width: ${props => (props.open ? "300px" : "0px")};
   min-width: ${props => (props.open ? "300px" : "0px")};
-  transition: width 2s;
+  transition: width 1s;
   background: ${props => props.theme.secondary};
   box-shadow: 0px -6px 8px rgba(0, 0, 0, 0.16);
+`;
+
+const SideMenuOpenTrigger = styled.div`
+  position: absolute;
+  top: 2.5%;
+  width: 40px;
+  left: -8px;
 `;
 
 function getUserContextString({ orgName, teams, activeTeamIndex }) {
@@ -68,70 +78,81 @@ function deleteCookie(name) {
 }
 
 function SideMenu(props) {
-  const [open, setOpen] = useState(true);
+  const [open, setOpen] = useState(false);
   return (
-    <SideMenuContainer open={open}>
-      <SideMenuHeader>
-        <FlexContainer mainAxis="space-between">
-          <CaretDownContainer>
-            <CaretDown />
-          </CaretDownContainer>
+    <div>
+      <SideMenuOpenTrigger onClick={() => setOpen(true)}>
+        <Menu />
+      </SideMenuOpenTrigger>
+      <SideMenuContainer open={open}>
+        <SideMenuHeader>
+          <FlexContainer mainAxis="space-between">
+            <CaretDownContainer>
+              <CaretDown />
+            </CaretDownContainer>
 
-          <UserInfoContainer>
-            <FlexContainer mainAxis="flex-start">
-              <Avatar name={props.user.name} />
-              <UserInfoTextContainer>
-                <Text type="caption" color="primary" case="title">
-                  {props.user.name}
-                </Text>
-                <Spacing />
-                <Text type="small" color="primary20" case="title">
-                  {getUserContextString(props.user)}
-                </Text>
-              </UserInfoTextContainer>
-            </FlexContainer>
-          </UserInfoContainer>
+            <UserInfoContainer>
+              <FlexContainer mainAxis="flex-start">
+                <Avatar name={props.user.name} />
+                <UserInfoTextContainer>
+                  <Text type="caption" color="primary" case="title">
+                    {props.user.name}
+                  </Text>
+                  <Spacing />
+                  <Text type="small" color="primary20" case="title">
+                    {getUserContextString(props.user)}
+                  </Text>
+                </UserInfoTextContainer>
+              </FlexContainer>
+            </UserInfoContainer>
 
-          <CrossContainer>{open ? "x" : ""}</CrossContainer>
-        </FlexContainer>
-      </SideMenuHeader>
-      <SideMenuBody>
-        <MenuTitleText type="body" color="primary40" weight="semibold">
-          <FormattedMessage {...messages.actionsTitle} />
-        </MenuTitleText>
+            <CrossContainer onClick={() => setOpen(false)}>
+              {open ? "x" : ""}
+            </CrossContainer>
+          </FlexContainer>
+        </SideMenuHeader>
+        <SideMenuBody>
+          <MenuTitleText type="body" color="primary40" weight="semibold">
+            <FormattedMessage {...messages.actionsTitle} />
+          </MenuTitleText>
 
-        <MenuContainer>
-          {props.actions.map(action => {
-            return (
-              <MenuItemContainer
-                key={action.title}
-                onClick={() => {
-                  props.push(action.link);
-                  if (props.onLinkChange) {
-                    props.onLinkChange(action.link);
-                  }
-                }}
-                isActive={action.isActive}
-              >
-                <Text type="body" color={action.isActive ? "white" : "primary"}>
-                  {action.title}
-                </Text>
-              </MenuItemContainer>
-            );
-          })}
-        </MenuContainer>
-      </SideMenuBody>
-      <SideMenuFooter
-        onClick={() => {
-          deleteCookie("ring-session");
-          window.location.assign("/login");
-        }}
-      >
-        <Text type="body" color="primary">
-          <FormattedMessage {...messages.logoutText} />
-        </Text>
-      </SideMenuFooter>
-    </SideMenuContainer>
+          <MenuContainer>
+            {props.actions.map(action => {
+              return (
+                <MenuItemContainer
+                  key={action.title}
+                  onClick={() => {
+                    props.push(action.link);
+                    if (props.onLinkChange) {
+                      props.onLinkChange(action.link);
+                    }
+                    setOpen(false);
+                  }}
+                  isActive={action.isActive}
+                >
+                  <Text
+                    type="body"
+                    color={action.isActive ? "white" : "primary"}
+                  >
+                    {action.title}
+                  </Text>
+                </MenuItemContainer>
+              );
+            })}
+          </MenuContainer>
+        </SideMenuBody>
+        <SideMenuFooter
+          onClick={() => {
+            deleteCookie("ring-session");
+            window.location.assign("/login");
+          }}
+        >
+          <Text type="body" color="primary">
+            <FormattedMessage {...messages.logoutText} />
+          </Text>
+        </SideMenuFooter>
+      </SideMenuContainer>
+    </div>
   );
 }
 
